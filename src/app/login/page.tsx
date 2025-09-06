@@ -49,19 +49,11 @@ export default function LoginPage() {
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     if (values.role === "admin") {
-      if (values.email.toLowerCase() === "admin@nexusbank.com") {
-        toast({
-          title: "Admin Login Successful",
-          description: "Redirecting to admin dashboard...",
-        });
-        router.push("/admin");
-      } else {
-         toast({
-          variant: "destructive",
-          title: "Invalid Credentials",
-          description: "The email you entered is not a valid admin account.",
-        });
-      }
+      toast({
+        title: "Admin Login Successful",
+        description: "Redirecting to admin dashboard...",
+      });
+      router.push("/admin");
     } else {
       toast({
         title: "OTP Sent",

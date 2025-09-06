@@ -19,8 +19,8 @@ export function LoanDetailsStep() {
     const loanType = watch("loanType");
     const config = loanConfig[loanType as keyof typeof loanConfig] || loanConfig.personal;
 
-    const amount = watch("amount") || config.min;
-    const tenure = watch("tenure") || config.minTenure;
+    const amount = watch("amount");
+    const tenure = watch("tenure");
 
     return (
         <div>
@@ -37,12 +37,11 @@ export function LoanDetailsStep() {
                                 <Input type="number" placeholder="e.g., 500000" {...field} onChange={e => field.onChange(Number(e.target.value))}/>
                             </FormControl>
                             <Slider
-                                defaultValue={[config.min]}
                                 min={config.min}
                                 max={config.max}
                                 step={config.step}
                                 onValueChange={(value) => field.onChange(value[0])}
-                                value={[field.value || config.min]}
+                                value={[field.value]}
                                 className="mt-4"
                             />
                             <FormMessage />
@@ -59,12 +58,11 @@ export function LoanDetailsStep() {
                                 <Input type="number" placeholder="e.g., 5" {...field} onChange={e => field.onChange(Number(e.target.value))}/>
                             </FormControl>
                              <Slider
-                                defaultValue={[config.minTenure]}
                                 min={config.minTenure}
                                 max={config.maxTenure}
                                 step={1}
                                 onValueChange={(value) => field.onChange(value[0])}
-                                value={[field.value || config.minTenure]}
+                                value={[field.value]}
                                 className="mt-4"
                             />
                             <FormMessage />

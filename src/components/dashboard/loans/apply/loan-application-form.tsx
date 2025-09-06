@@ -73,23 +73,47 @@ const formStepsPerLoan: Record<string, (keyof LoanFormData)[][]> = {
     ],
 };
 
+const loanConfig = {
+    home: { min: 500000, max: 20000000, step: 100000, minTenure: 5, maxTenure: 30, rate: 8.5 },
+    personal: { min: 50000, max: 2500000, step: 10000, minTenure: 1, maxTenure: 5, rate: 10.75 },
+    car: { min: 100000, max: 5000000, step: 25000, minTenure: 1, maxTenure: 7, rate: 9.25 },
+    education: { min: 100000, max: 10000000, step: 50000, minTenure: 5, maxTenure: 15, rate: 7.5 },
+}
+
 
 export function LoanApplicationForm() {
     const { toast } = useToast();
     const router = useRouter();
     const searchParams = useSearchParams();
     const loanType = searchParams.get("type") || "personal";
+    const config = loanConfig[loanType as keyof typeof loanConfig] || loanConfig.personal;
 
     const methods = useForm<LoanFormData>({
         resolver: zodResolver(loanApplicationSchema),
         defaultValues: {
             loanType: loanType as any,
+            amount: config.min,
+            tenure: config.minTenure,
+            fullName: "",
+            dob: undefined,
+            pan: "",
+            address: "",
+            employmentType: "salaried",
+            companyName: "",
+            monthlyIncome: 15000,
+            documents: null,
+            propertyInfo: "",
+            vehicleDetails: "",
+            courseDetails: "",
         },
         mode: "onTouched",
     });
 
     useEffect(() => {
         methods.setValue("loanType", loanType as any);
+        const newConfig = loanConfig[loanType as keyof typeof loanConfig] || loanConfig.personal;
+        methods.setValue("amount", newConfig.min);
+        methods.setValue("tenure", newConfig.minTenure);
     }, [loanType, methods]);
 
 
@@ -154,4 +178,3 @@ export function LoanApplicationForm() {
         </FormProvider>
     );
 }
-

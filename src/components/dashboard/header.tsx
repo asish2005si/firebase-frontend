@@ -16,6 +16,7 @@ import {
   ListOrdered,
   Banknote,
   FileText,
+  BadgeIndianRupee,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +51,7 @@ const navItems = [
     { href: "#", icon: Banknote, label: "Payments / Transfers" },
     { href: "#", icon: FileText, label: "Bill Payments" },
     { href: "#", icon: Landmark, label: "Deposit & Investment" },
+    { href: "#", icon: BadgeIndianRupee, label: "Loans" },
 ];
 
 export function Header() {

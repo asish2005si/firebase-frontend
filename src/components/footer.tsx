@@ -1,7 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import { Landmark, Facebook, Twitter, Linkedin } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export function Footer() {
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="container py-12">
@@ -42,7 +51,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-primary-foreground/20 text-center text-sm text-primary-foreground/60">
-          <p>&copy; {new Date().getFullYear()} Smart Bank. All Rights Reserved.</p>
+          <p>&copy; {currentYear} Smart Bank. All Rights Reserved.</p>
         </div>
       </div>
     </footer>

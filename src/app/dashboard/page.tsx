@@ -1,43 +1,48 @@
 
-import { AccountSummary } from "@/components/dashboard/account-summary";
-import { UpcomingPayments } from "@/components/dashboard/upcoming-payments";
-import { RecentNotifications } from "@/components/dashboard/recent-notifications";
+import { AccountCard } from "@/components/dashboard/account-card";
+import { CustomerProfile } from "@/components/dashboard/customer-profile";
 
 export default function DashboardPage() {
 
+    const customer = {
+        fullName: "Alex Thompson",
+        customerId: "NEXUS-12345",
+        email: "alex.thompson@example.com",
+        contactNumber: "+1-202-555-0178"
+    };
+
     const accounts = [
-        { type: "Savings Account", number: "XXXX-XXXX-1234", balance: 5420.50 },
-        { type: "Fixed Deposit", number: "XXXX-XXXX-5678", balance: 10000.00 }
-    ];
-
-    const upcomingPayments = [
-        { dueDate: "2024-07-28", description: "Home Loan EMI", amount: 1500.00, status: "Pending" },
-        { dueDate: "2024-08-01", description: "Credit Card Bill", amount: 750.80, status: "Pending" },
-        { dueDate: "2024-08-05", description: "Electricity Bill", amount: 120.00, status: "Upcoming" }
-    ];
-
-    const notifications = [
-        { date: "2024-07-25", message: "Your salary of $2500 has been credited." },
-        { date: "2024-07-24", message: "A new login was detected from a new device." },
-        { date: "2024-07-22", message: "Your request to update your address has been approved." }
+        { 
+            type: "Savings Account", 
+            number: "XXXX-XXXX-1234", 
+            balance: 5420.50,
+            currency: "USD"
+        },
+        { 
+            type: "Fixed Deposit", 
+            number: "XXXX-XXXX-5678", 
+            balance: 10000.00,
+            currency: "USD"
+        },
+         { 
+            type: "Salary Account", 
+            number: "XXXX-XXXX-9876", 
+            balance: 2500.75,
+            currency: "USD"
+        },
     ];
 
   return (
     <div className="flex flex-col gap-8">
-       <div className="space-y-2">
-            <h1 className="text-3xl font-bold font-headline tracking-tight">
-              Welcome back, Alex!
-            </h1>
-            <p className="text-muted-foreground">
-              Here&apos;s a summary of your financial activities.
-            </p>
-        </div>
-
-        <AccountSummary accounts={accounts} />
-
-        <div className="grid gap-8 md:grid-cols-2">
-            <UpcomingPayments payments={upcomingPayments} />
-            <RecentNotifications notifications={notifications} />
+        <CustomerProfile customer={customer} />
+        
+        <div>
+            <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Your Accounts</h2>
+            <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
+                {accounts.map(account => (
+                    <AccountCard key={account.number} account={account} />
+                ))}
+            </div>
         </div>
     </div>
   );

@@ -1,4 +1,5 @@
 
+
 import {
   Card,
   CardContent,
@@ -8,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PiggyBank, WalletCards, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const accountTypes = [
   {
@@ -50,9 +52,11 @@ export function OpenAccountSection() {
           ))}
         </div>
         <div className="text-center mt-12">
-          <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg">
-            Apply Now <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+          <Link href="/open-account">
+            <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg">
+              Apply Now <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

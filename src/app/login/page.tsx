@@ -158,7 +158,7 @@ export default function LoginPage() {
                 <div className="mt-6 text-center text-sm">
                 New here?{" "}
                 <Link
-                    href="/#open-account"
+                    href="/open-account"
                     className="font-medium text-primary hover:underline"
                 >
                     Open an Account

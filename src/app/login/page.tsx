@@ -51,9 +51,9 @@ export default function LoginPage() {
     if (values.role === "admin") {
       toast({
         title: "Admin Login Successful",
-        description: "Redirecting to dashboard...",
+        description: "Redirecting to homepage...",
       });
-      router.push("/dashboard");
+      router.push("/");
     } else {
       toast({
         title: "OTP Sent",

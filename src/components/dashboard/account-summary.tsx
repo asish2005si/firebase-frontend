@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 type Customer = {
     fullName: string;
-    customerId: string;
+    accountNumber: string;
     email: string;
     contactNumber: string;
 }
@@ -26,7 +26,7 @@ export function CustomerProfile({ customer }: CustomerProfileProps) {
         </CardHeader>
         <CardContent className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 pt-2">
             <DetailItem label="Full Name" value={customer.fullName} />
-            <DetailItem label="Customer ID" value={customer.customerId} />
+            <DetailItem label="Account Number" value={customer.accountNumber} />
             <DetailItem label="Email Address" value={customer.email} />
             <Button variant="outline" size="sm" className="max-w-fit">View Profile Status</Button>
         </CardContent>

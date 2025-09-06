@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 
 const customer = {
   fullName: "Jane Doe",
-  customerId: "CUST123456",
+  accountNumber: "123456789012345",
   email: "jane.doe@example.com",
   contactNumber: "+91 9876543210",
   address: "123, Sunshine Apartments, Mumbai, Maharashtra, 400001",

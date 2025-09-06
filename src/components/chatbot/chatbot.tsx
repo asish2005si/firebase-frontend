@@ -65,14 +65,15 @@ export function Chatbot() {
     if (!messageContent.trim()) return;
 
     const userMessage: ChatMessage = { role: "user", content: messageContent };
-    const newMessages = [...messages, userMessage];
-
-    setMessages(newMessages);
+    // Create a new, updated array for both state and the API call. This fixes the race condition.
+    const updatedMessages = [...messages, userMessage];
+    
+    setMessages(updatedMessages);
     setInput("");
     setIsLoading(true);
 
     try {
-      const botResponse = await chat(newMessages);
+      const botResponse = await chat(updatedMessages); // Use the updated array directly
       const botMessage: ChatMessage = { role: "model", content: botResponse };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {

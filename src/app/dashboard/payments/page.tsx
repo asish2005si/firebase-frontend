@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FundTransferForm } from "@/components/dashboard/payments/fund-transfer-form";
 import { BillPaymentForm } from "@/components/dashboard/payments/bill-payment-form";
 import { PaymentHistory } from "@/components/dashboard/payments/payment-history";
+import { ClientOnly } from "@/components/client-only";
 
 function PaymentsComponent() {
   const searchParams = useSearchParams();
@@ -48,8 +49,10 @@ function PaymentsComponent() {
 
 export default function PaymentsPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <PaymentsComponent />
-        </Suspense>
+        <ClientOnly>
+            <Suspense fallback={<div>Loading...</div>}>
+                <PaymentsComponent />
+            </Suspense>
+        </ClientOnly>
     )
 }

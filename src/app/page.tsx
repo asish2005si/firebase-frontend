@@ -12,10 +12,12 @@ export default function Home() {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        <HeroSection />
-        <OpenAccountSection />
-        <PersonalizedOffersSection />
-        <ContactSection />
+        <ClientOnly>
+          <HeroSection />
+          <OpenAccountSection />
+          <PersonalizedOffersSection />
+          <ContactSection />
+        </ClientOnly>
       </main>
       <Footer />
     </div>

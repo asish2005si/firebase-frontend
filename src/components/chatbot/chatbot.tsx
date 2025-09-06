@@ -51,6 +51,7 @@ export function Chatbot() {
 
         const userMessage: ChatMessage = { role: 'user', content: [{ text: messageContent }] };
         const updatedMessages = [...messages, userMessage];
+        
         setMessages(updatedMessages);
         setInput('');
         setIsLoading(true);

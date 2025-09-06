@@ -29,7 +29,8 @@ const suggestedQueries = [
     "Loan Information",
     "Cards & Services",
     "Expense Tracker",
-    "KYC / Document Help"
+    "KYC / Document Help",
+    "What's best for me?"
 ]
 
 export function Chatbot() {
@@ -90,7 +91,7 @@ export function Chatbot() {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 20, scale: 0.95 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="absolute bottom-20 right-0 w-80 h-[32rem] bg-card border border-border rounded-lg shadow-xl flex flex-col"
+      className="absolute bottom-20 right-0 w-80 md:w-96 h-[32rem] bg-card border border-border rounded-lg shadow-xl flex flex-col"
     >
       <header className="text-primary-foreground p-3 rounded-t-lg flex items-center gap-2" style={{backgroundColor: '#004aad'}}>
         <Bot className="h-6 w-6" />
@@ -102,7 +103,7 @@ export function Chatbot() {
             {messages.length === 0 && (
                 <div className="flex flex-col items-center text-center gap-2 p-4">
                     <Bot className="h-8 w-8 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Welcome to Nexus Bank! How can I help you today?</p>
+                    <p className="text-sm text-muted-foreground">Welcome to Nexus Bank! How can I help you today? Feel free to ask me anything or use the suggestions below.</p>
                     <div className="flex flex-wrap justify-center gap-2 mt-2">
                         {suggestedQueries.map(query => (
                             <Button 
@@ -152,8 +153,9 @@ export function Chatbot() {
                     className="flex items-start gap-2.5 justify-start"
                 >
                      <Bot className="h-6 w-6 text-muted-foreground" />
-                    <div className="p-3 rounded-lg bg-muted text-muted-foreground">
-                        <Loader2 className="h-5 w-5 animate-spin"/>
+                    <div className="p-3 rounded-lg bg-muted text-muted-foreground flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin"/>
+                        <span className="text-sm">Typing...</span>
                     </div>
                 </motion.div>
              )}
@@ -168,6 +170,7 @@ export function Chatbot() {
             placeholder="Ask me anything..."
             className="flex-1 bg-transparent border-none focus:ring-0 text-sm"
             disabled={isPending}
+            autoComplete="off"
           />
           <Button type="submit" size="icon" variant="ghost" disabled={isPending}>
             <SendHorizonal className="h-5 w-5 text-primary" />

@@ -47,7 +47,7 @@ export async function chat(apiKey: string, history: ChatMessage[]): Promise<stri
       history: historyForGenkit,
     });
     
-    return response.text();
+    return response.text;
   } catch (error) {
     console.error("Error calling Gemini API:", error);
     throw new Error("Failed to get a response from the AI model.");

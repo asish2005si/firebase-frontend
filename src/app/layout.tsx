@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Smart Bank',
-  description: 'A modern banking experience by Smart Bank',
+  title: 'Nexus Bank',
+  description: 'A modern banking experience by Nexus Bank',
 };
 
 export default function RootLayout({

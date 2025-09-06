@@ -18,7 +18,7 @@ export function Footer() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2">
               <Landmark className="h-7 w-7" />
-              <span className="text-xl font-bold font-headline">Smart Bank</span>
+              <span className="text-xl font-bold font-headline">Nexus Bank</span>
             </Link>
             <p className="text-sm text-primary-foreground/80">
               Your financial partner for a smarter future.
@@ -51,7 +51,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-primary-foreground/20 text-center text-sm text-primary-foreground/60">
-          <p>&copy; {currentYear} Smart Bank. All Rights Reserved.</p>
+          <p>&copy; {currentYear} Nexus Bank. All Rights Reserved.</p>
         </div>
       </div>
     </footer>

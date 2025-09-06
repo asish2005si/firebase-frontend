@@ -66,7 +66,7 @@ export function ContactSection() {
             <Mail className="h-8 w-8 text-primary mt-1"/>
             <div>
               <h3 className="font-semibold text-lg">Email Us Directly</h3>
-              <p className="text-foreground/80">support@smartbank.com</p>
+              <p className="text-foreground/80">support@nexusbank.com</p>
             </div>
           </div>
         </div>

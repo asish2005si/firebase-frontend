@@ -25,21 +25,21 @@ export function Header() {
       <div className="container flex h-16 items-center">
         <Link href="/" className="mr-6 flex items-center gap-2">
           <Landmark className="h-6 w-6 text-primary" />
-          <span className="hidden font-bold sm:inline-block font-headline">Smart Bank</span>
+          <span className="hidden font-bold sm:inline-block font-headline">Nexus Bank</span>
         </Link>
         <div className="flex flex-1 items-center justify-end">
-          <nav className="hidden md:flex md:gap-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="text-sm font-medium text-foreground/70 transition-colors hover:text-foreground"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
           <ClientOnly>
+            <nav className="hidden md:flex md:gap-6">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="text-sm font-medium text-foreground/70 transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
             <div className="flex items-center gap-2 md:ml-6">
               <Button
                 className="hidden md:inline-flex bg-accent text-accent-foreground hover:bg-accent/90"
@@ -59,7 +59,7 @@ export function Header() {
                     <div className="flex items-center justify-between p-4 border-b">
                       <Link href="/" className="flex items-center gap-2">
                         <Landmark className="h-6 w-6 text-primary" />
-                        <span className="font-bold font-headline">Smart Bank</span>
+                        <span className="font-bold font-headline">Nexus Bank</span>
                       </Link>
                       <SheetTrigger asChild>
                         <Button variant="ghost" size="icon" onClick={() => setIsSheetOpen(false)}>

@@ -11,7 +11,7 @@ export function HeroSection() {
             Banking Made <span className="text-accent">Smarter</span>, Not Harder
           </h1>
           <p className="text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto lg:mx-0">
-            Experience a new era of banking with personalized services, seamless digital access, and expert financial guidance. Your future starts with Smart Bank.
+            Experience a new era of banking with personalized services, seamless digital access, and expert financial guidance. Your future starts with Nexus Bank.
           </p>
           <ClientOnly>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -19,7 +19,7 @@ export function HeroSection() {
                 Open Account
               </Button>
               <Button size="lg" variant="secondary" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-lg transition-transform duration-300 hover:scale-105">
-                Login to Smart Bank
+                Login to Nexus Bank
               </Button>
             </div>
           </ClientOnly>

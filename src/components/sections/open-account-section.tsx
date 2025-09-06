@@ -32,7 +32,7 @@ export function OpenAccountSection() {
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-primary font-headline">
-            Open Your Smart Bank Account Today
+            Open Your Nexus Bank Account Today
           </h2>
           <p className="mt-4 text-lg text-foreground/80 max-w-2xl mx-auto">
             Choose your account type and get started in minutes. It's simple, secure, and smart.

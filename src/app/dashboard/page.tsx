@@ -15,7 +15,7 @@ export default function DashboardPage() {
         type: "Savings Account", 
         number: "XXXX-XXXX-1234", 
         balance: 5420.50,
-        currency: "USD"
+        currency: "INR"
     };
 
   return (

@@ -17,7 +17,7 @@ type AccountCardProps = {
 export function AccountCard({ account }: AccountCardProps) {
     
   const formatCurrency = (value: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: currency,
     }).format(value);

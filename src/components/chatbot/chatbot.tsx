@@ -68,8 +68,7 @@ export function Chatbot() {
   ];
   
   const handleQuickAction = (text: string) => {
-     const userMessage: ChatMessage = { role: "user", content: text };
-     getBotResponse([...messages, userMessage]);
+     sendMessage(text);
   };
   
   const scrollToBottom = useCallback(() => {
@@ -86,15 +85,22 @@ export function Chatbot() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
+  
+  const sendMessage = async (messageContent: string) => {
+    if (isPending) return;
 
-  const getBotResponse = async (currentMessages: ChatMessage[]) => {
-    setMessages(currentMessages);
+    const newUserMessage: ChatMessage = { role: "user", content: messageContent };
+    const updatedMessages = [...messages, newUserMessage];
+    
+    setMessages(updatedMessages);
     setIsPending(true);
+
     try {
-      const botResponse = await chat(currentMessages);
-      setMessages((prev) => [...prev, { role: "model", content: botResponse }]);
+      const botResponse = await chat(updatedMessages);
+      setMessages((prevMessages) => [...prevMessages, { role: "model", content: botResponse }]);
     } catch (error) {
       console.error(error);
+      setMessages((prevMessages) => prevMessages.slice(0, -1));
       toast({
         variant: "destructive",
         title: "Error",
@@ -106,12 +112,11 @@ export function Chatbot() {
   };
 
   const onSubmit: SubmitHandler<FormSchema> = async (data) => {
-    const userMessage: ChatMessage = { role: "user", content: data.message };
+    sendMessage(data.message);
     reset();
-    await getBotResponse([...messages, userMessage]);
   };
   
-  const showQuickActions = messages.length <= 2;
+  const showQuickActions = messages.length <= 2 && !isPending;
 
   return (
     <div className="w-80 h-[28rem] flex flex-col rounded-lg border bg-card text-card-foreground shadow-lg">

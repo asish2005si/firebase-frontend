@@ -11,11 +11,11 @@ import { ThemeToggle } from "./theme-toggle";
 
 const navLinks = [
   { href: "#", label: "Home" },
-  { href: "#", label: "Services" },
-  { href: "#", label: "Open Account" },
-  { href: "#", label: "Loans" },
+  { href: "#services", label: "Services" },
+  { href: "#open-account", label: "Open Account" },
+  { href: "#loans", label: "Loans" },
   { href: "#", label: "Cards" },
-  { href: "#", label: "Contact Us" },
+  { href: "#contact", label: "Contact Us" },
 ];
 
 export function Header() {

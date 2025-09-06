@@ -37,7 +37,7 @@ const loanTypes = [
 
 export function LoanSection() {
   return (
-    <section className="py-20 bg-gradient-to-b from-secondary/10 to-background">
+    <section id="loans" className="py-20 bg-gradient-to-b from-secondary/10 to-background">
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-primary font-headline">

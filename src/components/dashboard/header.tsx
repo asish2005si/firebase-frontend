@@ -27,7 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "../theme-toggle";
 
 export function DashboardHeader() {
@@ -50,6 +50,8 @@ export function DashboardHeader() {
               <span className="font-headline">Nexus Bank</span>
             </Link>
           </div>
+          <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+          <SheetDescription className="sr-only">Main navigation links for the dashboard.</SheetDescription>
           <nav className="grid gap-2 text-lg font-medium p-4">
             <Link
               href="#"

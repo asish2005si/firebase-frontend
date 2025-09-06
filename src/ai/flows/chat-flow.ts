@@ -149,7 +149,6 @@ If user exits:
       role: msg.role,
       content: msg.content
     })),
-    prompt: history[history.length - 1].content[0].text,
   });
 
   return response.text;

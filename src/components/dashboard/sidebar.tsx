@@ -59,10 +59,12 @@ export function DashboardSidebar({ isSheet = false } : DashboardSidebarProps) {
 
   const NavItem = ({ href, icon, children, tooltip } : { href: string, icon: React.ReactNode, children: React.ReactNode, tooltip: string }) => (
     <SidebarMenuItem>
-      <Link href={href}>
-        <SidebarMenuButton tooltip={tooltip} isActive={isActive(href)}>
-          {icon}
-          <span>{children}</span>
+      <Link href={href} passHref>
+        <SidebarMenuButton asChild tooltip={tooltip} isActive={isActive(href)}>
+          <span>
+            {icon}
+            <span>{children}</span>
+          </span>
         </SidebarMenuButton>
       </Link>
     </SidebarMenuItem>

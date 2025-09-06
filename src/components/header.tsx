@@ -5,7 +5,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Landmark, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { ClientOnly } from "@/components/client-only";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -58,6 +58,7 @@ export function Header() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                   <div className="flex flex-col h-full">
                     <div className="flex items-center justify-between p-4 border-b">
                       <Link href="/" className="flex items-center gap-2">

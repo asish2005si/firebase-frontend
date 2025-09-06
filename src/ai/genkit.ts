@@ -4,9 +4,9 @@ import {firebase, enableFirebaseTelemetry} from '@genkit-ai/firebase';
 
 export const ai = genkit({
   plugins: [
-    firebase(enableFirebaseTelemetry()), // Will use Application Default Credentials
+    firebase({
+      telemetry: enableFirebaseTelemetry(),
+    }),
     googleAI(),
   ],
-  logLevel: 'debug',
-  enableTracingAndMetrics: true,
 });

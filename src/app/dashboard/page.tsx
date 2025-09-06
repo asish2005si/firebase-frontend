@@ -6,7 +6,7 @@ export default function DashboardPage() {
 
     const customer = {
         fullName: "Alex Thompson",
-        customerId: "NEXUS-12345",
+        accountNumber: "123456789012",
         email: "alex.thompson@example.com",
         contactNumber: "+1-202-555-0178"
     };

@@ -4,7 +4,7 @@ import { User, Mail, Phone, ShieldCheck } from "lucide-react";
 
 type Customer = {
     fullName: string;
-    customerId: string;
+    accountNumber: string;
     email: string;
     contactNumber: string;
 }
@@ -32,7 +32,7 @@ export function CustomerProfile({ customer }: CustomerProfileProps) {
         </CardHeader>
         <CardContent className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 pt-2">
            <DetailItem icon={<User />} label="Full Name" value={customer.fullName} />
-           <DetailItem icon={<ShieldCheck />} label="Customer ID" value={customer.customerId} />
+           <DetailItem icon={<ShieldCheck />} label="Account Number" value={customer.accountNumber} />
            <DetailItem icon={<Mail />} label="Email Address" value={customer.email} />
            <DetailItem icon={<Phone />} label="Contact Number" value={customer.contactNumber} />
         </CardContent>

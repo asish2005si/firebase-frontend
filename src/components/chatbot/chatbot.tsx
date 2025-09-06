@@ -87,7 +87,7 @@ export function Chatbot() {
   }, [messages, scrollToBottom]);
   
   const sendMessage = async (messageContent: string) => {
-    if (isPending) return;
+    if (isPending || !messageContent.trim()) return;
 
     const newUserMessage: ChatMessage = { role: "user", content: messageContent };
     const updatedMessages = [...messages, newUserMessage];
@@ -96,10 +96,12 @@ export function Chatbot() {
     setIsPending(true);
 
     try {
+      // Pass the locally updated message array directly to the chat function
       const botResponse = await chat(updatedMessages);
       setMessages((prevMessages) => [...prevMessages, { role: "model", content: botResponse }]);
     } catch (error) {
-      console.error(error);
+      console.error("Error from chat flow:", error);
+      // If there's an error, roll back the user's message to allow them to try again.
       setMessages((prevMessages) => prevMessages.slice(0, -1));
       toast({
         variant: "destructive",
@@ -111,7 +113,7 @@ export function Chatbot() {
     }
   };
 
-  const onSubmit: SubmitHandler<FormSchema> = async (data) => {
+  const onSubmit: SubmitHandler<FormSchema> = (data) => {
     sendMessage(data.message);
     reset();
   };

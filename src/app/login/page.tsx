@@ -39,6 +39,7 @@ export default function LoginPage() {
     defaultValues: {
       email: "",
       password: "",
+      role: "customer",
     },
   });
 

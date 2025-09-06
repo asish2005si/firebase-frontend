@@ -2,12 +2,6 @@
 "use client";
 
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Table,
   TableBody,
   TableCell,
@@ -15,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 export type Transaction = {
     id: string;
@@ -38,11 +33,7 @@ type TransactionHistoryProps = {
 
 export function TransactionHistory({ transactions }: TransactionHistoryProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Transaction History</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="border rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>
@@ -55,23 +46,30 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {transactions.map((txn) => (
-              <TableRow key={txn.id}>
-                <TableCell>{new Date(txn.date).toLocaleDateString()}</TableCell>
-                <TableCell>{txn.id}</TableCell>
-                <TableCell>{txn.description}</TableCell>
-                <TableCell className="text-right text-red-600">
-                  {txn.type === "debit" ? formatCurrency(txn.amount) : "-"}
-                </TableCell>
-                <TableCell className="text-right text-green-600">
-                  {txn.type === "credit" ? formatCurrency(txn.amount) : "-"}
-                </TableCell>
-                <TableCell className="text-right">{formatCurrency(txn.balance)}</TableCell>
-              </TableRow>
-            ))}
+            {transactions.length > 0 ? (
+                transactions.map((txn) => (
+                <TableRow key={txn.id}>
+                    <TableCell>{new Date(txn.date).toLocaleDateString("en-GB")}</TableCell>
+                    <TableCell>{txn.id}</TableCell>
+                    <TableCell>{txn.description}</TableCell>
+                    <TableCell className="text-right font-medium text-red-600">
+                    {txn.type === "debit" ? formatCurrency(txn.amount) : "-"}
+                    </TableCell>
+                    <TableCell className="text-right font-medium text-green-600">
+                    {txn.type === "credit" ? formatCurrency(txn.amount) : "-"}
+                    </TableCell>
+                    <TableCell className="text-right font-semibold">{formatCurrency(txn.balance)}</TableCell>
+                </TableRow>
+                ))
+            ) : (
+                <TableRow>
+                    <TableCell colSpan={6} className="text-center h-24">
+                        No transactions found for the selected period.
+                    </TableCell>
+                </TableRow>
+            )}
           </TableBody>
         </Table>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

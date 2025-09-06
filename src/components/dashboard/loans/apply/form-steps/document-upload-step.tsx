@@ -4,63 +4,98 @@ import { useFormContext } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { UploadCloud, FileText } from "lucide-react";
+import { UploadCloud, FileText, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+
+const FileUpload = ({ fieldName, label }: { fieldName: string, label: string }) => {
+    const { control, watch, setValue } = useFormContext();
+    const fileList = watch(fieldName);
+    const [preview, setPreview] = useState<string | null>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setValue(fieldName, e.target.files, { shouldValidate: true });
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const removeFile = () => {
+        setValue(fieldName, null, { shouldValidate: true });
+        setPreview(null);
+    }
+    
+    return (
+        <FormField
+            control={control}
+            name={fieldName}
+            render={() => (
+                <FormItem>
+                    <FormLabel>{label}</FormLabel>
+                    <FormControl>
+                        {preview ? (
+                             <div className="relative w-full h-40 rounded-md border-2 border-dashed flex items-center justify-center p-2">
+                                {fileList && fileList[0] && fileList[0].type.startsWith("image/") ? (
+                                    <Image src={preview} alt="Preview" fill style={{ objectFit: 'contain' }} className="rounded-md" />
+                                ) : (
+                                    <div className="text-center">
+                                        <FileText className="h-10 w-10 mx-auto mb-2 text-muted-foreground" />
+                                        <p className="font-semibold text-sm">{fileList?.[0]?.name}</p>
+                                    </div>
+                                )}
+                                <Button variant="destructive" size="icon" className="absolute -top-3 -right-3 h-7 w-7 rounded-full" onClick={removeFile}>
+                                    <X className="h-4 w-4"/>
+                                </Button>
+                             </div>
+                        ) : (
+                            <label className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted hover:bg-muted/80">
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <UploadCloud className="w-8 h-8 mb-3 text-muted-foreground" />
+                                    <p className="mb-2 text-sm text-center text-muted-foreground">
+                                        <span className="font-semibold text-primary">Click to upload</span>
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">PDF, JPG, PNG (MAX. 5MB)</p>
+                                </div>
+                                <Input 
+                                    type="file" 
+                                    className="hidden"
+                                    accept=".jpg,.jpeg,.png,.pdf"
+                                    onChange={handleFileChange}
+                                />
+                            </label>
+                        )}
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+    )
+}
 
 export function DocumentUploadStep() {
-    const { control, watch } = useFormContext();
+    const { watch } = useFormContext();
     const loanType = watch("loanType");
 
     return (
         <div>
             <h2 className="text-2xl font-bold font-headline text-primary">Upload Documents</h2>
-            <p className="text-muted-foreground mt-1 mb-6">Please upload the required documents.</p>
+            <p className="text-muted-foreground mt-1 mb-6">Please upload clear copies of the required documents.</p>
             <div className="space-y-6">
-                <FormField
-                    control={control}
-                    name="documents"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Required Documents</FormLabel>
-                            <FormControl>
-                                 <label className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted hover:bg-muted/80">
-                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <UploadCloud className="w-8 h-8 mb-3 text-gray-500" />
-                                        <p className="mb-2 text-sm text-center text-gray-500">
-                                            <span className="font-semibold">Click to upload</span> or drag and drop
-                                        </p>
-                                        <p className="text-xs text-gray-500">PAN, Aadhaar, Salary Slips, etc. (PDF, JPG, PNG)</p>
-                                    </div>
-                                    <Input 
-                                        type="file" 
-                                        className="hidden"
-                                        multiple 
-                                        accept=".jpg,.jpeg,.png,.pdf"
-                                        onChange={(e) => field.onChange(e.target.files)}
-                                    />
-                                </label>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                {watch("documents")?.length > 0 && (
-                    <div className="p-4 border rounded-md">
-                        <h4 className="font-semibold mb-2">Selected Files:</h4>
-                        <ul className="space-y-1 list-disc list-inside">
-                           {Array.from(watch("documents")).map((file: any, index) => (
-                                <li key={index} className="text-sm flex items-center gap-2">
-                                    <FileText className="h-4 w-4"/>
-                                    {file.name}
-                                </li>
-                           ))}
-                        </ul>
-                    </div>
-                )}
+                <div className="grid md:grid-cols-3 gap-6">
+                    <FileUpload fieldName="panCard" label="PAN Card"/>
+                    <FileUpload fieldName="aadhaarCard" label="Aadhaar Card"/>
+                    <FileUpload fieldName="salarySlip" label="Latest Salary Slip"/>
+                </div>
                 
                 {loanType === 'home' && (
                     <FormField
-                        control={control}
+                        control={watch("control")}
                         name="propertyInfo"
                         render={({ field }) => (
                             <FormItem>
@@ -75,7 +110,7 @@ export function DocumentUploadStep() {
                 )}
                  {loanType === 'car' && (
                     <FormField
-                        control={control}
+                        control={watch("control")}
                         name="vehicleDetails"
                         render={({ field }) => (
                             <FormItem>
@@ -90,7 +125,7 @@ export function DocumentUploadStep() {
                 )}
                 {loanType === 'education' && (
                     <FormField
-                        control={control}
+                        control={watch("control")}
                         name="courseDetails"
                         render={({ field }) => (
                             <FormItem>
@@ -107,4 +142,3 @@ export function DocumentUploadStep() {
         </div>
     );
 }
-

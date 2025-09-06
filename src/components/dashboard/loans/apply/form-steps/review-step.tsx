@@ -3,11 +3,26 @@
 import { useFormContext } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
+import { FileCheck2 } from "lucide-react";
 
 const DetailItem = ({ label, value }: { label: string; value?: string | number }) => (
     <div>
         <p className="text-sm text-muted-foreground">{label}</p>
         <p className="font-medium">{value || "-"}</p>
+    </div>
+);
+
+const DocumentStatusItem = ({ label, fileList }: { label: string; fileList?: FileList | null }) => (
+    <div>
+        <p className="text-sm text-muted-foreground">{label}</p>
+        {fileList && fileList.length > 0 ? (
+            <div className="flex items-center gap-2 mt-1 text-green-600">
+                <FileCheck2 className="h-5 w-5" />
+                <span className="font-medium text-sm">Uploaded</span>
+            </div>
+        ) : (
+            <p className="font-medium text-destructive text-sm">Not Uploaded</p>
+        )}
     </div>
 );
 
@@ -32,7 +47,7 @@ export function ReviewStep() {
             <CardHeader>
                 <CardTitle className="text-lg">Loan Details</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4">
+            <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <DetailItem label="Loan Type" value={values.loanType} />
                 <DetailItem label="Loan Amount" value={formatCurrency(values.amount)} />
                 <DetailItem label="Tenure" value={`${values.tenure} years`} />
@@ -64,7 +79,11 @@ export function ReviewStep() {
                 <CardTitle className="text-lg">Documents & Other Info</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <DetailItem label="Documents" value={`${values.documents?.length || 0} file(s) uploaded`} />
+                <div className="grid grid-cols-3 gap-4">
+                    <DocumentStatusItem label="PAN Card" fileList={values.panCard}/>
+                    <DocumentStatusItem label="Aadhaar Card" fileList={values.aadhaarCard}/>
+                    <DocumentStatusItem label="Salary Slip" fileList={values.salarySlip}/>
+                </div>
                 {values.propertyInfo && <DetailItem label="Property Info" value={values.propertyInfo} />}
                 {values.vehicleDetails && <DetailItem label="Vehicle Details" value={values.vehicleDetails} />}
                 {values.courseDetails && <DetailItem label="Course Details" value={values.courseDetails} />}

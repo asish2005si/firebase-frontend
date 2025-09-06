@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent } from "react";
-import { Bot, Send, X, Loader2, MessageCircle } from "lucide-react";
+import { Bot, Send, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,9 +29,8 @@ export function Chatbot() {
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setIsLoading(true);
-      // Create a temporary history to send to the server for the initial greeting
-      const initialHistory: MessageData[] = [{ role: 'user', content: [{ text: 'Hi' }] }];
-       chat(initialHistory)
+      const initialMessage: MessageData = { role: 'user', content: [{ text: 'Hi' }] };
+      chat([initialMessage])
         .then(response => {
           setMessages([
               { role: 'model', content: [{ text: response }]}
@@ -48,7 +47,7 @@ export function Chatbot() {
   }, [isOpen, messages.length]);
 
 
-  const sendMessage = async (e: FormEvent) => {
+  const sendMessage = (e: FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
@@ -62,23 +61,25 @@ export function Chatbot() {
     setInput("");
     setIsLoading(true);
 
-    try {
-      const botResponse = await chat(updatedMessages);
-      const botMessage: MessageData = {
-        role: 'model',
-        content: [{ text: botResponse }],
-      };
-      setMessages(prevMessages => [...prevMessages, botMessage]);
-    } catch (error) {
-      console.error("Chatbot error:", error);
-      const errorMessage: MessageData = {
-        role: 'model',
-        content: [{ text: "Sorry, I encountered an error. Please try again." }],
-      };
-      setMessages(prevMessages => [...prevMessages, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
+    chat(updatedMessages)
+      .then(botResponse => {
+        const botMessage: MessageData = {
+          role: 'model',
+          content: [{ text: botResponse }],
+        };
+        setMessages(prevMessages => [...prevMessages, botMessage]);
+      })
+      .catch(error => {
+        console.error("Chatbot error:", error);
+        const errorMessage: MessageData = {
+          role: 'model',
+          content: [{ text: "Sorry, I encountered an error. Please try again." }],
+        };
+        setMessages(prevMessages => [...prevMessages, errorMessage]);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (

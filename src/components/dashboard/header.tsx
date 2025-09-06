@@ -49,7 +49,6 @@ import { ThemeToggle } from "../theme-toggle";
 const navItems = [
     { href: "/dashboard", icon: CircleUser, label: "My Accounts & Profile" },
     { href: "/dashboard/payments", icon: Banknote, label: "Payments / Transfers" },
-    { href: "/dashboard/payments?tab=bill", icon: FileText, label: "Bill Payments" },
     { href: "#", icon: Landmark, label: "Deposit & Investment" },
     { href: "/dashboard/statements", icon: ListOrdered, label: "Statements" },
     { href: "#", icon: BadgeIndianRupee, label: "Loans" },

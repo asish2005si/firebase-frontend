@@ -34,9 +34,9 @@ export function OpenAccountSection() {
             Choose your account type and get started in minutes. It's simple, secure, and smart.
           </p>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 justify-center">
           {accountTypes.map((account) => (
-            <Card key={account.title} className="flex flex-col text-center items-center border-secondary/50 hover:shadow-2xl hover:shadow-primary/20 transition-shadow duration-300 transform hover:-translate-y-2">
+            <Card key={account.title} className="flex flex-col text-center items-center border-secondary/50 hover:shadow-2xl hover:shadow-primary/20 transition-shadow duration-300 transform hover:-translate-y-2 max-w-md">
               <CardHeader className="items-center">
                 <div className="p-4 bg-secondary/10 rounded-full mb-4">
                   {account.icon}

@@ -1,40 +1,104 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Mail, Phone, ShieldCheck } from "lucide-react";
 
-type Customer = {
-    fullName: string;
-    customerId: string;
-    email: string;
-    contactNumber: string;
+"use client"
+
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  getPaginationRowModel,
+} from "@tanstack/react-table"
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Button } from "./button"
+
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
 }
 
-type CustomerProfileProps = {
-    customer: Customer;
-}
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+}: DataTableProps<TData, TValue>) {
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getCoreRowModel(),
+  })
 
-const DetailItem = ({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) => (
-    <div className="flex items-center gap-3">
-        <div className="text-muted-foreground">{icon}</div>
-        <div>
-            <p className="text-sm text-muted-foreground">{label}</p>
-            <p className="font-medium text-foreground">{value}</p>
-        </div>
-    </div>
-)
-
-export function CustomerProfile({ customer }: CustomerProfileProps) {
   return (
-    <Card>
-        <CardHeader>
-            <CardTitle className="text-xl font-headline">Welcome back, {customer.fullName}!</CardTitle>
-            <CardDescription>Here’s a summary of your profile information.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 pt-2">
-           <DetailItem icon={<User />} label="Full Name" value={customer.fullName} />
-           <DetailItem icon={<ShieldCheck />} label="Customer ID" value={customer.customerId} />
-           <DetailItem icon={<Mail />} label="Email Address" value={customer.email} />
-           <DetailItem icon={<Phone />} label="Contact Number" value={customer.contactNumber} />
-        </CardContent>
-    </Card>
+    <div>
+        <div className="rounded-md border">
+        <Table>
+            <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                    return (
+                    <TableHead key={header.id}>
+                        {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                            )}
+                    </TableHead>
+                    )
+                })}
+                </TableRow>
+            ))}
+            </TableHeader>
+            <TableBody>
+            {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                >
+                    {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                    ))}
+                </TableRow>
+                ))
+            ) : (
+                <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                    No results.
+                </TableCell>
+                </TableRow>
+            )}
+            </TableBody>
+        </Table>
+        </div>
+         <div className="flex items-center justify-end space-x-2 py-4">
+            <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+                >
+                Previous
+            </Button>
+            <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+                >
+                Next
+            </Button>
+      </div>
+    </div>
   )
 }

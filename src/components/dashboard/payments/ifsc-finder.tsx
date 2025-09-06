@@ -100,7 +100,7 @@ export function IfscFinder({ form, isOpen, setIsOpen }: IfscFinderProps) {
                     <SelectValue placeholder="Select Bank" />
                 </SelectTrigger>
                 <SelectContent>
-                    {Object.keys(bankData).map(bank => (
+                    {Object.keys(bankData).sort().map(bank => (
                         <SelectItem key={bank} value={bank}>{bank}</SelectItem>
                     ))}
                 </SelectContent>

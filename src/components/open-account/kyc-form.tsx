@@ -34,7 +34,7 @@ const kycSchema = z.object({
   pan: z.any().refine(file => file?.length == 1, "PAN card is required."),
   photo: z.any().refine(file => file?.length == 1, "Photograph is required."),
 }).refine(data => {
-    if (!data.isSameAddress) {
+    if (data.isSameAddress === false) {
         return !!data.communicationAddress && data.communicationAddress.length >= 5;
     }
     return true;

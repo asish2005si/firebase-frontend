@@ -17,6 +17,11 @@ const navLinks = [
 
 export function Header() {
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -26,24 +31,29 @@ export function Header() {
           <span className="hidden font-bold sm:inline-block font-headline">Smart Bank</span>
         </Link>
         <div className="flex flex-1 items-center justify-end">
-          <nav className="hidden md:flex md:gap-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="text-sm font-medium text-foreground/70 transition-colors hover:text-foreground"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+          {isMounted && (
+            <nav className="hidden md:flex md:gap-6">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="text-sm font-medium text-foreground/70 transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          )}
           <div className="flex items-center gap-2 md:ml-6">
-            <Button
-              className="hidden md:inline-flex bg-accent text-accent-foreground hover:bg-accent/90"
-              size="sm"
-            >
-              Login
-            </Button>
+            {isMounted && (
+              <Button
+                className="hidden md:inline-flex bg-accent text-accent-foreground hover:bg-accent/90"
+                size="sm"
+              >
+                Login
+              </Button>
+            )}
+            {isMounted && (
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="md:hidden">
@@ -87,6 +97,7 @@ export function Header() {
                 </div>
               </SheetContent>
             </Sheet>
+            )}
           </div>
         </div>
       </div>

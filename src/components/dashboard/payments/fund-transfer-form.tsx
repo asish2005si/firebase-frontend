@@ -44,7 +44,7 @@ const transferSchema = z.object({
                 path: ["bankName"],
             });
         }
-        if (!data.ifsc || data.ifsc.length !== 11) {
+        if (!data.ifsc || !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(data.ifsc)) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
                 message: "A valid 11-digit IFSC code is required.",
@@ -55,17 +55,17 @@ const transferSchema = z.object({
 });
 
 const otherBanks = [
-    "State Bank of India",
-    "HDFC Bank",
-    "ICICI Bank",
-    "Punjab National Bank",
     "Axis Bank",
     "Bank of Baroda",
-    "Kotak Mahindra Bank",
+    "Canara Bank",
+    "HDFC Bank",
+    "ICICI Bank",
     "IndusInd Bank",
-    "Yes Bank",
-    "Canara Bank"
-];
+    "Kotak Mahindra Bank",
+    "Punjab National Bank",
+    "State Bank of India",
+    "Yes Bank"
+].sort();
 
 
 export function FundTransferForm() {

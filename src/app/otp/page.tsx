@@ -51,7 +51,7 @@ function OTPFormComponent() {
         title: "Login Successful!",
         description: "Welcome to Nexus Bank.",
       });
-      router.push("/");
+      router.push("/dashboard");
     } else {
       toast({
         variant: "destructive",

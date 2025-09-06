@@ -74,7 +74,8 @@ export function KycForm() {
         aadhaar: null,
         pan: null,
         photo: null,
-    }
+    },
+    mode: "onTouched",
   });
 
   const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } =
@@ -87,7 +88,7 @@ export function KycForm() {
     ]);
 
     async function processForm() {
-        const fieldsToValidate = formSteps[currentStepIndex];
+        const fieldsToValidate = formSteps.slice(0, currentStepIndex + 1).flat();
         const result = await methods.trigger(fieldsToValidate);
         if(result) {
             next();

@@ -14,15 +14,14 @@ import { Badge } from '../ui/badge';
 
 const welcomeMessage: ChatMessage = {
     role: 'model',
-    content: [{text: "Hello! 👋 Welcome to Nexus Bank. I’m your virtual assistant. I can help you learn about our bank, account types, loans, and card services. How can I assist you today?"}]
+    content: [{text: "Hello! 👋 Welcome to Nexus Bank. I’m your virtual assistant. I can help you with accounts, loans, cards, and general banking information. How can I assist you today?"}]
 };
 
 const quickButtons = [
-    "About Nexus Bank",
-    "Account Types",
-    "Loans We Offer",
+    "Open a New Account",
+    "Check Loan Options",
     "Card Services",
-    "Contact & Support"
+    "General FAQs"
 ];
 
 export function Chatbot() {
@@ -101,7 +100,7 @@ export function Chatbot() {
                     >
                         <Card className="flex flex-col h-[60vh] shadow-2xl">
                             <CardHeader className="bg-[#003366] text-white rounded-t-lg">
-                                <CardTitle className="text-lg">Nexus InfoBot 🤖</CardTitle>
+                                <CardTitle className="text-lg">Nexus Assist</CardTitle>
                             </CardHeader>
                             <CardContent className="flex-1 flex flex-col p-0">
                                 <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>

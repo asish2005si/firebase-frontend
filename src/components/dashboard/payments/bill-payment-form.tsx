@@ -25,6 +25,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import type { Payment } from "@/app/dashboard/payments/page";
 
 const billPaymentSchema = z.object({
   category: z.string({ required_error: "Please select a bill category." }),
@@ -40,7 +41,11 @@ const billers: Record<string, string[]> = {
     "Internet": ["JioFiber", "Airtel Xstream Fiber", "Hathway Broadband"],
 }
 
-export function BillPaymentForm() {
+type BillPaymentFormProps = {
+  onSuccessfulPayment: (payment: Omit<Payment, 'id' | 'date'>) => void;
+}
+
+export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -57,11 +62,24 @@ export function BillPaymentForm() {
   const onSubmit = async (values: z.infer<typeof billPaymentSchema>) => {
     setIsSubmitting(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    onSuccessfulPayment({
+        type: "Bill Payment",
+        description: values.biller,
+        amount: values.amount,
+        status: "Success",
+    });
+
     toast({
         title: "Bill Paid Successfully!",
         description: `Your payment of ₹${values.amount} for ${values.biller} was successful.`
     });
-    form.reset();
+    form.reset({
+      consumerNumber: "",
+      amount: 0,
+    });
+    form.setValue("category", "");
+    form.setValue("biller", "");
     setIsSubmitting(false);
   }
 
@@ -86,7 +104,7 @@ export function BillPaymentForm() {
                     <Select onValueChange={(value) => {
                         field.onChange(value);
                         form.setValue("biller", "");
-                    }} defaultValue={field.value} disabled={isSubmitting}>
+                    }} value={field.value} disabled={isSubmitting}>
                         <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="Select a category" />
@@ -108,7 +126,7 @@ export function BillPaymentForm() {
                 render={({ field }) => (
                     <FormItem>
                     <FormLabel>Biller</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting || !selectedCategory}>
+                    <Select onValueChange={field.onChange} value={field.value} disabled={isSubmitting || !selectedCategory}>
                         <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="Select a biller" />

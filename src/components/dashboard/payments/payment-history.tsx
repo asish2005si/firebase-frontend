@@ -17,14 +17,7 @@ import {
     TableRow,
   } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-
-const paymentHistory = [
-    { id: "PAY84321", date: "2024-07-29", type: "Bill Payment", description: "Adani Electricity", amount: 1500.00, status: "Success" },
-    { id: "TRN99823", date: "2024-07-28", type: "Fund Transfer", description: "John Doe", amount: 10000.00, status: "Success" },
-    { id: "PAY84320", date: "2024-07-25", type: "Bill Payment", description: "Airtel Postpaid", amount: 599.00, status: "Success" },
-    { id: "TRN99822", date: "2024-07-22", type: "Fund Transfer", description: "Jane Smith", amount: 2500.00, status: "Failed" },
-    { id: "PAY84319", date: "2024-07-20", type: "Bill Payment", description: "Mahanagar Gas", amount: 850.00, status: "Success" },
-];
+import type { Payment } from "@/app/dashboard/payments/page";
 
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -33,8 +26,11 @@ const formatCurrency = (amount: number) => {
     }).format(amount);
 };
 
+type PaymentHistoryProps = {
+    history: Payment[];
+}
 
-export function PaymentHistory() {
+export function PaymentHistory({ history }: PaymentHistoryProps) {
   return (
     <Card className="mt-6 border-0 shadow-none">
       <CardHeader>
@@ -54,9 +50,9 @@ export function PaymentHistory() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {paymentHistory.map((item) => (
+                {history.length > 0 ? history.map((item) => (
                     <TableRow key={item.id}>
-                        <TableCell>{item.date}</TableCell>
+                        <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
                         <TableCell>{item.id}</TableCell>
                         <TableCell>{item.type}</TableCell>
                         <TableCell>{item.description}</TableCell>
@@ -67,7 +63,11 @@ export function PaymentHistory() {
                         </TableCell>
                         <TableCell className="text-right">{formatCurrency(item.amount)}</TableCell>
                     </TableRow>
-                ))}
+                )) : (
+                    <TableRow>
+                        <TableCell colSpan={6} className="text-center">No payment history found.</TableCell>
+                    </TableRow>
+                )}
             </TableBody>
         </Table>
       </CardContent>

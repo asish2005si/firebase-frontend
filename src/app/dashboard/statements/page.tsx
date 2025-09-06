@@ -18,14 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Download,
   Printer,
   Calendar as CalendarIcon,
@@ -40,8 +32,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { TransactionHistory, Transaction } from "@/components/dashboard/transaction-history";
 
-const transactions = [
+const initialTransactions: Transaction[] = [
     { id: "TXN75620", date: "2024-07-28", description: "UPI/Google Pay/Amazon", type: "debit", amount: 1250.00, balance: 148750.75 },
     { id: "TXN75619", date: "2024-07-27", description: "Salary Credit July", type: "credit", amount: 75000.00, balance: 150000.75 },
     { id: "TXN75618", date: "2024-07-26", description: "Rent Payment", type: "debit", amount: 20000.00, balance: 75000.75 },
@@ -58,10 +51,16 @@ const formatCurrency = (amount: number) => {
 };
   
 export default function StatementsPage() {
+  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(2024, 6, 22),
     to: addDays(new Date(2024, 6, 28), 0),
   });
+
+  const openingBalance = transactions[transactions.length - 1]?.balance + transactions[transactions.length - 1]?.amount || 0;
+  const closingBalance = transactions[0]?.balance || 0;
+  const totalCredits = transactions.filter(t => t.type === 'credit').reduce((acc, t) => acc + t.amount, 0);
+  const totalDebits = transactions.filter(t => t.type === 'debit').reduce((acc, t) => acc + t.amount, 0);
   
   return (
     <div className="flex flex-col gap-8">
@@ -149,58 +148,24 @@ export default function StatementsPage() {
              </div>
           </div>
 
-           <Card>
-                <CardHeader>
-                    <CardTitle>Transaction History</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                        <TableRow>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Transaction ID</TableHead>
-                            <TableHead>Description</TableHead>
-                            <TableHead className="text-right">Debit</TableHead>
-                            <TableHead className="text-right">Credit</TableHead>
-                            <TableHead className="text-right">Balance</TableHead>
-                        </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                        {transactions.map((txn) => (
-                            <TableRow key={txn.id}>
-                                <TableCell>{txn.date}</TableCell>
-                                <TableCell>{txn.id}</TableCell>
-                                <TableCell>{txn.description}</TableCell>
-                                <TableCell className="text-right text-red-600">
-                                    {txn.type === "debit" ? formatCurrency(txn.amount) : "-"}
-                                </TableCell>
-                                <TableCell className="text-right text-green-600">
-                                    {txn.type === "credit" ? formatCurrency(txn.amount) : "-"}
-                                </TableCell>
-                                <TableCell className="text-right">{formatCurrency(txn.balance)}</TableCell>
-                            </TableRow>
-                        ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+           <TransactionHistory transactions={transactions} />
 
             <div className="grid md:grid-cols-4 gap-4 p-4 border rounded-lg bg-muted/50">
                  <div>
                     <p className="text-sm text-muted-foreground">Opening Balance</p>
-                    <p className="font-bold text-lg">{formatCurrency(103500.75)}</p>
+                    <p className="font-bold text-lg">{formatCurrency(openingBalance)}</p>
                 </div>
                  <div>
                     <p className="text-sm text-muted-foreground">Total Credits</p>
-                    <p className="font-bold text-lg text-green-600">{formatCurrency(75000.00)}</p>
+                    <p className="font-bold text-lg text-green-600">{formatCurrency(totalCredits)}</p>
                 </div>
                  <div>
                     <p className="text-sm text-muted-foreground">Total Debits</p>
-                    <p className="font-bold text-lg text-red-600">{formatCurrency(38750.00)}</p>
+                    <p className="font-bold text-lg text-red-600">{formatCurrency(totalDebits)}</p>
                 </div>
                  <div>
                     <p className="text-sm text-muted-foreground">Closing Balance</p>
-                    <p className="font-bold text-lg text-primary">{formatCurrency(148750.75)}</p>
+                    <p className="font-bold text-lg text-primary">{formatCurrency(closingBalance)}</p>
                 </div>
             </div>
         </CardContent>

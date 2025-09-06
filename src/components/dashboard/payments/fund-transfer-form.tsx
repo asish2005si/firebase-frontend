@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -26,6 +27,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { IfscFinder } from "./ifsc-finder";
+import type { Payment } from "@/app/dashboard/payments/page";
 
 const otherBanks = [
     "Allahabad Bank", "Andhra Bank", "Axis Bank", "Bandhan Bank", "Bank of Baroda",
@@ -41,7 +43,6 @@ const otherBanks = [
     "Vijaya Bank", "Yes Bank"
 ].sort();
 
-// A mapping of bank names to their common IFSC prefixes for validation
 const bankIfscPrefixes: Record<string, string> = {
     "State Bank of India": "SBIN",
     "HDFC Bank": "HDFC",
@@ -103,8 +104,12 @@ const transferSchema = z.object({
     }
 });
 
+type FundTransferFormProps = {
+  onSuccessfulTransfer: (payment: Omit<Payment, 'id' | 'date'>) => void;
+};
 
-export function FundTransferForm() {
+
+export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isIfscFinderOpen, setIsIfscFinderOpen] = useState(false);
@@ -127,11 +132,28 @@ export function FundTransferForm() {
   const onSubmit = async (values: z.infer<typeof transferSchema>) => {
     setIsSubmitting(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    onSuccessfulTransfer({
+        type: "Fund Transfer",
+        description: values.recipientName,
+        amount: values.amount,
+        status: "Success",
+    });
+
     toast({
         title: "Transfer Successful!",
         description: `₹${values.amount} has been successfully transferred to ${values.recipientName}.`
     });
-    form.reset();
+
+    form.reset({
+        transferType: values.transferType,
+        recipientName: "",
+        recipientAccount: "",
+        bankName: "",
+        ifsc: "",
+        amount: 0,
+        remarks: "",
+    });
     setIsSubmitting(false);
   }
 

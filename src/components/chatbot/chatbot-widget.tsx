@@ -21,10 +21,10 @@ export function ChatbotWidget() {
       >
         <Button
           size="icon"
-          className="rounded-full w-14 h-14 bg-primary text-primary-foreground shadow-lg"
+          className="rounded-full w-14 h-14 bg-secondary text-secondary-foreground shadow-lg"
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? "Close Chatbot" : "Open Chatbot"}
-          style={{backgroundColor: '#004aad'}}
+          style={{backgroundColor: '#0072CE'}}
         >
           {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
         </Button>

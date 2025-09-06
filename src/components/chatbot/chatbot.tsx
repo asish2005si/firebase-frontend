@@ -25,12 +25,11 @@ const ChatMessageSchema = z.object({
 type ChatMessage = z.infer<typeof ChatMessageSchema>;
 
 const suggestedQueries = [
-    "Open Account",
+    "Open New Account",
     "Loan Information",
-    "Cards & Services",
-    "Expense Tracker",
-    "KYC / Document Help",
-    "What's best for me?"
+    "Card Services",
+    "Goal-Based Savings",
+    "Other Queries",
 ]
 
 export function Chatbot() {
@@ -50,6 +49,16 @@ export function Chatbot() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  
+  useEffect(() => {
+    // Set initial greeting from the bot
+    setMessages([
+        {
+            role: "model",
+            content: [{text: "Hello! 👋 I’m Nexus Assist, your virtual banking guide. How can I help you today?"}]
+        }
+    ])
+  }, []);
 
   const handleSuggestedQuery = (query: string) => {
     form.setValue("message", query);
@@ -93,32 +102,13 @@ export function Chatbot() {
       transition={{ duration: 0.3, ease: "easeOut" }}
       className="absolute bottom-20 right-0 w-80 md:w-96 h-[32rem] bg-card border border-border rounded-lg shadow-xl flex flex-col"
     >
-      <header className="text-primary-foreground p-3 rounded-t-lg flex items-center gap-2" style={{backgroundColor: '#004aad'}}>
+      <header className="text-primary-foreground p-3 rounded-t-lg flex items-center gap-2" style={{backgroundColor: '#003366'}}>
         <Bot className="h-6 w-6" />
-        <h3 className="font-semibold text-lg">NexusBot</h3>
+        <h3 className="font-semibold text-lg">Nexus Assist</h3>
       </header>
       <div className="flex-1 p-4 overflow-y-auto">
         <div className="flex flex-col gap-4">
           <AnimatePresence>
-            {messages.length === 0 && (
-                <div className="flex flex-col items-center text-center gap-2 p-4">
-                    <Bot className="h-8 w-8 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Welcome to Nexus Bank! How can I help you today? Feel free to ask me anything or use the suggestions below.</p>
-                    <div className="flex flex-wrap justify-center gap-2 mt-2">
-                        {suggestedQueries.map(query => (
-                            <Button 
-                                key={query} 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={() => handleSuggestedQuery(query)}
-                                className="text-xs"
-                            >
-                                {query}
-                            </Button>
-                        ))}
-                    </div>
-                </div>
-            )}
             {messages.map((msg, index) => (
               <motion.div
                 key={index}
@@ -135,7 +125,7 @@ export function Chatbot() {
                   className={cn(
                     "p-3 rounded-lg max-w-[85%]",
                     msg.role === "user"
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-secondary text-secondary-foreground"
                       : "bg-muted text-muted-foreground"
                   )}
                 >
@@ -163,11 +153,28 @@ export function Chatbot() {
           <div ref={messagesEndRef} />
         </div>
       </div>
+       {messages.length <= 1 && !isPending && (
+         <div className="p-4 border-t">
+            <div className="flex flex-wrap justify-center gap-2">
+                {suggestedQueries.map(query => (
+                    <Button 
+                        key={query} 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => handleSuggestedQuery(query)}
+                        className="text-xs"
+                    >
+                        {query}
+                    </Button>
+                ))}
+            </div>
+         </div>
+        )}
       <div className="p-3 border-t">
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-center gap-2">
           <input
             {...form.register("message")}
-            placeholder="Ask me anything..."
+            placeholder="Type your message..."
             className="flex-1 bg-transparent border-none focus:ring-0 text-sm"
             disabled={isPending}
             autoComplete="off"

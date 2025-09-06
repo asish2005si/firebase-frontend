@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -42,6 +42,7 @@ export function DashboardHeader() {
                 <SidebarTrigger />
             </SheetTrigger>
              <SheetContent side="left" className="sm:max-w-xs">
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <DashboardSidebar isSheet={true}/>
              </SheetContent>
         </Sheet>

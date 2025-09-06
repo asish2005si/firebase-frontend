@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { SendHorizonal, Bot, User, Loader2 } from "lucide-react";
-import { format } from "date-fns";
 
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -70,8 +69,7 @@ export function Chatbot() {
   
   const handleQuickAction = (text: string) => {
      const userMessage: ChatMessage = { role: "user", content: text };
-     setMessages((prev) => [...prev, userMessage]);
-     getBotResponse(userMessage);
+     getBotResponse([...messages, userMessage]);
   };
   
   const scrollToBottom = useCallback(() => {
@@ -89,11 +87,11 @@ export function Chatbot() {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  const getBotResponse = async (userMessage: ChatMessage) => {
+  const getBotResponse = async (currentMessages: ChatMessage[]) => {
+    setMessages(currentMessages);
     setIsPending(true);
     try {
-      const fullHistory = [...messages, userMessage];
-      const botResponse = await chat(fullHistory);
+      const botResponse = await chat(currentMessages);
       setMessages((prev) => [...prev, { role: "model", content: botResponse }]);
     } catch (error) {
       console.error(error);
@@ -109,9 +107,8 @@ export function Chatbot() {
 
   const onSubmit: SubmitHandler<FormSchema> = async (data) => {
     const userMessage: ChatMessage = { role: "user", content: data.message };
-    setMessages((prev) => [...prev, userMessage]);
     reset();
-    await getBotResponse(userMessage);
+    await getBotResponse([...messages, userMessage]);
   };
   
   const showQuickActions = messages.length <= 2;

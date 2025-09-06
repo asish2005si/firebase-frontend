@@ -7,6 +7,7 @@ import { ContactSection } from "@/components/sections/contact-section";
 import { ClientOnly } from "@/components/client-only";
 import { PersonalizedOffersSection } from "@/components/sections/personalized-offers-section";
 import { LoanSection } from "@/components/sections/loan-section";
+import { SmartCardSection } from "@/components/sections/smart-card-section";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
           <HeroSection />
           <OpenAccountSection />
           <LoanSection />
+          <SmartCardSection />
           <PersonalizedOffersSection />
           <ContactSection />
         </ClientOnly>

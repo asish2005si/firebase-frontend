@@ -59,7 +59,7 @@ export function DashboardSidebar({ isSheet = false } : DashboardSidebarProps) {
 
   const NavItem = ({ href, icon, children, tooltip } : { href: string, icon: React.ReactNode, children: React.ReactNode, tooltip: string }) => (
     <SidebarMenuItem>
-      <Link href={href} legacyBehavior passHref>
+      <Link href={href}>
         <SidebarMenuButton tooltip={tooltip} isActive={isActive(href)}>
           {icon}
           <span>{children}</span>
@@ -91,7 +91,7 @@ export function DashboardSidebar({ isSheet = false } : DashboardSidebarProps) {
 
   const SubNavItem = ({ href, children }: { href: string, children: React.ReactNode }) => (
     <SidebarMenuSubItem>
-        <Link href={href} legacyBehavior passHref>
+        <Link href={href}>
             <SidebarMenuSubButton isActive={isActive(href)}>{children}</SidebarMenuSubButton>
         </Link>
     </SidebarMenuSubItem>
@@ -115,7 +115,7 @@ export function DashboardSidebar({ isSheet = false } : DashboardSidebarProps) {
             <SubNavItem href="/dashboard/accounts/salary">Salary Account</SubNavItem>
             <SubNavItem href="/dashboard/accounts/student">Student Account</SubNavItem>
             <SidebarMenuSubItem>
-                <Link href="/dashboard/statements" legacyBehavior passHref>
+                <Link href="/dashboard/statements">
                     <SidebarMenuSubButton isActive={isActive('/dashboard/statements')}>
                         Account Statements <Download className="ml-auto h-4 w-4" />
                     </SidebarMenuSubButton>

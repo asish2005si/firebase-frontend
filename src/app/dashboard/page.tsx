@@ -2,7 +2,7 @@
 import { CustomerProfile } from "@/components/dashboard/account-summary";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CreditCard, Landmark, ArrowRight } from "lucide-react";
+import { CreditCard, Landmark, ArrowRight, IndianRupee, Receipt } from "lucide-react";
 import Link from "next/link";
 
 const customer = {
@@ -76,6 +76,9 @@ export default function DashboardPage() {
                 <CardContent className="grid grid-cols-2 gap-4">
                     <Link href="/dashboard/payments?tab=transfer">
                       <Button variant="outline" className="justify-start gap-2 w-full"><span className="font-bold">₹</span>Fund Transfer</Button>
+                    </Link>
+                    <Link href="/dashboard/payments?tab=bill">
+                      <Button variant="outline" className="justify-start gap-2 w-full"><Receipt/>Bill Payments</Button>
                     </Link>
                     <Button variant="outline" className="justify-start gap-2"><CreditCard/>Card Services</Button>
                     <Button variant="outline" className="justify-start gap-2"><ArrowRight/>Cheque Book Request</Button>

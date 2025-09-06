@@ -17,6 +17,7 @@ import {
   Banknote,
   FileText,
   BadgeIndianRupee,
+  Receipt,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";

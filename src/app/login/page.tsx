@@ -21,10 +21,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
   password: z.string().min(1, "Password is required."),
+  role: z.enum(["customer", "admin"], { required_error: "Please select a role." }),
 });
 
 export default function LoginPage() {
@@ -42,24 +44,27 @@ export default function LoginPage() {
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true);
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    // Role-based redirection logic
-    if (values.email.toLowerCase() === "admin@nexusbank.com") {
-      // Admin user
-      toast({
-        title: "Admin Login Successful",
-        description: "Redirecting to admin dashboard...",
-      });
-      router.push("/admin");
+    if (values.role === "admin") {
+      if (values.email.toLowerCase() === "admin@nexusbank.com") {
+        toast({
+          title: "Admin Login Successful",
+          description: "Redirecting to admin dashboard...",
+        });
+        router.push("/admin");
+      } else {
+         toast({
+          variant: "destructive",
+          title: "Invalid Credentials",
+          description: "The email you entered is not a valid admin account.",
+        });
+      }
     } else {
-      // Customer user
       toast({
         title: "OTP Sent",
         description: "Please check your email for the OTP.",
       });
-      // Pass email to OTP page to show which email it was sent to
       router.push(`/otp?email=${encodeURIComponent(values.email)}`);
     }
 
@@ -84,7 +89,28 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                 <FormField
+                  control={form.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Role</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select your role" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="customer">Customer</SelectItem>
+                          <SelectItem value="admin">Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="email"

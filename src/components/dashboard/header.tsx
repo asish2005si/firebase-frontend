@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -17,6 +18,7 @@ import {
   FileText,
   BadgeIndianRupee,
   Receipt,
+  PiggyBank,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -50,7 +52,7 @@ import { ClientOnly } from "../client-only";
 const navItems = [
     { href: "/dashboard", icon: CircleUser, label: "My Accounts & Profile" },
     { href: "/dashboard/payments", icon: Banknote, label: "Payments / Transfers" },
-    { href: "#", icon: Landmark, label: "Deposit & Investment" },
+    { href: "/dashboard/deposits", icon: PiggyBank, label: "Deposit & Investment" },
     { href: "/dashboard/statements", icon: ListOrdered, label: "Statements" },
     { href: "/dashboard/loans", icon: BadgeIndianRupee, label: "Loans" },
     { href: "#", icon: CreditCard, label: "Card Services" },

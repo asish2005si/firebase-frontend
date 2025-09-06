@@ -27,6 +27,35 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+const otherBanks = [
+    "Allahabad Bank", "Andhra Bank", "Axis Bank", "Bandhan Bank", "Bank of Baroda",
+    "Bank of India", "Bank of Maharashtra", "Canara Bank", "Central Bank of India",
+    "City Union Bank", "Corporation Bank", "DBS Bank", "DCB Bank", "Dena Bank",
+    "Deutsche Bank", "Dhanlaxmi Bank", "Federal Bank", "HDFC Bank", "HSBC Bank",
+    "ICICI Bank", "IDBI Bank", "IDFC FIRST Bank", "Indian Bank", "Indian Overseas Bank",
+    "IndusInd Bank", "Jammu & Kashmir Bank", "Karnataka Bank", "Karur Vysya Bank",
+    "Kotak Mahindra Bank", "Lakshmi Vilas Bank", "Nainital Bank",
+    "Oriental Bank of Commerce", "Punjab & Sind Bank", "Punjab National Bank", "RBL Bank",
+    "South Indian Bank", "Standard Chartered Bank", "State Bank of India", "Syndicate Bank",
+    "Tamilnad Mercantile Bank", "UCO Bank", "Union Bank of India", "United Bank of India",
+    "Vijaya Bank", "Yes Bank"
+].sort();
+
+// A mapping of bank names to their common IFSC prefixes for validation
+const bankIfscPrefixes: Record<string, string> = {
+    "State Bank of India": "SBIN",
+    "HDFC Bank": "HDFC",
+    "ICICI Bank": "ICIC",
+    "Axis Bank": "UTIB",
+    "Punjab National Bank": "PUNB",
+    "Bank of Baroda": "BARB",
+    "Canara Bank": "CNRB",
+    "Union Bank of India": "UBIN",
+    "Kotak Mahindra Bank": "KKBK",
+    "IndusInd Bank": "INDB",
+    "Yes Bank": "YESB",
+};
+
 const transferSchema = z.object({
   transferType: z.enum(["self", "internal", "other"]),
   recipientName: z.string().min(2, "Recipient name is required."),
@@ -44,63 +73,35 @@ const transferSchema = z.object({
                 path: ["bankName"],
             });
         }
-        if (!data.ifsc || !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(data.ifsc)) {
+        if (!data.ifsc) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
                 message: "A valid 11-digit IFSC code is required.",
                 path: ["ifsc"],
             });
+            return;
+        }
+
+        const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+        if (!ifscRegex.test(data.ifsc)) {
+             ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "A valid 11-digit IFSC code is required.",
+                path: ["ifsc"],
+            });
+            return;
+        }
+
+        const selectedBankPrefix = data.bankName ? bankIfscPrefixes[data.bankName] : undefined;
+        if (selectedBankPrefix && !data.ifsc.startsWith(selectedBankPrefix)) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: `IFSC code does not match selected bank. Expected prefix: ${selectedBankPrefix}`,
+                path: ["ifsc"],
+            });
         }
     }
 });
-
-const otherBanks = [
-    "Allahabad Bank",
-    "Andhra Bank",
-    "Axis Bank",
-    "Bandhan Bank",
-    "Bank of Baroda",
-    "Bank of India",
-    "Bank of Maharashtra",
-    "Canara Bank",
-    "Central Bank of India",
-    "City Union Bank",
-    "Corporation Bank",
-    "DBS Bank",
-    "DCB Bank",
-    "Dena Bank",
-    "Deutsche Bank",
-    "Dhanlaxmi Bank",
-    "Federal Bank",
-    "HDFC Bank",
-    "HSBC Bank",
-    "ICICI Bank",
-    "IDBI Bank",
-    "IDFC FIRST Bank",
-    "Indian Bank",
-    "Indian Overseas Bank",
-    "IndusInd Bank",
-    "Jammu & Kashmir Bank",
-    "Karnataka Bank",
-    "Karur Vysya Bank",
-    "Kotak Mahindra Bank",
-    "Lakshmi Vilas Bank",
-    "Nainital Bank",
-    "Oriental Bank of Commerce",
-    "Punjab & Sind Bank",
-    "Punjab National Bank",
-    "RBL Bank",
-    "South Indian Bank",
-    "Standard Chartered Bank",
-    "State Bank of India",
-    "Syndicate Bank",
-    "Tamilnad Mercantile Bank",
-    "UCO Bank",
-    "Union Bank of India",
-    "United Bank of India",
-    "Vijaya Bank",
-    "Yes Bank"
-].sort();
 
 
 export function FundTransferForm() {

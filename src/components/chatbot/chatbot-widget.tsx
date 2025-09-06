@@ -24,6 +24,7 @@ export function ChatbotWidget() {
           className="rounded-full w-14 h-14 bg-primary text-primary-foreground shadow-lg"
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? "Close Chatbot" : "Open Chatbot"}
+          style={{backgroundColor: '#004aad'}}
         >
           {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
         </Button>

@@ -24,6 +24,13 @@ const ChatMessageSchema = z.object({
 
 type ChatMessage = z.infer<typeof ChatMessageSchema>;
 
+const suggestedQueries = [
+    "Open Account",
+    "Loan Information",
+    "Cards & Services",
+    "Expense Tracker",
+    "KYC / Document Help"
+]
 
 export function Chatbot() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -42,6 +49,11 @@ export function Chatbot() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const handleSuggestedQuery = (query: string) => {
+    form.setValue("message", query);
+    form.handleSubmit(onSubmit)();
+  }
 
   async function onSubmit(data: ChatInput) {
     const userMessage: ChatMessage = {
@@ -78,15 +90,34 @@ export function Chatbot() {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 20, scale: 0.95 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="absolute bottom-20 right-0 w-80 h-[28rem] bg-card border border-border rounded-lg shadow-xl flex flex-col"
+      className="absolute bottom-20 right-0 w-80 h-[32rem] bg-card border border-border rounded-lg shadow-xl flex flex-col"
     >
-      <header className="bg-primary text-primary-foreground p-3 rounded-t-lg flex items-center gap-2">
+      <header className="text-primary-foreground p-3 rounded-t-lg flex items-center gap-2" style={{backgroundColor: '#004aad'}}>
         <Bot className="h-6 w-6" />
         <h3 className="font-semibold text-lg">NexusBot</h3>
       </header>
       <div className="flex-1 p-4 overflow-y-auto">
         <div className="flex flex-col gap-4">
           <AnimatePresence>
+            {messages.length === 0 && (
+                <div className="flex flex-col items-center text-center gap-2 p-4">
+                    <Bot className="h-8 w-8 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">Welcome to Nexus Bank! How can I help you today?</p>
+                    <div className="flex flex-wrap justify-center gap-2 mt-2">
+                        {suggestedQueries.map(query => (
+                            <Button 
+                                key={query} 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => handleSuggestedQuery(query)}
+                                className="text-xs"
+                            >
+                                {query}
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+            )}
             {messages.map((msg, index) => (
               <motion.div
                 key={index}
@@ -94,19 +125,21 @@ export function Chatbot() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
                 className={cn(
-                  "flex items-start gap-2.5",
+                  "flex items-end gap-2.5",
                   msg.role === "user" ? "justify-end" : "justify-start"
                 )}
               >
+                 {msg.role === 'model' && <Bot className="h-6 w-6 text-muted-foreground self-start flex-shrink-0" />}
                 <div
                   className={cn(
-                    "p-3 rounded-lg max-w-[80%]",
+                    "p-3 rounded-lg max-w-[85%]",
                     msg.role === "user"
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground"
                   )}
                 >
                   <p className="text-sm whitespace-pre-wrap">{msg.content[0].text}</p>
+                   <p className="text-xs text-right mt-1 opacity-70">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                 </div>
               </motion.div>
             ))}
@@ -118,6 +151,7 @@ export function Chatbot() {
                     transition={{ duration: 0.2 }}
                     className="flex items-start gap-2.5 justify-start"
                 >
+                     <Bot className="h-6 w-6 text-muted-foreground" />
                     <div className="p-3 rounded-lg bg-muted text-muted-foreground">
                         <Loader2 className="h-5 w-5 animate-spin"/>
                     </div>

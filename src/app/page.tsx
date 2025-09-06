@@ -6,6 +6,7 @@ import { OpenAccountSection } from "@/components/sections/open-account-section";
 import { ContactSection } from "@/components/sections/contact-section";
 import { ClientOnly } from "@/components/client-only";
 import { PersonalizedOffersSection } from "@/components/sections/personalized-offers-section";
+import { LoanSection } from "@/components/sections/loan-section";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
         <ClientOnly>
           <HeroSection />
           <OpenAccountSection />
+          <LoanSection />
           <PersonalizedOffersSection />
           <ContactSection />
         </ClientOnly>

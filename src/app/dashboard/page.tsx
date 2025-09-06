@@ -14,18 +14,11 @@ const customer = {
   address: "123, Sunshine Apartments, Mumbai, Maharashtra, 400001",
 };
 
-const accounts = [
-    {
-        type: "Savings Account",
-        number: "XXXX-XXXX-XX9876",
-        balance: 150000.75,
-    },
-    {
-        type: "Current Account",
-        number: "XXXX-XXXX-XX5432",
-        balance: 45000.00,
-    }
-]
+const account = {
+    type: "Savings Account",
+    number: "XXXX-XXXX-XX9876",
+    balance: 150000.75,
+};
 
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -46,31 +39,29 @@ export default function DashboardPage() {
 
       <Card>
         <CardHeader>
-            <CardTitle>My Accounts</CardTitle>
-            <CardDescription>An overview of your bank accounts and balances.</CardDescription>
+            <CardTitle>My Account</CardTitle>
+            <CardDescription>An overview of your bank account and balance.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-            {accounts.map((account) => (
-                 <div key={account.number} className="p-4 border rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-secondary/20 rounded-full">
-                            <Landmark className="h-6 w-6 text-secondary" />
-                        </div>
-                        <div>
-                            <p className="font-bold text-lg">{account.type}</p>
-                            <p className="text-muted-foreground">{account.number}</p>
-                        </div>
+        <CardContent>
+            <div className="p-4 border rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 bg-secondary/20 rounded-full">
+                        <Landmark className="h-6 w-6 text-secondary" />
                     </div>
-                    <div className="text-left md:text-right">
-                        <p className="text-sm text-muted-foreground">Available Balance</p>
-                        <p className="font-bold text-xl text-primary">{formatCurrency(account.balance)}</p>
+                    <div>
+                        <p className="font-bold text-lg">{account.type}</p>
+                        <p className="text-muted-foreground">{account.number}</p>
                     </div>
-                    <div className="flex gap-2 self-start md:self-center">
-                        <Button variant="outline" size="sm">View Transactions</Button>
-                        <Button size="sm">Transfer Funds</Button>
-                    </div>
-                 </div>
-            ))}
+                </div>
+                <div className="text-left md:text-right">
+                    <p className="text-sm text-muted-foreground">Available Balance</p>
+                    <p className="font-bold text-xl text-primary">{formatCurrency(account.balance)}</p>
+                </div>
+                <div className="flex gap-2 self-start md:self-center">
+                    <Button variant="outline" size="sm">View Transactions</Button>
+                    <Button size="sm">Transfer Funds</Button>
+                </div>
+            </div>
         </CardContent>
       </Card>
       

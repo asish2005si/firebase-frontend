@@ -31,18 +31,41 @@ const transferSchema = z.object({
   transferType: z.enum(["self", "internal", "other"]),
   recipientName: z.string().min(2, "Recipient name is required."),
   recipientAccount: z.string().regex(/^\d{12,16}$/, "Invalid account number."),
+  bankName: z.string().optional(),
   ifsc: z.string().optional(),
   amount: z.coerce.number().min(1, "Amount must be at least ₹1."),
   remarks: z.string().optional(),
-}).refine(data => {
+}).superRefine((data, ctx) => {
     if (data.transferType === "other") {
-        return !!data.ifsc && data.ifsc.length === 11;
+        if (!data.bankName) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Please select a bank.",
+                path: ["bankName"],
+            });
+        }
+        if (!data.ifsc || data.ifsc.length !== 11) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "A valid 11-digit IFSC code is required.",
+                path: ["ifsc"],
+            });
+        }
     }
-    return true;
-}, {
-    message: "A valid 11-digit IFSC code is required for other bank transfers.",
-    path: ["ifsc"],
 });
+
+const otherBanks = [
+    "State Bank of India",
+    "HDFC Bank",
+    "ICICI Bank",
+    "Punjab National Bank",
+    "Axis Bank",
+    "Bank of Baroda",
+    "Kotak Mahindra Bank",
+    "IndusInd Bank",
+    "Yes Bank",
+    "Canara Bank"
+];
 
 
 export function FundTransferForm() {
@@ -54,6 +77,7 @@ export function FundTransferForm() {
       transferType: "internal",
       recipientName: "",
       recipientAccount: "",
+      bankName: "",
       ifsc: "",
       amount: 0,
       remarks: "",
@@ -136,19 +160,43 @@ export function FundTransferForm() {
                 )}
               />
               {transferType === "other" && (
-                 <FormField
-                    control={form.control}
-                    name="ifsc"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>IFSC Code</FormLabel>
-                        <FormControl>
-                        <Input placeholder="Enter 11-digit IFSC" {...field} disabled={isSubmitting}/>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
+                <>
+                    <FormField
+                        control={form.control}
+                        name="bankName"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Bank Name</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
+                                <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a bank" />
+                                </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {otherBanks.map(bank => (
+                                        <SelectItem key={bank} value={bank}>{bank}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="ifsc"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>IFSC Code</FormLabel>
+                            <FormControl>
+                            <Input placeholder="Enter 11-digit IFSC" {...field} disabled={isSubmitting}/>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                </>
               )}
             </div>
              <FormField

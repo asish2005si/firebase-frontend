@@ -57,7 +57,9 @@ export default function DashboardPage() {
                     <p className="font-bold text-xl text-primary">{formatCurrency(account.balance)}</p>
                 </div>
                 <div className="flex gap-2 self-start md:self-center">
-                    <Button variant="outline" size="sm">View Transactions</Button>
+                    <Link href="/dashboard/statements">
+                        <Button variant="outline" size="sm">View Transactions</Button>
+                    </Link>
                     <Button size="sm">Transfer Funds</Button>
                 </div>
             </div>

@@ -25,7 +25,11 @@ const loanApplicationSchema = z.object({
     tenure: z.coerce.number().min(1, "Tenure must be at least 1 year."),
 
     fullName: z.string().min(2, "Full name is required."),
-    dob: z.date({ required_error: "Date of birth is required." }),
+    dob: z.date({ required_error: "Date of birth is required." }).refine((date) => {
+        const today = new Date();
+        const twentyOneYearsAgo = new Date(today.getFullYear() - 21, today.getMonth(), today.getDate());
+        return date <= twentyOneYearsAgo;
+    }, "You must be at least 21 years old to apply for a loan."),
     pan: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format."),
     address: z.string().min(10, "Address is required."),
 

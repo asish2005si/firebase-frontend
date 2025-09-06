@@ -46,6 +46,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ThemeToggle } from "../theme-toggle";
+import { ClientOnly } from "../client-only";
 
 const navItems = [
     { href: "/dashboard", icon: CircleUser, label: "My Accounts & Profile" },
@@ -111,7 +112,9 @@ export function Header() {
       </Sheet>
       <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
         <div className="ml-auto flex-1 sm:flex-initial" />
-        <ThemeToggle />
+        <ClientOnly>
+          <ThemeToggle />
+        </ClientOnly>
         <Button variant="secondary" size="icon" className="rounded-full">
           <Bell className="h-5 w-5" />
           <span className="sr-only">Toggle notifications</span>

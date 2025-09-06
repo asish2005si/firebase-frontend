@@ -1,13 +1,14 @@
 
 'use server';
 
-import type {MessageData} from 'genkit';
 import {ai} from '@/ai/genkit';
 
-export interface ChatMessage extends MessageData {
+export interface ChatMessage {
   role: 'user' | 'model';
+  content: { text: string }[];
 }
 
+// System instruction for your Nexus Bank chatbot
 const systemInstruction = `You are "Nexus InfoBot 🤖", a virtual assistant for Nexus Bank.
 Your personality is friendly, professional, and helpful.
 Your purpose is to provide information about Nexus Bank's services based ONLY on the information provided below.
@@ -50,18 +51,41 @@ Closing Message: "Thank you for visiting Nexus Bank! 😊 You can continue brows
 When responding, keep your answers concise and clear, based on the information points above.
 `;
 
-export async function chat(history: ChatMessage[]) {
-  const response = await ai.generate({
-    model: 'googleai/gemini-1.5-flash',
-    system: systemInstruction,
-    history: history.map(msg => ({
-      role: msg.role,
-      content: msg.content,
-    })),
-  });
+export async function chat(history: ChatMessage[]): Promise<ChatMessage> {
+  try {
+    // Validate history
+    if (!history || !Array.isArray(history)) {
+        throw new Error("Invalid history provided.");
+    }
 
-  return {
-    role: 'model' as const,
-    content: [{text: response.text}],
-  };
+    const response = await ai.generate({
+      model: 'googleai/gemini-1.5-flash',
+      system: systemInstruction,
+      history: history.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      })),
+    });
+
+    const message = response?.text();
+
+    if (!message) {
+        return {
+            role: 'model',
+            content: [{ text: "Sorry, I didn't get that. Could you please rephrase your question?"}]
+        };
+    }
+
+    return {
+        role: 'model',
+        content: [{ text: message }]
+    };
+
+  } catch (error) {
+    console.error("Chat error:", error);
+    return {
+        role: 'model',
+        content: [{ text: "Oops! Something went wrong while fetching the response. Try again."}]
+    };
+  }
 }

@@ -2,6 +2,8 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme-provider';
+import { ChatWidget } from '@/components/chatbot/chat-widget';
+import { ClientOnly } from '@/components/client-only';
 
 export const metadata: Metadata = {
   title: 'Nexus Bank',
@@ -28,6 +30,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <ClientOnly>
+            <ChatWidget />
+          </ClientOnly>
           <Toaster />
         </ThemeProvider>
       </body>

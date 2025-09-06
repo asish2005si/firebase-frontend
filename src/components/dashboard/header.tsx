@@ -53,6 +53,7 @@ const navItems = [
     { href: "#", icon: Landmark, label: "Deposit & Investment" },
     { href: "/dashboard/statements", icon: ListOrdered, label: "Statements" },
     { href: "#", icon: BadgeIndianRupee, label: "Loans" },
+    { href: "#", icon: CreditCard, label: "Card Services" },
 ];
 
 export function Header() {

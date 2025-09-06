@@ -50,7 +50,6 @@ const navItems = [
     { href: "#", icon: Banknote, label: "Payments / Transfers" },
     { href: "#", icon: FileText, label: "Bill Payments" },
     { href: "#", icon: Landmark, label: "Deposit & Investment" },
-    { href: "#", icon: ListOrdered, label: "e-Tax" },
 ];
 
 export function Header() {

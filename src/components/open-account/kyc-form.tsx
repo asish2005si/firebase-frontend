@@ -31,7 +31,7 @@ const kycSchema = z.object({
   city: z.string().min(2, "City is required."),
   pincode: z.string().regex(/^\d{6}$/, "PIN code must be 6 digits."),
   aadhaar: z.any().refine(file => file?.length == 1, "Aadhaar card is required."),
-  pan: z.any().refine(file => file?.length == 1, "PAN card is required."),
+  pan: z.any().optional(),
   photo: z.any().refine(file => file?.length == 1, "Photograph is required."),
 }).refine(data => {
     if (data.isSameAddress === false) {
@@ -41,6 +41,14 @@ const kycSchema = z.object({
 }, {
     message: "Communication address is required.",
     path: ["communicationAddress"]
+}).refine(data => {
+    if (data.accountType !== 'student') {
+        return data.pan?.length == 1;
+    }
+    return true;
+}, {
+    message: "PAN card is required.",
+    path: ["pan"]
 });
 
 type KycFormData = z.infer<typeof kycSchema>;
@@ -89,7 +97,7 @@ export function KycForm() {
 
     async function processForm() {
         const fieldsToValidate = formSteps.slice(0, currentStepIndex + 1).flat();
-        const result = await methods.trigger(fieldsToValidate);
+        const result = await methods.trigger(fieldsToValidate as (keyof KycFormData)[]);
         if(result) {
             next();
         }

@@ -41,12 +41,12 @@ const FileUploadItem = ({ fieldName, label }: { fieldName: string, label: string
                     <FormControl>
                         {preview ? (
                              <div className="relative w-full h-48 rounded-md border-2 border-dashed border-gray-300 flex items-center justify-center">
-                                {file[0].type.startsWith("image/") ? (
+                                {file && file[0] && file[0].type.startsWith("image/") ? (
                                     <Image src={preview} alt="Preview" fill style={{ objectFit: 'contain' }} className="rounded-md p-2" />
                                 ) : (
                                     <div className="text-center p-4">
                                         <p className="font-semibold">File Selected</p>
-                                        <p className="text-sm text-muted-foreground">{file[0].name}</p>
+                                        <p className="text-sm text-muted-foreground">{file?.[0]?.name}</p>
                                     </div>
                                 )}
                                 <Button variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={removeFile}>
@@ -79,6 +79,9 @@ const FileUploadItem = ({ fieldName, label }: { fieldName: string, label: string
 }
 
 export function DocumentUploadForm() {
+  const { watch } = useFormContext();
+  const accountType = watch("accountType");
+
   return (
     <div>
         <FormHeader 
@@ -87,7 +90,7 @@ export function DocumentUploadForm() {
         />
         <div className="space-y-6">
             <FileUploadItem fieldName="aadhaar" label="Aadhaar Card" />
-            <FileUploadItem fieldName="pan" label="PAN Card" />
+            {accountType !== 'student' && <FileUploadItem fieldName="pan" label="PAN Card" />}
             <FileUploadItem fieldName="photo" label="Passport-size Photograph" />
         </div>
     </div>

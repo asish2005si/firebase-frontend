@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export function HeroSection() {
   return (
@@ -20,8 +21,15 @@ export function HeroSection() {
             </Button>
           </div>
         </div>
-        <div className="hidden lg:block">
-            {/* You can add an illustration or image here */}
+        <div className="hidden lg:flex justify-center items-center">
+            <Image 
+              src="https://picsum.photos/600/400" 
+              alt="Person using online banking on a laptop"
+              width={600}
+              height={400}
+              className="rounded-lg shadow-2xl"
+              data-ai-hint="online banking"
+            />
         </div>
       </div>
     </section>

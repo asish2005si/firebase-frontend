@@ -51,7 +51,7 @@ export default function DashboardPage() {
                 <CardDescription>Primary</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">₹10,430.50</p>
+                <p className="text-3xl font-bold">10,430.50</p>
                 <p className="text-sm text-green-500">+2.5% this month</p>
               </CardContent>
             </Card>
@@ -61,7 +61,7 @@ export default function DashboardPage() {
                 <CardDescription>Nexus Platinum</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">₹1,204.78</p>
+                <p className="text-3xl font-bold">1,204.78</p>
                 <p className="text-sm text-muted-foreground">Due on 25th</p>
               </CardContent>
             </Card>

@@ -60,7 +60,9 @@ export default function DashboardPage() {
                     <Link href="/dashboard/statements">
                         <Button variant="outline" size="sm">View Transactions</Button>
                     </Link>
-                    <Button size="sm">Transfer Funds</Button>
+                    <Link href="/dashboard/payments?tab=transfer">
+                      <Button size="sm">Transfer Funds</Button>
+                    </Link>
                 </div>
             </div>
         </CardContent>
@@ -72,8 +74,12 @@ export default function DashboardPage() {
                     <CardTitle>Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-4">
-                    <Button variant="outline" className="justify-start gap-2"><span className="font-bold">₹</span>Fund Transfer</Button>
-                    <Button variant="outline" className="justify-start gap-2"><FileText/>Bill Payments</Button>
+                    <Link href="/dashboard/payments?tab=transfer">
+                      <Button variant="outline" className="justify-start gap-2 w-full"><span className="font-bold">₹</span>Fund Transfer</Button>
+                    </Link>
+                    <Link href="/dashboard/payments?tab=bill">
+                      <Button variant="outline" className="justify-start gap-2 w-full"><FileText/>Bill Payments</Button>
+                    </Link>
                     <Button variant="outline" className="justify-start gap-2"><CreditCard/>Card Services</Button>
                     <Button variant="outline" className="justify-start gap-2"><ArrowRight/>Cheque Book Request</Button>
                 </CardContent>

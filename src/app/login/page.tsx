@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ClientOnly } from "@/components/client-only";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -81,97 +82,99 @@ export default function LoginPage() {
               <span className="text-3xl font-bold font-headline">Nexus Bank</span>
             </Link>
         </div>
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Welcome Back!</CardTitle>
-            <CardDescription>
-              Sign in to access your account.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                 <FormField
-                  control={form.control}
-                  name="role"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Role</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
+        <ClientOnly>
+            <Card>
+            <CardHeader className="text-center">
+                <CardTitle className="text-2xl">Welcome Back!</CardTitle>
+                <CardDescription>
+                Sign in to access your account.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                    control={form.control}
+                    name="role"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Role</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select your role" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                            <SelectItem value="customer">Customer</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Email Address</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select your role" />
-                          </SelectTrigger>
+                            <Input
+                            type="email"
+                            placeholder="you@example.com"
+                            {...field}
+                            disabled={isSubmitting}
+                            />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="customer">Customer</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Address</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="you@example.com"
-                          {...field}
-                          disabled={isSubmitting}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="••••••••"
-                          {...field}
-                          disabled={isSubmitting}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <div className="text-right text-sm">
-                  <Link href="/forgot-password"
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                            <Input
+                            type="password"
+                            placeholder="••••••••"
+                            {...field}
+                            disabled={isSubmitting}
+                            />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <div className="text-right text-sm">
+                    <Link href="/forgot-password"
+                        className="font-medium text-primary hover:underline"
+                    >
+                        Forgot Password?
+                    </Link>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isSubmitting ? "Signing In..." : "Login"}
+                    </Button>
+                </form>
+                </Form>
+                <div className="mt-6 text-center text-sm">
+                New here?{" "}
+                <Link
+                    href="/#open-account"
                     className="font-medium text-primary hover:underline"
-                  >
-                    Forgot Password?
-                  </Link>
+                >
+                    Open an Account
+                </Link>
                 </div>
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {isSubmitting ? "Signing In..." : "Login"}
-                </Button>
-              </form>
-            </Form>
-            <div className="mt-6 text-center text-sm">
-              New here?{" "}
-              <Link
-                href="/#open-account"
-                className="font-medium text-primary hover:underline"
-              >
-                Open an Account
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+            </Card>
+        </ClientOnly>
       </div>
     </div>
   );

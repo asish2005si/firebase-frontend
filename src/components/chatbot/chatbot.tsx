@@ -9,6 +9,7 @@ import { Bot, SendHorizonal, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { chat } from "@/ai/flows/chat-flow";
+import { Button } from "@/components/ui/button";
 
 const chatInputSchema = z.object({
   message: z.string().min(1, "Message cannot be empty."),

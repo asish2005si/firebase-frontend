@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { ClientOnly } from "@/components/client-only";
 
 export function HeroSection() {
   return (
@@ -12,14 +13,16 @@ export function HeroSection() {
           <p className="text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto lg:mx-0">
             Experience a new era of banking with personalized services, seamless digital access, and expert financial guidance. Your future starts with Smart Bank.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-            <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg transition-transform duration-300 hover:scale-105">
-              Open Account
-            </Button>
-            <Button size="lg" variant="secondary" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-lg transition-transform duration-300 hover:scale-105">
-              Login to Smart Bank
-            </Button>
-          </div>
+          <ClientOnly>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg transition-transform duration-300 hover:scale-105">
+                Open Account
+              </Button>
+              <Button size="lg" variant="secondary" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-lg transition-transform duration-300 hover:scale-105">
+                Login to Smart Bank
+              </Button>
+            </div>
+          </ClientOnly>
         </div>
         <div className="hidden lg:flex justify-center items-center">
             <Image 

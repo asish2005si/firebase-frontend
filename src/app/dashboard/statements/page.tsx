@@ -15,6 +15,7 @@ import { StatementControls } from "@/components/dashboard/statements/statement-c
 import { StatementSummary } from "@/components/dashboard/statements/statement-summary";
 import { DateRange } from "react-day-picker";
 import { subDays } from "date-fns";
+import { ClientOnly } from "@/components/client-only";
 
 const initialTransactions: Transaction[] = [
     { id: "TXN75620", date: "2024-07-28", description: "UPI/Google Pay/Amazon", type: "debit", amount: 1250.00, balance: 148750.75 },
@@ -38,10 +39,14 @@ const customerInfo = {
 export default function StatementsPage() {
   const [transactions] = useState<Transaction[]>(initialTransactions);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 29),
-    to: new Date(),
-  });
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+
+  useEffect(() => {
+    setDateRange({
+        from: subDays(new Date(), 29),
+        to: new Date(),
+    });
+  }, []);
 
   useEffect(() => {
     if (dateRange?.from && dateRange?.to) {
@@ -78,20 +83,22 @@ export default function StatementsPage() {
   
   return (
     <div className="flex flex-col gap-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>Account Statement</CardTitle>
-          <CardDescription>
-            View, filter, and download your transaction history.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-            <StatementHeader customer={customerInfo} range={dateRange}/>
-            <StatementControls dateRange={dateRange} setDateRange={setDateRange} />
-            <StatementSummary summary={summary} />
-            <TransactionHistory transactions={filteredTransactions} />
-        </CardContent>
-      </Card>
+        <ClientOnly>
+            <Card>
+                <CardHeader>
+                <CardTitle>Account Statement</CardTitle>
+                <CardDescription>
+                    View, filter, and download your transaction history.
+                </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <StatementHeader customer={customerInfo} range={dateRange}/>
+                    <StatementControls dateRange={dateRange} setDateRange={setDateRange} />
+                    <StatementSummary summary={summary} />
+                    <TransactionHistory transactions={filteredTransactions} />
+                </CardContent>
+            </Card>
+        </ClientOnly>
     </div>
   );
 }

@@ -49,9 +49,9 @@ function OTPFormComponent() {
     if (values.otp === "123456") { // Hardcoded OTP for demo
       toast({
         title: "Login Successful!",
-        description: "Welcome to your dashboard.",
+        description: "Welcome to Nexus Bank.",
       });
-      router.push("/dashboard");
+      router.push("/");
     } else {
       toast({
         variant: "destructive",

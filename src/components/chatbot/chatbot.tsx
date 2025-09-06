@@ -2,14 +2,14 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent } from "react";
-import { MessageCircle, Send, X, Loader2 } from "lucide-react";
+import { Bot, Send, X, Loader2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { chat } from "@/ai/flows/chat-flow";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import type { MessageData } from 'genkit/generate';
+import type { MessageData } from 'genkit';
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -101,7 +101,7 @@ export function Chatbot() {
               <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages.map((msg, index) => (
                   <div key={index} className={cn("flex items-end gap-2", msg.role === 'user' ? 'justify-end' : 'justify-start')}>
-                     {msg.role === 'model' && <MessageCircle className="h-6 w-6 text-primary flex-shrink-0" />}
+                     {msg.role === 'model' && <Bot className="h-6 w-6 text-primary flex-shrink-0" />}
                     <div className={cn(
                       "rounded-lg px-4 py-2 max-w-xs whitespace-pre-wrap",
                       msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
@@ -112,7 +112,7 @@ export function Chatbot() {
                 ))}
                 {isLoading && (
                   <div className="flex items-center gap-2">
-                    <MessageCircle className="h-6 w-6 text-primary flex-shrink-0" />
+                    <Bot className="h-6 w-6 text-primary flex-shrink-0" />
                     <div className="bg-muted text-muted-foreground rounded-lg px-4 py-2">
                       <Loader2 className="h-5 w-5 animate-spin"/>
                     </div>
@@ -146,7 +146,7 @@ export function Chatbot() {
         aria-label="Toggle Chatbot"
       >
         <AnimatePresence>
-        {isOpen ? <X className="h-8 w-8" /> : <MessageCircle className="h-8 w-8" />}
+        {isOpen ? <X className="h-8 w-8" /> : <Bot className="h-8 w-8" />}
         </AnimatePresence>
       </Button>
     </>

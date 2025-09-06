@@ -82,6 +82,7 @@ export function ReviewDetails() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-3 gap-4">
                     <FilePreviewItem label="Aadhaar Card" fileList={values.aadhaar} />
+                    {values.accountType === 'student' && <FilePreviewItem label="Birth Certificate" fileList={values.birthCertificate} />}
                     {values.accountType !== 'student' && <FilePreviewItem label="PAN Card" fileList={values.pan} />}
                     <FilePreviewItem label="Photograph" fileList={values.photo} />
                 </CardContent>

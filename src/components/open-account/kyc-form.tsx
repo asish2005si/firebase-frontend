@@ -33,6 +33,7 @@ const kycSchema = z.object({
   aadhaar: z.any().refine(file => file?.length == 1, "Aadhaar card is required."),
   pan: z.any().optional(),
   photo: z.any().refine(file => file?.length == 1, "Photograph is required."),
+  birthCertificate: z.any().optional(),
 }).refine(data => {
     if (data.isSameAddress === false) {
         return !!data.communicationAddress && data.communicationAddress.length >= 5;
@@ -49,7 +50,16 @@ const kycSchema = z.object({
 }, {
     message: "PAN card is required.",
     path: ["pan"]
+}).refine(data => {
+    if (data.accountType === 'student') {
+        return data.birthCertificate?.length == 1;
+    }
+    return true;
+}, {
+    message: "Birth Certificate is required for student accounts.",
+    path: ["birthCertificate"]
 });
+
 
 type KycFormData = z.infer<typeof kycSchema>;
 
@@ -57,7 +67,7 @@ const formSteps: (keyof KycFormData)[][] = [
     ["accountType"],
     ["fullName", "dob", "gender", "email", "mobile"],
     ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode"],
-    ["aadhaar", "pan", "photo"],
+    ["aadhaar", "pan", "photo", "birthCertificate"],
     []
 ];
 
@@ -82,6 +92,7 @@ export function KycForm() {
         aadhaar: null,
         pan: null,
         photo: null,
+        birthCertificate: null,
     },
     mode: "onTouched",
   });

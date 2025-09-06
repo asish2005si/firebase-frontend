@@ -90,6 +90,7 @@ export function DocumentUploadForm() {
         />
         <div className="space-y-6">
             <FileUploadItem fieldName="aadhaar" label="Aadhaar Card" />
+            {accountType === 'student' && <FileUploadItem fieldName="birthCertificate" label="Birth Certificate" />}
             {accountType !== 'student' && <FileUploadItem fieldName="pan" label="PAN Card" />}
             <FileUploadItem fieldName="photo" label="Passport-size Photograph" />
         </div>

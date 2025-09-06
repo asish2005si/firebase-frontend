@@ -4,11 +4,13 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Home, User, Car, GraduationCap, ArrowRight, BadgePercent, CalendarClock, IndianRupee, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
 
 const loanTypes = [
   {
     icon: <Home className="h-10 w-10 text-primary" />,
     title: "Home Loan",
+    type: "home",
     description: "Finance your dream home with attractive interest rates and flexible tenure.",
     details: [
       { icon: <BadgePercent />, text: "Rates from 8.5% p.a. (Fixed/Floating)" },
@@ -19,6 +21,7 @@ const loanTypes = [
   {
     icon: <User className="h-10 w-10 text-primary" />,
     title: "Personal Loan",
+    type: "personal",
     description: "Meet your personal financial needs with our quick and easy personal loans.",
     details: [
       { icon: <BadgePercent />, text: "Rates from 10.75% p.a." },
@@ -29,6 +32,7 @@ const loanTypes = [
   {
     icon: <Car className="h-10 w-10 text-primary" />,
     title: "Car Loan",
+    type: "car",
     description: "Get behind the wheel of your new car with our competitive car loan options.",
     details: [
         { icon: <BadgePercent />, text: "Rates from 9.25% p.a." },
@@ -39,6 +43,7 @@ const loanTypes = [
   {
     icon: <GraduationCap className="h-10 w-10 text-primary" />,
     title: "Education Loan",
+    type: "education",
     description: "Invest in your future with our education loans for studies in India and abroad.",
     details: [
         { icon: <BadgePercent />, text: "Subsidized interest rates" },
@@ -77,9 +82,11 @@ export function LoanProducts() {
                 </CardContent>
               </div>
               <CardContent>
-                 <Button className="w-full">
-                    Apply Now <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+                <Link href={`/dashboard/loans/apply?type=${loan.type}`}>
+                    <Button className="w-full">
+                        Apply Now <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                 </Link>
               </CardContent>
             </Card>
           ))}

@@ -19,7 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-type LoanApplication = {
+export type LoanApplication = {
     id: string;
     type: string;
     amount: number;
@@ -52,40 +52,42 @@ export function LoanApplications({ applications }: LoanApplicationsProps) {
         <CardDescription>A history of your past and current loan applications.</CardDescription>
       </CardHeader>
       <CardContent>
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Application ID</TableHead>
-                    <TableHead>Loan Type</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {applications.length > 0 ? applications.map((item) => (
-                    <TableRow key={item.id}>
-                        <TableCell>{item.id}</TableCell>
-                        <TableCell>{item.type}</TableCell>
-                        <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
-                        <TableCell>
-                            <Badge className={statusColors[item.status]}>
-                                {item.status}
-                            </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">{formatCurrency(item.amount)}</TableCell>
-                        <TableCell className="text-right">
-                           <Button variant="outline" size="sm">View Details</Button>
-                        </TableCell>
-                    </TableRow>
-                )) : (
+        <div className="border rounded-lg">
+            <Table>
+                <TableHeader>
                     <TableRow>
-                        <TableCell colSpan={6} className="text-center">No loan applications found.</TableCell>
+                        <TableHead>Application ID</TableHead>
+                        <TableHead>Loan Type</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                )}
-            </TableBody>
-        </Table>
+                </TableHeader>
+                <TableBody>
+                    {applications.length > 0 ? applications.map((item) => (
+                        <TableRow key={item.id}>
+                            <TableCell>{item.id}</TableCell>
+                            <TableCell>{item.type}</TableCell>
+                            <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
+                            <TableCell>
+                                <Badge className={statusColors[item.status]}>
+                                    {item.status}
+                                </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">{formatCurrency(item.amount)}</TableCell>
+                            <TableCell className="text-right">
+                               <Button variant="outline" size="sm">View Details</Button>
+                            </TableCell>
+                        </TableRow>
+                    )) : (
+                        <TableRow>
+                            <TableCell colSpan={6} className="text-center h-24">No loan applications found.</TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
+        </div>
       </CardContent>
     </Card>
   );

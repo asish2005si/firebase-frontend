@@ -7,7 +7,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import { generate, MessageData } from 'genkit';
+import { MessageData } from 'genkit';
 
 
 const systemInstruction = `You are "Nexus Assist", a friendly, professional, and informative virtual banking guide for Nexus Bank. Your tone should be conversational, polite, supportive, and clear.
@@ -42,7 +42,7 @@ Here is a summary of Nexus Bank's offerings:
 `;
 
 export async function chat(history: MessageData[]) {
-  const response = await generate({
+  const response = await ai.generate({
     model: 'googleai/gemini-1.5-flash',
     system: systemInstruction,
     history: history,

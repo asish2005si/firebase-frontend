@@ -76,10 +76,10 @@ export function Chatbot() {
     setIsPending(true);
 
     try {
-      const botResponse = await chat(newMessages);
+      const botResponseText = await chat(newMessages);
       const botMessage: ChatMessage = {
         role: "model",
-        content: [{ text: botResponse }],
+        content: [{ text: botResponseText }],
       };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
@@ -128,6 +128,7 @@ export function Chatbot() {
                       ? "bg-secondary text-secondary-foreground"
                       : "bg-muted text-muted-foreground"
                   )}
+                  style={msg.role === 'user' ? { backgroundColor: '#0072CE', color: 'white' } : {}}
                 >
                   <p className="text-sm whitespace-pre-wrap">{msg.content[0].text}</p>
                    <p className="text-xs text-right mt-1 opacity-70">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>

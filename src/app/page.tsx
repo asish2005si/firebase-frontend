@@ -7,7 +7,6 @@ import { ContactSection } from "@/components/sections/contact-section";
 import { ClientOnly } from "@/components/client-only";
 import { LoanSection } from "@/components/sections/loan-section";
 import { SmartCardSection } from "@/components/sections/smart-card-section";
-import { ChatbotWidget } from "@/components/chatbot/chatbot-widget";
 
 export default function Home() {
   return (
@@ -20,7 +19,6 @@ export default function Home() {
           <LoanSection />
           <SmartCardSection />
           <ContactSection />
-          <ChatbotWidget />
         </ClientOnly>
       </main>
       <Footer />

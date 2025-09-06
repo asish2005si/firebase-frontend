@@ -16,7 +16,7 @@ const accountTypes = [
   },
   {
     icon: <WalletCards className="h-10 w-10 text-primary" />,
-    title: "Checking Account",
+    title: "Current Account",
     description: "Manage your day-to-day finances with ease. Enjoy features like online bill pay and mobile deposits.",
   },
   {

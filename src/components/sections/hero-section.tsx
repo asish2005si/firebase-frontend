@@ -1,6 +1,8 @@
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { ClientOnly } from "@/components/client-only";
+import Link from "next/link";
 
 export function HeroSection() {
   return (
@@ -18,9 +20,11 @@ export function HeroSection() {
               <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg transition-transform duration-300 hover:scale-105">
                 Open Account
               </Button>
-              <Button size="lg" variant="secondary" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-lg transition-transform duration-300 hover:scale-105">
-                Login to Nexus Bank
-              </Button>
+              <Link href="/login">
+                <Button size="lg" variant="secondary" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-lg transition-transform duration-300 hover:scale-105">
+                  Login to Nexus Bank
+                </Button>
+              </Link>
             </div>
           </ClientOnly>
         </div>

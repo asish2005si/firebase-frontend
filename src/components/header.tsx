@@ -42,12 +42,14 @@ export function Header() {
             </nav>
             <div className="flex items-center gap-2 md:ml-6">
                <ThemeToggle />
-              <Button
-                className="hidden md:inline-flex bg-accent text-accent-foreground hover:bg-accent/90"
-                size="sm"
-              >
-                Login
-              </Button>
+              <Link href="/login">
+                <Button
+                  className="hidden md:inline-flex bg-accent text-accent-foreground hover:bg-accent/90"
+                  size="sm"
+                >
+                  Login
+                </Button>
+              </Link>
               <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="md:hidden">
@@ -82,11 +84,13 @@ export function Header() {
                       ))}
                     </nav>
                     <div className="mt-auto p-4 border-t">
-                      <Button
-                        className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-                      >
-                        Login
-                      </Button>
+                      <Link href="/login">
+                        <Button
+                          className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                        >
+                          Login
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </SheetContent>

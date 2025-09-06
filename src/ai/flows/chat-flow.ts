@@ -4,7 +4,6 @@
  * @fileoverview This file defines the chat flow for the Nexus Bank assistant.
  *
  * - chat - A function that handles the chat interaction.
- * - ChatMessage - The type for a single chat message.
  */
 
 import {ai} from '@/ai/genkit';
@@ -32,7 +31,12 @@ export async function chat(history: ChatMessage[]) {
   const response = await ai.generate({
     model: 'googleai/gemini-1.5-flash',
     system: systemInstruction,
-    history: history,
+    history: history
+      .filter(Boolean) // Remove any null/undefined messages
+      .map(msg => ({
+        role: msg.role,
+        content: msg.content || ""
+    })),
   });
 
   return response.output;

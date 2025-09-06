@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ClientOnly } from "@/components/client-only";
 
 const otpSchema = z.object({
   otp: z.string().length(6, "OTP must be 6 digits."),
@@ -126,8 +127,10 @@ function OTPFormComponent() {
 
 export default function OTPPage() {
     return (
+      <ClientOnly>
         <Suspense fallback={<div>Loading...</div>}>
             <OTPFormComponent />
         </Suspense>
+      </ClientOnly>
     )
 }

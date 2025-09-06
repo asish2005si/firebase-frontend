@@ -6,7 +6,6 @@
  * - ChatMessage - The type for a single chat message.
  */
 import {ai} from '@/ai/genkit';
-import {generate} from 'genkit/ai';
 
 export interface ChatMessage {
   role: 'user' | 'model';
@@ -32,10 +31,12 @@ export async function chat(history: ChatMessage[]) {
   const response = await ai.generate({
     model: 'googleai/gemini-1.5-flash',
     system: systemInstruction,
-    history: history.map(msg => ({
-      role: msg.role,
-      content: msg.content || '',
-    })),
+    history: history
+      .filter(msg => !!msg && !!msg.content) // Filter out invalid messages
+      .map(msg => ({
+        role: msg.role,
+        content: msg.content,
+      })),
   });
 
   return response.text();

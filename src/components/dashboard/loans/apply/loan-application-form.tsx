@@ -68,6 +68,7 @@ const formStepsPerLoan: Record<string, (keyof LoanFormData)[][]> = {
     education: [
         ["amount", "tenure"],
         ["fullName", "dob", "pan", "address"],
+        ["employmentType", "companyName", "monthlyIncome"],
         ["documents", "courseDetails"],
         [],
     ],

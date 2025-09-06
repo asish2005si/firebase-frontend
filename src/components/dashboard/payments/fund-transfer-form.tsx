@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -26,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { IfscFinder } from "./ifsc-finder";
 
 const otherBanks = [
     "Allahabad Bank", "Andhra Bank", "Axis Bank", "Bandhan Bank", "Bank of Baroda",
@@ -107,6 +107,8 @@ const transferSchema = z.object({
 export function FundTransferForm() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isIfscFinderOpen, setIsIfscFinderOpen] = useState(false);
+
   const form = useForm<z.infer<typeof transferSchema>>({
     resolver: zodResolver(transferSchema),
     defaultValues: {
@@ -225,9 +227,16 @@ export function FundTransferForm() {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>IFSC Code</FormLabel>
-                            <FormControl>
-                            <Input placeholder="Enter 11-digit IFSC" {...field} disabled={isSubmitting}/>
-                            </FormControl>
+                            <div className="flex gap-2">
+                                <FormControl>
+                                    <Input placeholder="Enter 11-digit IFSC" {...field} disabled={isSubmitting}/>
+                                </FormControl>
+                                <IfscFinder 
+                                    form={form} 
+                                    isOpen={isIfscFinderOpen} 
+                                    setIsOpen={setIsIfscFinderOpen} 
+                                />
+                            </div>
                             <FormMessage />
                         </FormItem>
                         )}

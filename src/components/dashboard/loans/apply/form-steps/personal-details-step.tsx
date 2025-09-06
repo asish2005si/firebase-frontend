@@ -76,7 +76,11 @@ export function PersonalDetailsStep() {
                             <FormItem>
                                 <FormLabel>PAN Number</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="ABCDE1234F" {...field} />
+                                    <Input 
+                                        placeholder="ABCDE1234F" 
+                                        {...field} 
+                                        onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -100,4 +104,3 @@ export function PersonalDetailsStep() {
         </div>
     );
 }
-

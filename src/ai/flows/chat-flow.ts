@@ -20,7 +20,7 @@ Available services:
 When a user expresses intent to use a service, guide them to the relevant page. For example, if they want to open an account, suggest they visit the 'Open Account' page.`;
 
     const response = await ai.generate({
-        model: 'gemini-1.5-flash',
+        model: 'googleai/gemini-1.5-flash',
         system: systemInstruction,
         history: history.map(msg => ({
             role: msg.role,

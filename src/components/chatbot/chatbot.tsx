@@ -7,8 +7,15 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
-import { chat, type ChatMessage } from '@/ai/flows/chat-flow';
+import { chat } from '@/ai/flows/chat-flow';
 import { useToast } from '@/hooks/use-toast';
+import { z } from 'zod';
+
+export const ChatMessageSchema = z.object({
+  role: z.enum(['user', 'model']),
+  content: z.string(),
+});
+export type ChatMessage = z.infer<typeof ChatMessageSchema>;
 
 export function Chatbot() {
     const [isOpen, setIsOpen] = useState(false);
@@ -87,8 +94,37 @@ export function Chatbot() {
                                         <div className="flex flex-col gap-2">
                                             {quickReplies.map(reply => (
                                                 <Button key={reply} variant="outline" size="sm" onClick={() => {
-                                                    setInput(reply);
-                                                    setTimeout(handleSendMessage, 0);
+                                                    const updatedInput = reply;
+                                                    setInput(updatedInput);
+                                                    const newUserMessage: ChatMessage = { role: 'user', content: updatedInput };
+                                                    const updatedMessages = [...messages, newUserMessage];
+                                                    setMessages(updatedMessages);
+                                                    setIsLoading(true);
+
+                                                    chat(updatedMessages)
+                                                        .then(response => {
+                                                            if (response?.content) {
+                                                                setMessages(prev => [...prev, { role: 'model', content: response.content as string }]);
+                                                            } else {
+                                                                toast({
+                                                                    variant: 'destructive',
+                                                                    title: 'AI Error',
+                                                                    description: 'The AI did not return a valid response. Please try again.',
+                                                                });
+                                                            }
+                                                        })
+                                                        .catch(error => {
+                                                            toast({
+                                                                variant: 'destructive',
+                                                                title: 'Chat Error',
+                                                                description: 'Failed to get a response. Please check the console for details.',
+                                                            });
+                                                            console.error(error);
+                                                        })
+                                                        .finally(() => {
+                                                            setIsLoading(false);
+                                                            setInput('');
+                                                        });
                                                 }}>
                                                     {reply}
                                                 </Button>

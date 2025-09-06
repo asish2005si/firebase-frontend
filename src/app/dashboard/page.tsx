@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { IndianRupee, CreditCard, Landmark, ArrowRight, FileText, Download } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
 const customer = {
   fullName: "Jane Doe",
@@ -90,14 +91,11 @@ export default function DashboardPage() {
                     <CardTitle>Statements</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <p>Download Monthly Statement (PDF)</p>
-                        <Button variant="secondary" size="icon"><Download className="h-5 w-5" /></Button>
-                    </div>
-                     <Separator />
                      <div className="flex justify-between items-center">
-                        <p>Download Last 6 Months (CSV)</p>
-                        <Button variant="secondary" size="icon"><Download className="h-5 w-5" /></Button>
+                        <p>View and download your statements</p>
+                         <Link href="/dashboard/statements">
+                            <Button variant="secondary">View Statements</Button>
+                        </Link>
                     </div>
                 </CardContent>
             </Card>

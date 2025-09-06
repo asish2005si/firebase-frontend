@@ -1,4 +1,3 @@
-
 'use server';
 
 import {ai} from '@/ai/genkit';
@@ -8,8 +7,6 @@ const ChatMessageSchema = z.object({
   role: z.enum(['user', 'model']),
   content: z.array(z.object({text: z.string()})),
 });
-
-const ChatHistorySchema = z.array(ChatMessageSchema);
 
 type ChatMessage = z.infer<typeof ChatMessageSchema>;
 
@@ -33,5 +30,5 @@ Services include:
     prompt: history[history.length - 1].content,
   });
 
-  return response.text();
+  return response.text;
 }

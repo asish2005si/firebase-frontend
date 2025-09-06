@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PiggyBank, Briefcase, WalletCards, ArrowRight } from "lucide-react";
+import { PiggyBank, WalletCards, ArrowRight } from "lucide-react";
 
 const accountTypes = [
   {
@@ -19,11 +19,6 @@ const accountTypes = [
     icon: <WalletCards className="h-10 w-10 text-primary" />,
     title: "Current Account",
     description: "Manage your day-to-day finances with ease. Enjoy features like online bill pay and mobile deposits.",
-  },
-  {
-    icon: <Briefcase className="h-10 w-10 text-primary" />,
-    title: "Business Account",
-    description: "Power your business with our tailored financial solutions, from checking to commercial loans.",
   },
 ];
 

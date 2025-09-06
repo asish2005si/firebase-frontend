@@ -29,6 +29,12 @@ export const bankData: BankData = {
                 "Connaught Place": "SBIN0000691",
                 "Chandni Chowk": "SBIN0000631",
             }
+        },
+        "West Bengal": {
+            "Kolkata": {
+                "Park Street": "SBIN0000150",
+                "Salt Lake": "SBIN0001612"
+            }
         }
     },
     "HDFC Bank": {
@@ -46,6 +52,7 @@ export const bankData: BankData = {
             "Bengaluru": {
                 "Koramangala": "HDFC0000175",
                 "Indiranagar": "HDFC0000184",
+                "Whitefield": "HDFC0000572"
             }
         }
     },
@@ -60,6 +67,58 @@ export const bankData: BankData = {
             "Chennai": {
                 "T Nagar": "ICIC0000004",
                 "Anna Nagar": "ICIC0000156",
+            }
+        },
+        "Gujarat": {
+            "Ahmedabad": {
+                "C G Road": "ICIC0000021",
+                "Maninagar": "ICIC0000115"
+            }
+        }
+    },
+    "Axis Bank": {
+        "Delhi": {
+            "New Delhi": {
+                "Greater Kailash": "UTIB0000007",
+                "Saket": "UTIB0000047"
+            }
+        },
+        "Karnataka": {
+            "Bengaluru": {
+                "MG Road": "UTIB0000009",
+                "Jayanagar": "UTIB0000051"
+            }
+        }
+    },
+    "Kotak Mahindra Bank": {
+        "Maharashtra": {
+            "Mumbai": {
+                "Fort": "KKBK0000651",
+                "Juhu": "KKBK0000654"
+            }
+        },
+        "Rajasthan": {
+            "Jaipur": {
+                "C Scheme": "KKBK0000261",
+                "MI Road": "KKBK0000262"
+            }
+        }
+    },
+    "Punjab National Bank": {
+        "Punjab": {
+            "Amritsar": {
+                "Hall Bazar": "PUNB0000100",
+                "Lawrence Road": "PUNB0000200"
+            },
+            "Ludhiana": {
+                "Miller Ganj": "PUNB0001300",
+                "Model Town": "PUNB0001500"
+            }
+        },
+        "Uttar Pradesh": {
+            "Lucknow": {
+                "Hazratganj": "PUNB0002900",
+                "Alambagh": "PUNB0003000"
             }
         }
     }

@@ -1,3 +1,4 @@
+
 "use server";
 
 import { z } from "zod";
@@ -35,4 +36,30 @@ export async function submitContactRequest(
       message: "An unexpected error occurred. Please try again later.",
     };
   }
+}
+
+const supportTicketSchema = z.object({
+  subject: z.string().min(5, "Subject must be at least 5 characters."),
+  description: z.string().min(20, "Description must be at least 20 characters long."),
+  category: z.string({ required_error: "Please select a category." }),
+});
+
+export async function submitSupportTicket(
+  values: z.infer<typeof supportTicketSchema>
+): Promise<{ success: boolean; message: string }> {
+    try {
+        console.log("Received support ticket submission:", values);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        return {
+            success: true,
+            message: `Your ticket (Subject: ${values.subject}) has been successfully created. Our team will get back to you shortly.`,
+        };
+    } catch (error) {
+        console.error("Error submitting support ticket:", error);
+        return {
+            success: false,
+            message: "An unexpected error occurred while creating your ticket. Please try again later.",
+        };
+    }
 }

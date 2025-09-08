@@ -19,6 +19,7 @@ import {
   BadgeIndianRupee,
   Receipt,
   PiggyBank,
+  LifeBuoy,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -55,7 +56,7 @@ const navItems = [
     { href: "/dashboard/deposits", icon: PiggyBank, label: "Deposit & Investment" },
     { href: "/dashboard/statements", icon: ListOrdered, label: "Statements" },
     { href: "/dashboard/loans", icon: BadgeIndianRupee, label: "Loans" },
-    { href: "#", icon: CreditCard, label: "Card Services" },
+    { href: "/dashboard/customer-care", icon: LifeBuoy, label: "Customer Care" },
 ];
 
 export function Header() {

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import React from 'react';
 
 import { useMultistepForm } from "@/hooks/use-multistep-form";
 import { AccountTypeSelector } from "./account-type-selector";
@@ -160,14 +161,23 @@ export function KycForm() {
   
   const accountType = methods.watch("accountType");
 
-  const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next, goTo } = useMultistepForm([
-      <AccountTypeSelector key="accountType" />,
-      <PersonalDetailsForm key="personal" />,
-      <AddressDetailsForm key="address" />,
-      ...(accountType === 'savings' ? [<SavingsAccountDetailsForm key="savings-specific" />] : []),
-      ...(accountType === 'current' ? [<CurrentAccountDetailsForm key="current-specific" />] : []),
-      <ReviewDetailsForm key="review" goTo={goTo} />,
-  ]);
+  const formSteps = [
+    <AccountTypeSelector key="accountType" />,
+    <PersonalDetailsForm key="personal" />,
+    <AddressDetailsForm key="address" />,
+    ...(accountType === 'savings' ? [<SavingsAccountDetailsForm key="savings-specific" />] : []),
+    ...(accountType === 'current' ? [<CurrentAccountDetailsForm key="current-specific" />] : []),
+    <ReviewDetailsForm key="review" goTo={() => {}} />, // Pass a dummy function initially
+  ];
+
+  const { steps, currentStepIndex, step: currentStep, isFirstStep, isLastStep, back, next, goTo } = useMultistepForm(formSteps);
+
+  // Now, clone the current step and pass the actual goTo function to ReviewDetailsForm
+  const step = React.isValidElement(currentStep)
+    ? currentStep.type === ReviewDetailsForm
+      ? React.cloneElement(currentStep, { goTo })
+      : currentStep
+    : null;
 
     async function processForm() {
         const fieldGroups = formStepsPerType[accountType || 'savings'];

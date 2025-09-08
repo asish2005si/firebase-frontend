@@ -1,8 +1,8 @@
 
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -31,8 +31,10 @@ const loginSchema = z.object({
   role: z.enum(["customer", "admin"], { required_error: "Please select a role." }),
 });
 
-export default function LoginPage() {
+function LoginComponent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -48,22 +50,25 @@ export default function LoginPage() {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, 1500));
+    
+    const destination = redirectUrl || "/dashboard";
 
     if (values.role === "admin") {
       toast({
         title: "Admin Login Successful",
         description: "Redirecting to dashboard...",
       });
-      router.push("/dashboard");
+      router.push(destination);
     } else {
       toast({
         title: "OTP Sent",
         description: "Please check your email for the OTP.",
       });
-      router.push(`/otp?email=${encodeURIComponent(values.email)}`);
+      const otpUrl = `/otp?email=${encodeURIComponent(values.email)}`;
+      router.push(redirectUrl ? `${otpUrl}&redirect=${encodeURIComponent(redirectUrl)}` : otpUrl);
     }
 
-    setIsSubmitting(false);
+    // Note: isSubmitting is not set back to false because of the navigation
   };
 
   return (
@@ -75,100 +80,108 @@ export default function LoginPage() {
               <span className="text-3xl font-bold font-headline">Nexus Bank</span>
             </Link>
         </div>
-        <ClientOnly>
-            <Card>
-            <CardHeader className="text-center">
-                <CardTitle className="text-2xl">Welcome Back!</CardTitle>
-                <CardDescription>
-                Sign in to access your account.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                    control={form.control}
-                    name="role"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Role</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
-                            <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select your role" />
-                            </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                            <SelectItem value="customer">Customer</SelectItem>
-                            <SelectItem value="admin">Admin</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Email Address</FormLabel>
+        <Card>
+        <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Welcome Back!</CardTitle>
+            <CardDescription>
+            Sign in to access your account.
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
                         <FormControl>
-                            <Input
-                            type="email"
-                            placeholder="you@example.com"
-                            {...field}
-                            disabled={isSubmitting}
-                            />
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
                         </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                            <Input
-                            type="password"
-                            placeholder="••••••••"
-                            {...field}
-                            disabled={isSubmitting}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <div className="text-right text-sm">
-                    <Link href="/forgot-password"
-                        className="font-medium text-primary hover:underline"
-                    >
-                        Forgot Password?
-                    </Link>
-                    </div>
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {isSubmitting ? "Signing In..." : "Login"}
-                    </Button>
-                </form>
-                </Form>
-                <div className="mt-6 text-center text-sm">
-                New here?{" "}
-                <Link
-                    href="/open-account"
+                        <SelectContent>
+                        <SelectItem value="customer">Customer</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Email Address</FormLabel>
+                    <FormControl>
+                        <Input
+                        type="email"
+                        placeholder="you@example.com"
+                        {...field}
+                        disabled={isSubmitting}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                        <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                        disabled={isSubmitting}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <div className="text-right text-sm">
+                <Link href="/forgot-password"
                     className="font-medium text-primary hover:underline"
                 >
-                    Open an Account
+                    Forgot Password?
                 </Link>
                 </div>
-            </CardContent>
-            </Card>
-        </ClientOnly>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting ? "Signing In..." : "Login"}
+                </Button>
+            </form>
+            </Form>
+            <div className="mt-6 text-center text-sm">
+            New here?{" "}
+            <Link
+                href="/open-account"
+                className="font-medium text-primary hover:underline"
+            >
+                Open an Account
+            </Link>
+            </div>
+        </CardContent>
+        </Card>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <ClientOnly>
+      <Suspense fallback={<div>Loading...</div>}>
+        <LoginComponent />
+      </Suspense>
+    </ClientOnly>
   );
 }

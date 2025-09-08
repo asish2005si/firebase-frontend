@@ -31,6 +31,7 @@ function OTPFormComponent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
+  const redirectUrl = searchParams.get("redirect");
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -51,7 +52,7 @@ function OTPFormComponent() {
         title: "Login Successful!",
         description: "Welcome to Nexus Bank.",
       });
-      router.push("/dashboard");
+      router.push(redirectUrl || "/dashboard");
     } else {
       toast({
         variant: "destructive",

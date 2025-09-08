@@ -13,12 +13,12 @@ const loanProducts = [
     icon: <Home className="h-5 w-5" />,
     title: "Home Loan",
     tagline: "Your Dream Home, Closer Than Ever.",
-    description: "Finance your dream home with our flexible home loans.",
-    interestRate: "Starting from 8.5% p.a.",
+    description: "Flexible home loans to finance your dream home.",
+    interestRate: "Rates from 8.5% p.a.",
     highlights: [
-      "Flexible tenure up to 30 years",
+      "Tenure up to 30 years",
       "Special rates for women",
-      "Quick, minimal documentation",
+      "Minimal documentation",
     ],
     festiveOffer: "Zero processing fees this month!",
   },
@@ -27,12 +27,12 @@ const loanProducts = [
     icon: <Car className="h-5 w-5" />,
     title: "Car Loan",
     tagline: "Get Behind the Wheel, Faster.",
-    description: "Drive home your new car with attractive loans and easy repayment.",
+    description: "Attractive loans and easy repayment for your new car.",
     interestRate: "Rates from 9.25% p.a.",
     highlights: [
       "Up to 100% on-road funding",
-      "Repayment tenure up to 7 years",
-      "Quick disbursal process",
+      "Tenure up to 7 years",
+      "Quick disbursal",
     ],
     festiveOffer: "Free car accessory kit with every loan!",
   },
@@ -41,28 +41,28 @@ const loanProducts = [
     icon: <User className="h-5 w-5" />,
     title: "Personal Loan",
     tagline: "Your Goals, Your Loan, Your Terms.",
-    description: "Our personal loans provide the financial boost you need, right when you need it.",
-    interestRate: "Attractive rates from 10.75% p.a.",
+    description: "The financial boost you need, right when you need it.",
+    interestRate: "From 10.75% p.a.",
     highlights: [
       "Loans up to ₹25 Lakhs",
       "No collateral required",
-      "Instant approval for pre-qualified customers",
+      "Instant approval for select customers",
     ],
-    festiveOffer: "50% off processing fees for all personal loans.",
+    festiveOffer: "50% off processing fees on all loans.",
   },
   {
     value: "education",
     icon: <GraduationCap className="h-5 w-5" />,
     title: "Education Loan",
     tagline: "Invest in Your Future.",
-    description: "We cover courses in India and abroad with tax benefits under Sec 80E.",
+    description: "Covering courses in India and abroad with tax benefits.",
     interestRate: "Subsidized rates for premier institutes.",
     highlights: [
-      "Covers tuition & living expenses",
-      "Moratorium period after course",
-      "Tax benefits for the borrower",
+      "Covers tuition & living costs",
+      "Moratorium period",
+      "Tax benefits under Sec 80E",
     ],
-    festiveOffer: "Free international student card with every education loan.",
+    festiveOffer: "Free international student card.",
   },
 ];
 
@@ -111,7 +111,7 @@ export function LoanProductsSection() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4 mt-auto pt-6">
-                        <Link href={`/dashboard/loans/apply?type=${loan.value}`} className="w-full sm:w-auto">
+                        <Link href={`/login?redirect=/dashboard/loans/apply?type=${loan.value}`} className="w-full sm:w-auto">
                             <Button size="lg" className="w-full">
                                 Apply Now <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>

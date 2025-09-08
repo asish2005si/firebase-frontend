@@ -195,18 +195,19 @@ export function KycForm() {
       <PersonalDetailsForm key="personal" />,
       <AddressDetailsForm key="address" />,
     ];
-
+    
     if (accountType === 'savings') {
       baseSteps.push(<SavingsAccountDetailsForm key="savings-specific" />);
     } else if (accountType === 'current') {
       baseSteps.push(<CurrentAccountDetailsForm key="current-specific" />);
     }
-
-    baseSteps.push(<ReviewDetailsForm key="review" goTo={goTo} />);
+    
+    baseSteps.push(<ReviewDetailsForm key="review" />);
     baseSteps.push(<OtpVerificationStep key="otp" />);
     
     return baseSteps;
   }, [accountType]);
+
 
   const {
     currentStepIndex,
@@ -253,6 +254,8 @@ export function KycForm() {
         next();
     }
   }
+  
+  const currentStepWithProps = React.cloneElement(step, { goTo });
 
   return (
     <FormProvider {...methods}>
@@ -265,7 +268,7 @@ export function KycForm() {
                     </p>
                 </div>
                 <AnimatePresence mode="wait">
-                    {React.cloneElement(step, { goTo })}
+                    {currentStepWithProps}
                 </AnimatePresence>
                 <div className="mt-8 flex justify-between">
                     {!isFirstStep && (

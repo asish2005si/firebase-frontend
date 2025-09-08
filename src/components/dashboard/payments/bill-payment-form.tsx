@@ -53,7 +53,7 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
     resolver: zodResolver(billPaymentSchema),
     defaultValues: {
       consumerNumber: "",
-      amount: 0,
+      amount: undefined,
     },
   });
 
@@ -76,10 +76,10 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
     });
     form.reset({
       consumerNumber: "",
-      amount: 0,
+      amount: undefined,
+      category: undefined,
+      biller: undefined,
     });
-    form.setValue("category", "");
-    form.setValue("biller", "");
     setIsSubmitting(false);
   }
 

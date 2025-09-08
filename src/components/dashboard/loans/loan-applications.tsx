@@ -35,6 +35,7 @@ const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
+      minimumFractionDigits: 0,
     }).format(amount);
 };
 
@@ -75,7 +76,7 @@ export function LoanApplications({ applications }: LoanApplicationsProps) {
                                     {item.status}
                                 </Badge>
                             </TableCell>
-                            <TableCell className="text-right">{formatCurrency(item.amount)}</TableCell>
+                            <TableCell className="text-right font-semibold">{formatCurrency(item.amount)}</TableCell>
                             <TableCell className="text-right">
                                <Button variant="outline" size="sm">View Details</Button>
                             </TableCell>

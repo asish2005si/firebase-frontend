@@ -35,7 +35,7 @@ export function EmiCalculator({ amount, rate, tenure }: EmiCalculatorProps) {
             (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) /
             (Math.pow(1 + monthlyRate, months) - 1);
         
-        return isNaN(calculatedEmi) ? 0 : calculatedEmi;
+        return isNaN(calculatedEmi) || !isFinite(calculatedEmi) ? 0 : calculatedEmi;
     }, [amount, rate, tenure]);
 
     const totalPayable = emi > 0 ? emi * tenure * 12 : 0;

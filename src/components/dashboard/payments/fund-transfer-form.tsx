@@ -60,7 +60,7 @@ const bankIfscPrefixes: Record<string, string> = {
 const transferSchema = z.object({
   transferType: z.enum(["self", "internal", "other"]),
   recipientName: z.string().min(2, "Recipient name is required."),
-  recipientAccount: z.string().regex(/^\d{12,16}$/, "Invalid account number."),
+  recipientAccount: z.string().regex(/^\d{9,18}$/, "Invalid account number (must be 9-18 digits)."),
   bankName: z.string().optional(),
   ifsc: z.string().optional(),
   amount: z.coerce.number().min(1, "Amount must be at least ₹1."),
@@ -84,7 +84,7 @@ const transferSchema = z.object({
         }
 
         const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
-        if (!ifscRegex.test(data.ifsc)) {
+        if (!ifscRegex.test(data.ifsc.toUpperCase())) {
              ctx.addIssue({
                 code: z.ZodIssueCode.custom,
                 message: "A valid 11-digit IFSC code is required.",
@@ -94,7 +94,7 @@ const transferSchema = z.object({
         }
 
         const selectedBankPrefix = data.bankName ? bankIfscPrefixes[data.bankName] : undefined;
-        if (selectedBankPrefix && !data.ifsc.startsWith(selectedBankPrefix)) {
+        if (selectedBankPrefix && !data.ifsc.toUpperCase().startsWith(selectedBankPrefix)) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
                 message: `IFSC code does not match selected bank. Expected prefix: ${selectedBankPrefix}`,
@@ -122,7 +122,7 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
       recipientAccount: "",
       bankName: "",
       ifsc: "",
-      amount: 0,
+      amount: undefined,
       remarks: "",
     },
   });
@@ -146,12 +146,12 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
     });
 
     form.reset({
-        transferType: values.transferType,
+        transferType: "internal",
         recipientName: "",
         recipientAccount: "",
         bankName: "",
         ifsc: "",
-        amount: 0,
+        amount: undefined,
         remarks: "",
     });
     setIsSubmitting(false);
@@ -251,7 +251,12 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
                             <FormLabel>IFSC Code</FormLabel>
                             <div className="flex gap-2">
                                 <FormControl>
-                                    <Input placeholder="Enter 11-digit IFSC" {...field} disabled={isSubmitting}/>
+                                    <Input 
+                                      placeholder="Enter 11-digit IFSC" 
+                                      {...field}
+                                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                                      disabled={isSubmitting}
+                                    />
                                 </FormControl>
                                 <IfscFinder 
                                     form={form} 

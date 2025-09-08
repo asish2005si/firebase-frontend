@@ -20,7 +20,7 @@ const formatCurrency = (value: number) => {
 }
 
 export function MaturityCalculator({ amount, rate, tenure, maturityAmount }: MaturityCalculatorProps) {
-    const totalInterest = maturityAmount - amount;
+    const totalInterest = maturityAmount > 0 && amount > 0 ? maturityAmount - amount : 0;
 
     return (
         <Card className="bg-muted/50">

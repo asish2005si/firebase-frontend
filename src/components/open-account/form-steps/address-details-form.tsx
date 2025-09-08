@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FormHeader } from "../form-header";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { FileUploadItem } from "../form-steps/personal-details-form";
+import { FileUploadItem } from "./file-upload-item";
 
 
 export function AddressDetailsForm() {

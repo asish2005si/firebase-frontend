@@ -35,7 +35,7 @@ const resetSchema = z.object({
     confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match.",
-    path: ["confirmPassword"], // path of error
+    path: ["confirmPassword"],
 });
 
 
@@ -76,7 +76,7 @@ export default function ForgotPasswordPage() {
         title: "Password Updated",
         description: "Your password has been successfully updated."
     });
-    resetForm.reset({ password: "", confirmPassword: "" });
+    resetForm.reset();
     setIsSubmitting(false);
     router.push("/login");
   }

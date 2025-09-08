@@ -16,10 +16,12 @@ export const FileUploadItem = ({ fieldName, label }: { fieldName: string, label:
     useEffect(() => {
         if (fileList && fileList.length > 0) {
             const file = fileList[0];
-            const objectUrl = URL.createObjectURL(file);
-            setPreview(objectUrl);
+            if (file instanceof File) {
+                const objectUrl = URL.createObjectURL(file);
+                setPreview(objectUrl);
 
-            return () => URL.revokeObjectURL(objectUrl);
+                return () => URL.revokeObjectURL(objectUrl);
+            }
         } else {
             setPreview(null);
         }

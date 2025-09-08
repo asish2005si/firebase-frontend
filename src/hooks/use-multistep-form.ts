@@ -10,7 +10,7 @@ export function useMultistepForm(steps: ReactElement[]) {
     if (currentStepIndex >= validSteps.length) {
       setCurrentStepIndex(validSteps.length > 0 ? validSteps.length - 1 : 0);
     }
-  }, [validSteps.length, currentStepIndex]);
+  }, [validSteps.length]);
 
 
   function next() {

@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -140,6 +141,9 @@ export default function LoginPage() {
                             disabled={isSubmitting}
                             />
                         </FormControl>
+                         <FormDescription>
+                            Password must be at least 8 characters, include a number, and a special character.
+                        </FormDescription>
                         <FormMessage />
                         </FormItem>
                     )}

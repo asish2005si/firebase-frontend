@@ -14,7 +14,7 @@ const DetailItem = ({ label, value }: { label: string; value?: string | number }
     </div>
 );
 
-const DocumentStatusItem = ({ label, fileList }: { label: string; fileList?: FileList | null }) => {
+const FilePreviewItem = ({ label, fileList }: { label: string; fileList?: FileList | null }) => {
     const [preview, setPreview] = useState<string | null>(null);
 
     useEffect(() => {
@@ -24,6 +24,8 @@ const DocumentStatusItem = ({ label, fileList }: { label: string; fileList?: Fil
             setPreview(objectUrl);
 
             return () => URL.revokeObjectURL(objectUrl);
+        } else {
+            setPreview(null)
         }
     }, [fileList]);
 
@@ -105,9 +107,9 @@ export function ReviewStep() {
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
-                    <DocumentStatusItem label="PAN Card" fileList={values.panCard}/>
-                    <DocumentStatusItem label="Aadhaar Card" fileList={values.aadhaarCard}/>
-                    <DocumentStatusItem label="Salary Slip" fileList={values.salarySlip}/>
+                    <FilePreviewItem label="PAN Card" fileList={values.panCard}/>
+                    <FilePreviewItem label="Aadhaar Card" fileList={values.aadhaarCard}/>
+                    <FilePreviewItem label="Salary Slip" fileList={values.salarySlip}/>
                 </div>
                 {values.propertyInfo && <DetailItem label="Property Info" value={values.propertyInfo} />}
                 {values.vehicleDetails && <DetailItem label="Vehicle Details" value={values.vehicleDetails} />}

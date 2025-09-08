@@ -3,7 +3,7 @@
 import { useFormContext } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UploadCloud, FileText, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
@@ -14,21 +14,27 @@ const FileUpload = ({ fieldName, label }: { fieldName: string, label: string }) 
     const fileList = watch(fieldName);
     const [preview, setPreview] = useState<string | null>(null);
 
+    useEffect(() => {
+        if (fileList && fileList.length > 0) {
+            const file = fileList[0];
+            const objectUrl = URL.createObjectURL(file);
+            setPreview(objectUrl);
+
+            return () => URL.revokeObjectURL(objectUrl);
+        } else {
+            setPreview(null);
+        }
+    }, [fileList]);
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             setValue(fieldName, e.target.files, { shouldValidate: true });
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
         }
     };
 
     const removeFile = () => {
         setValue(fieldName, null, { shouldValidate: true });
-        setPreview(null);
     }
     
     return (

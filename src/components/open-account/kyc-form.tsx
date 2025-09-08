@@ -6,7 +6,7 @@ import { z } from "zod";
 import { AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { useMultistepForm } from "@/hooks/use-multistep-form";
 import { AccountTypeSelector } from "./account-type-selector";
@@ -183,6 +183,10 @@ export function KycForm() {
 
   const { steps, currentStepIndex, step: currentStep, isFirstStep, isLastStep, back, next, goTo } = useMultistepForm(formSteps);
 
+  useEffect(() => {
+    goTo(0);
+  }, [accountType]);
+
   // Now, clone the current step and pass the actual goTo function to ReviewDetailsForm
   const step = React.isValidElement(currentStep)
     ? currentStep.type === ReviewDetailsForm
@@ -201,7 +205,7 @@ export function KycForm() {
 
         // For the last step (review step), there are no fields to validate, just proceed to submit.
         if (isLastStep) {
-            methods.handleSubmit(onSubmit)();
+            await methods.handleSubmit(onSubmit)();
             return;
         }
 

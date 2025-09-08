@@ -18,22 +18,16 @@ const FilePreviewItem = ({ label, fileList }: { label: string; fileList: FileLis
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     useEffect(() => {
-        let objectUrl: string | null = null;
         if (fileList && fileList.length > 0) {
             const file = fileList[0];
-            objectUrl = URL.createObjectURL(file);
-            setPreviewUrl(objectUrl);
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+
+            return () => {
+                URL.revokeObjectURL(url);
+            };
         }
-
-        // Cleanup function
-        return () => {
-            if (objectUrl) {
-                URL.revokeObjectURL(objectUrl);
-                setPreviewUrl(null);
-            }
-        };
     }, [fileList]);
-
 
     if (!fileList || fileList.length === 0) {
         return <DetailItem label={label} value="Not uploaded" />;

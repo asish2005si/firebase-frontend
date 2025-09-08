@@ -3,7 +3,6 @@
 
 import { useFormContext } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FormHeader } from "../form-header";
 
@@ -38,19 +37,6 @@ export function SavingsAccountDetailsForm() {
               <FormMessage />
             </FormItem>
           )}
-        />
-        <FormField
-            control={control}
-            name="initialDeposit"
-            render={({ field }) => (
-            <FormItem>
-                <FormLabel>Initial Deposit Amount (₹)</FormLabel>
-                <FormControl>
-                <Input type="number" placeholder="Minimum ₹1,000" {...field} onChange={e => field.onChange(Number(e.target.value))} />
-                </FormControl>
-                <FormMessage />
-            </FormItem>
-            )}
         />
       </div>
     </div>

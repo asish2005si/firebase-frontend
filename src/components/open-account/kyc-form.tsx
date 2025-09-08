@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { SavingsAccountDetailsForm } from "./form-steps/savings-account-details-form";
 import { CurrentAccountDetailsForm } from "./form-steps/current-account-details-form";
+import { ReviewDetailsForm } from "./form-steps/review-details-form";
 
 
 const kycSchema = z.object({
@@ -53,9 +54,6 @@ const kycSchema = z.object({
   businessType: z.enum(["proprietorship", "partnership", "llp", "company"]).optional(),
   gstNumber: z.string().optional(),
 
-  // Deposit
-  initialDeposit: z.coerce.number().optional(),
-
   // Other documents (for other account types, kept optional for now)
   aadhaar: z.any().optional(),
   birthCertificate: z.any().optional(),
@@ -76,12 +74,6 @@ const kycSchema = z.object({
     return true;
 }, { message: "Occupation is required for a Savings Account.", path: ["occupation"]})
 .refine(data => {
-    if (data.accountType === 'savings') {
-        return !!data.initialDeposit && data.initialDeposit >= 1000;
-    }
-    return true;
-}, { message: "Minimum initial deposit is ₹1,000.", path: ["initialDeposit"]})
-.refine(data => {
     if (data.accountType === 'current') {
         return !!data.businessName && data.businessName.length > 2;
     }
@@ -100,12 +92,6 @@ const kycSchema = z.object({
     }
     return true;
 }, { message: "A valid GST Number is required.", path: ["gstNumber"]})
-.refine(data => {
-    if (data.accountType === 'current') {
-        return !!data.initialDeposit && data.initialDeposit >= 5000;
-    }
-    return true;
-}, { message: "Minimum initial deposit is ₹5,000.", path: ["initialDeposit"]})
 .refine(data => {
     if (data.accountType === 'savings' || data.accountType === 'current') {
         const today = new Date();
@@ -126,13 +112,15 @@ const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
         ["accountType"],
         ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo", "nomineeName", "nomineeRelation"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
-        ["occupation", "initialDeposit"],
+        ["occupation"],
+        [], // Review step has no validation
     ],
     current: [
         ["accountType"],
         ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo", "nomineeName", "nomineeRelation"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
-        ["businessName", "businessType", "gstNumber", "initialDeposit"],
+        ["businessName", "businessType", "gstNumber"],
+        [], // Review step has no validation
     ],
 };
 
@@ -166,50 +154,47 @@ export function KycForm() {
         businessName: "",
         businessType: undefined,
         gstNumber: "",
-        initialDeposit: "" as any,
     },
     mode: "onTouched",
   });
   
   const accountType = methods.watch("accountType");
 
-  const formSteps = [
+  const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, goTo } = useMultistepForm([
       <AccountTypeSelector key="accountType" />,
       <PersonalDetailsForm key="personal" />,
       <AddressDetailsForm key="address" />,
-  ];
-
-  if (accountType === 'savings') {
-      formSteps.push(<SavingsAccountDetailsForm key="savings-specific" />)
-  }
-  if (accountType === 'current') {
-      formSteps.push(<CurrentAccountDetailsForm key="current-specific" />)
-  }
-
-
-  const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } = useMultistepForm(formSteps);
+      ...(accountType === 'savings' ? [<SavingsAccountDetailsForm key="savings-specific" />] : []),
+      ...(accountType === 'current' ? [<CurrentAccountDetailsForm key="current-specific" />] : []),
+      <ReviewDetailsForm key="review" goTo={goTo} />,
+  ]);
 
     async function processForm() {
         const fieldGroups = formStepsPerType[accountType || 'savings'];
+        // On the last step (review step), we don't validate, we submit.
+        if (isLastStep) {
+            methods.handleSubmit(onSubmit)();
+            return;
+        }
+
         const currentFields = fieldGroups ? fieldGroups[currentStepIndex] : [];
 
         if (!currentFields || currentFields.length === 0) {
-            if (isLastStep) {
-                methods.handleSubmit(onSubmit)();
-            } else {
-                next();
-            }
+            next();
             return;
         }
         
         const result = await methods.trigger(currentFields as (keyof KycFormData)[]);
         
         if (result) {
-            if (isLastStep) {
-                methods.handleSubmit(onSubmit)();
-            } else {
-                next();
-            }
+            next();
+        }
+    }
+
+    const next = () => {
+        const nextStepIndex = currentStepIndex + 1;
+        if(nextStepIndex < steps.length) {
+            goTo(nextStepIndex);
         }
     }
 

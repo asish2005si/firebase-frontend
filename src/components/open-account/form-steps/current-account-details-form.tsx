@@ -65,19 +65,6 @@ export function CurrentAccountDetailsForm() {
                 </FormItem>
             )}
         />
-        <FormField
-            control={control}
-            name="initialDeposit"
-            render={({ field }) => (
-            <FormItem>
-                <FormLabel>Initial Deposit Amount (₹)</FormLabel>
-                <FormControl>
-                <Input type="number" placeholder="Minimum ₹5,000" {...field} onChange={e => field.onChange(Number(e.target.value))}/>
-                </FormControl>
-                <FormMessage />
-            </FormItem>
-            )}
-        />
       </div>
     </div>
   );

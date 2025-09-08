@@ -1,12 +1,24 @@
 
-import { ReactElement, useState } from "react";
+import { ReactElement, useState, Children, useEffect } from "react";
 
 export function useMultistepForm(steps: ReactElement[]) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
+  // Filter out null/undefined steps that may result from conditional rendering
+  const validSteps = Children.toArray(steps).filter(Boolean) as ReactElement[];
+
+  useEffect(() => {
+    // If the number of steps changes (e.g., due to accountType change),
+    // ensure the currentStepIndex is not out of bounds.
+    if (currentStepIndex >= validSteps.length) {
+      setCurrentStepIndex(validSteps.length - 1);
+    }
+  }, [validSteps.length, currentStepIndex]);
+
+
   function next() {
     setCurrentStepIndex(i => {
-      if (i >= steps.length - 1) return i;
+      if (i >= validSteps.length - 1) return i;
       return i + 1;
     });
   }
@@ -19,15 +31,17 @@ export function useMultistepForm(steps: ReactElement[]) {
   }
 
   function goTo(index: number) {
-    setCurrentStepIndex(index);
+    if (index >= 0 && index < validSteps.length) {
+      setCurrentStepIndex(index);
+    }
   }
 
   return {
     currentStepIndex,
-    step: steps[currentStepIndex],
-    steps,
+    step: validSteps[currentStepIndex],
+    steps: validSteps,
     isFirstStep: currentStepIndex === 0,
-    isLastStep: currentStepIndex === steps.length - 1,
+    isLastStep: currentStepIndex === validSteps.length - 1,
     goTo,
     next,
     back,

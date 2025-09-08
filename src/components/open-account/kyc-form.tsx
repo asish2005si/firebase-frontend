@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { SavingsAccountDetailsForm } from "./form-steps/savings-account-details-form";
 import { CurrentAccountDetailsForm } from "./form-steps/current-account-details-form";
-import { ReviewDetails } from "./form-steps/review-details";
 
 
 const kycSchema = z.object({
@@ -209,7 +208,7 @@ export function KycForm() {
         businessName: "",
         businessType: undefined,
         gstNumber: "",
-        initialDeposit: undefined,
+        initialDeposit: "" as any,
     },
     mode: "onTouched",
   });
@@ -302,5 +301,3 @@ export function KycForm() {
     </FormProvider>
   );
 }
-
-      

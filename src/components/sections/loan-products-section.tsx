@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Download, Home, Car, User, GraduationCap, Star, BadgePercent, Gift } from "lucide-react";
+import { ArrowRight, CheckCircle2, Download, Home, Car, User, GraduationCap, BadgePercent, Gift } from "lucide-react";
 
 const loanProducts = [
   {
@@ -13,18 +13,13 @@ const loanProducts = [
     icon: <Home className="h-5 w-5" />,
     title: "Home Loan",
     tagline: "Your Dream Home, Closer Than Ever.",
-    description: "Our flexible home loans help you buy, build, or renovate. Let us help you turn your dream into an address.",
+    description: "Finance your dream home with our flexible home loans.",
     interestRate: "Starting from 8.5% p.a.",
     highlights: [
       "Flexible tenure up to 30 years",
       "Special rates for women",
       "Quick, minimal documentation",
-      "Top-up loan facility",
     ],
-    testimonial: {
-      text: "Nexus Bank made our dream of owning a home a reality. The process was transparent and supportive.",
-      author: "The Sharma Family",
-    },
     festiveOffer: "Zero processing fees this month!",
   },
   {
@@ -32,18 +27,13 @@ const loanProducts = [
     icon: <Car className="h-5 w-5" />,
     title: "Car Loan",
     tagline: "Get Behind the Wheel, Faster.",
-    description: "Drive home your new car with our attractive loans, offering up to 100% on-road funding and easy repayment.",
+    description: "Drive home your new car with attractive loans and easy repayment.",
     interestRate: "Rates from 9.25% p.a.",
     highlights: [
       "Up to 100% on-road funding",
       "Repayment tenure up to 7 years",
       "Quick disbursal process",
-      "Tie-ups with major dealers",
     ],
-    testimonial: {
-      text: "Our car loan was approved in just a day! The experience was seamless and hassle-free. Highly recommended!",
-      author: "Rohan Singh",
-    },
     festiveOffer: "Free car accessory kit with every loan!",
   },
   {
@@ -51,18 +41,13 @@ const loanProducts = [
     icon: <User className="h-5 w-5" />,
     title: "Personal Loan",
     tagline: "Your Goals, Your Loan, Your Terms.",
-    description: "From weddings to vacations, our personal loans provide the financial boost you need, right when you need it.",
+    description: "Our personal loans provide the financial boost you need, right when you need it.",
     interestRate: "Attractive rates from 10.75% p.a.",
     highlights: [
       "Loans up to ₹25 Lakhs",
       "No collateral required",
       "Instant approval for pre-qualified customers",
-      "Easy 5-year repayment",
     ],
-    testimonial: {
-      text: "I needed funds urgently for an emergency, and Nexus Bank's personal loan came through instantly. Swift support!",
-      author: "Priya Menon",
-    },
     festiveOffer: "50% off processing fees for all personal loans.",
   },
   {
@@ -70,18 +55,13 @@ const loanProducts = [
     icon: <GraduationCap className="h-5 w-5" />,
     title: "Education Loan",
     tagline: "Invest in Your Future.",
-    description: "Don't let finances hold you back. We cover courses in India and abroad with tax benefits under Sec 80E.",
+    description: "We cover courses in India and abroad with tax benefits under Sec 80E.",
     interestRate: "Subsidized rates for premier institutes.",
     highlights: [
       "Covers tuition & living expenses",
       "Moratorium period after course",
       "Tax benefits for the borrower",
-      "Doorstep service and guidance",
     ],
-    testimonial: {
-      text: "Thanks to Nexus Bank, I could pursue my Master's degree in the US without any financial burden on my parents.",
-      author: "Aarav Patel",
-    },
     festiveOffer: "Free international student card with every education loan.",
   },
 ];
@@ -125,18 +105,8 @@ export function LoanProductsSection() {
                             </div>
                         ))}
                     </div>
-                    
-                    <Card className="bg-muted/50 my-4">
-                        <CardContent className="p-4">
-                            <div className="flex items-center text-yellow-500 mb-2">
-                                {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
-                            </div>
-                            <blockquote className="text-sm italic">"{loan.testimonial.text}"</blockquote>
-                            <p className="text-right font-semibold text-primary mt-2">- {loan.testimonial.author}</p>
-                        </CardContent>
-                    </Card>
 
-                    <div className="bg-accent/10 border-l-4 border-accent text-accent-foreground p-3 rounded-r-md text-sm font-semibold flex items-center gap-3">
+                    <div className="bg-accent/10 border-l-4 border-accent text-accent-foreground p-3 rounded-r-md text-sm font-semibold flex items-center gap-3 my-4">
                        <Gift className="h-5 w-5"/> {loan.festiveOffer}
                     </div>
 

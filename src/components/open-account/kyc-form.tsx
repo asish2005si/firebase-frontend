@@ -39,8 +39,6 @@ const kycSchema = z.object({
   nomineeRelation: z.string({ required_error: "Nominee relationship is required." }),
   nomineePan: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format."),
   nomineeAadhaar: z.string().regex(/^\d{12}$/, "Aadhaar must be 12 digits."),
-  nomineeEmail: z.string().email("Invalid email address."),
-  nomineeMobile: z.string().regex(/^\d{10}$/, "Mobile number must be 10 digits."),
 
   // Contact Details
   email: z.string().email("Invalid email address."),
@@ -119,14 +117,14 @@ type KycFormData = z.infer<typeof kycSchema>;
 const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     savings: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "photo", "panCardUpload", "nomineeName", "nomineeRelation", "nomineePan", "nomineeAadhaar", "nomineeEmail", "nomineeMobile"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "photo", "panCardUpload", "nomineeName", "nomineeRelation", "nomineePan", "nomineeAadhaar"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof", "aadhaarCardUpload"],
         ["occupation"],
         [], // Review step has no validation
     ],
     current: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "photo", "panCardUpload", "nomineeName", "nomineeRelation", "nomineePan", "nomineeAadhaar", "nomineeEmail", "nomineeMobile"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "photo", "panCardUpload", "nomineeName", "nomineeRelation", "nomineePan", "nomineeAadhaar"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof", "aadhaarCardUpload"],
         ["businessName", "businessType", "gstNumber"],
         [], // Review step has no validation
@@ -165,8 +163,6 @@ export function KycForm() {
         nomineeRelation: "",
         nomineePan: "",
         nomineeAadhaar: "",
-        nomineeEmail: "",
-        nomineeMobile: "",
         businessName: "",
         businessType: undefined,
         gstNumber: "",

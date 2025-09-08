@@ -19,19 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 const relationTypes = ["Spouse", "Son", "Daughter", "Father", "Mother", "Brother", "Sister", "Other"];
 
 export function PersonalDetailsForm() {
-  const { control, trigger } = useFormContext();
-  const { toast } = useToast();
-
-  const handleOtp = async (field: 'nomineeEmail' | 'nomineeMobile') => {
-      const result = await trigger(field);
-      if (result) {
-          toast({
-            title: "OTP Sent (Simulation)",
-            description: `An OTP has been sent to the nominee's ${field === 'nomineeEmail' ? 'email' : 'mobile'}.`
-          })
-      }
-  }
-
+  const { control } = useFormContext();
 
   return (
     <div>
@@ -251,40 +239,6 @@ export function PersonalDetailsForm() {
                             <FormControl>
                                 <Input type="text" maxLength={12} placeholder="Enter 12-digit Aadhaar number" {...field} />
                             </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                     <FormField
-                        control={control}
-                        name="nomineeEmail"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Nominee's Email</FormLabel>
-                             <div className="flex gap-2">
-                                <FormControl>
-                                    <Input type="email" placeholder="nominee@example.com" {...field} />
-                                </FormControl>
-                                <Button type="button" variant="outline" onClick={() => handleOtp('nomineeEmail')}>Verify</Button>
-                            </div>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={control}
-                        name="nomineeMobile"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Nominee's Mobile</FormLabel>
-                            <div className="flex gap-2">
-                                <FormControl>
-                                    <Input type="tel" placeholder="9876543210" {...field} />
-                                </FormControl>
-                                <Button type="button" variant="outline" onClick={() => handleOtp('nomineeMobile')}>Verify</Button>
-                            </div>
                             <FormMessage />
                             </FormItem>
                         )}

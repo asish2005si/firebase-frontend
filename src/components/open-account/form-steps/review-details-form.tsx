@@ -118,8 +118,6 @@ export function ReviewDetailsForm({ goTo }: ReviewDetailsFormProps) {
                     <DetailItem label="Relationship" value={values.nomineeRelation} />
                     <DetailItem label="Nominee PAN" value={values.nomineePan} />
                     <DetailItem label="Nominee Aadhaar" value={values.nomineeAadhaar} />
-                    <DetailItem label="Nominee Email" value={values.nomineeEmail} />
-                    <DetailItem label="Nominee Mobile" value={values.nomineeMobile} />
                 </div>
             </ReviewSection>
 

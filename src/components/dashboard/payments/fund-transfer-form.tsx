@@ -142,7 +142,7 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
 
     toast({
         title: "Transfer Successful!",
-        description: `₹${values.amount} has been successfully transferred to ${values.recipientName}.`
+        description: `₹${values.amount.toLocaleString('en-IN')} has been successfully transferred to ${values.recipientName}.`
     });
 
     form.reset({
@@ -273,7 +273,7 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
                   <FormItem>
                     <FormLabel>Amount (₹)</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="0.00" {...field} disabled={isSubmitting}/>
+                      <Input type="number" placeholder="₹ Enter Amount" {...field} disabled={isSubmitting}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

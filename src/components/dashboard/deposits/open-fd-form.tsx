@@ -69,7 +69,7 @@ export function OpenFdForm({ addFd, onFormClose }: OpenFdFormProps) {
     
     toast({
         title: "Fixed Deposit Created!",
-        description: `Your FD of ₹${values.amount} for ${values.tenure} year(s) has been successfully created.`
+        description: `Your FD of ₹${values.amount.toLocaleString('en-IN')} for ${values.tenure} year(s) has been successfully created.`
     });
     onFormClose();
     setIsSubmitting(false);

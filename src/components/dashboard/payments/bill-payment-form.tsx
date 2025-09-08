@@ -72,7 +72,7 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
 
     toast({
         title: "Bill Paid Successfully!",
-        description: `Your payment of ₹${values.amount} for ${values.biller} was successful.`
+        description: `Your payment of ₹${values.amount.toLocaleString('en-IN')} for ${values.biller} was successful.`
     });
     form.reset({
       consumerNumber: "",
@@ -165,7 +165,7 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
                   <FormItem>
                     <FormLabel>Amount (₹)</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="0.00" {...field} disabled={isSubmitting}/>
+                      <Input type="number" placeholder="₹ Enter Amount" {...field} disabled={isSubmitting}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

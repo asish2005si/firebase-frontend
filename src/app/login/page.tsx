@@ -26,9 +26,9 @@ import { ClientOnly } from "@/components/client-only";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
-  password: z.string().min(8, "Password must be at least 8 characters.")
-    .regex(/[0-9]/, "Password must contain at least one number.")
-    .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character."),
+  password: z.string().min(8, "Password must be at least 8 characters long.")
+    .regex(/[0-9]/, "Password must include at least one number.")
+    .regex(/[^a-zA-Z0-9]/, "Password must include at least one special character."),
   role: z.enum(["customer", "admin"], { required_error: "Please select a role." }),
 });
 

@@ -8,6 +8,7 @@ import { FileCheck2, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import { Separator } from "@/components/ui/separator";
 
 const DetailItem = ({ label, value }: { label: string; value?: string | number }) => (
     <div>
@@ -104,12 +105,21 @@ export function ReviewDetailsForm({ goTo }: ReviewDetailsFormProps) {
                     <DetailItem label="Gender" value={values.gender} />
                     <DetailItem label="Marital Status" value={values.maritalStatus} />
                     <DetailItem label="PAN" value={values.panNumber} />
-                    <DetailItem label="Nominee Name" value={values.nomineeName} />
-                    <DetailItem label="Nominee Relationship" value={values.nomineeRelation} />
+                    <DetailItem label="Aadhaar Number" value={values.aadhaarNumber} />
                 </div>
                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
                     <FilePreviewItem label="Photograph" fileList={values.photo} />
                     <FilePreviewItem label="PAN Card" fileList={values.panCardUpload} />
+                </div>
+                <Separator className="my-6" />
+                <h4 className="text-md font-semibold text-primary mb-4">Nominee Details</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <DetailItem label="Nominee Name" value={values.nomineeName} />
+                    <DetailItem label="Relationship" value={values.nomineeRelation} />
+                    <DetailItem label="Nominee PAN" value={values.nomineePan} />
+                    <DetailItem label="Nominee Aadhaar" value={values.nomineeAadhaar} />
+                    <DetailItem label="Nominee Email" value={values.nomineeEmail} />
+                    <DetailItem label="Nominee Mobile" value={values.nomineeMobile} />
                 </div>
             </ReviewSection>
 

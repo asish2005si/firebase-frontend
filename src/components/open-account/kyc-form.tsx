@@ -30,10 +30,17 @@ const kycSchema = z.object({
   gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender."}),
   maritalStatus: z.enum(["single", "married", "divorced", "widowed"], { required_error: "Please select a marital status."}),
   panNumber: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format."),
+  aadhaarNumber: z.string().regex(/^\d{12}$/, "Aadhaar must be 12 digits."),
   photo: z.any().refine(files => files?.length > 0, "Photograph is required."),
   panCardUpload: z.any().refine(files => files?.length > 0, "PAN Card is required."),
+  
+  // Nominee Details
   nomineeName: z.string().min(2, "Nominee name is required."),
   nomineeRelation: z.string({ required_error: "Nominee relationship is required." }),
+  nomineePan: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format."),
+  nomineeAadhaar: z.string().regex(/^\d{12}$/, "Aadhaar must be 12 digits."),
+  nomineeEmail: z.string().email("Invalid email address."),
+  nomineeMobile: z.string().regex(/^\d{10}$/, "Mobile number must be 10 digits."),
 
   // Contact Details
   email: z.string().email("Invalid email address."),
@@ -112,14 +119,14 @@ type KycFormData = z.infer<typeof kycSchema>;
 const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     savings: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo", "nomineeName", "nomineeRelation", "panCardUpload"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "photo", "panCardUpload", "nomineeName", "nomineeRelation", "nomineePan", "nomineeAadhaar", "nomineeEmail", "nomineeMobile"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof", "aadhaarCardUpload"],
         ["occupation"],
         [], // Review step has no validation
     ],
     current: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo", "nomineeName", "nomineeRelation", "panCardUpload"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "photo", "panCardUpload", "nomineeName", "nomineeRelation", "nomineePan", "nomineeAadhaar", "nomineeEmail", "nomineeMobile"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof", "aadhaarCardUpload"],
         ["businessName", "businessType", "gstNumber"],
         [], // Review step has no validation
@@ -140,6 +147,7 @@ export function KycForm() {
         gender: undefined,
         maritalStatus: undefined,
         panNumber: "",
+        aadhaarNumber: "",
         photo: null,
         panCardUpload: null,
         email: "",
@@ -155,6 +163,10 @@ export function KycForm() {
         occupation: "",
         nomineeName: "",
         nomineeRelation: "",
+        nomineePan: "",
+        nomineeAadhaar: "",
+        nomineeEmail: "",
+        nomineeMobile: "",
         businessName: "",
         businessType: undefined,
         gstNumber: "",

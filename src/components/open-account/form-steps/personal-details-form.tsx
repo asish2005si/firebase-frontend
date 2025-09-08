@@ -13,11 +13,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FormHeader } from "../form-header";
 import { FileUploadItem } from "./document-upload-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 
 const relationTypes = ["Spouse", "Son", "Daughter", "Father", "Mother", "Brother", "Sister", "Other"];
 
 export function PersonalDetailsForm() {
-  const { control } = useFormContext();
+  const { control, trigger } = useFormContext();
+  const { toast } = useToast();
+
+  const handleOtp = async (field: 'nomineeEmail' | 'nomineeMobile') => {
+      const result = await trigger(field);
+      if (result) {
+          toast({
+            title: "OTP Sent (Simulation)",
+            description: `An OTP has been sent to the nominee's ${field === 'nomineeEmail' ? 'email' : 'mobile'}.`
+          })
+      }
+  }
+
 
   return (
     <div>
@@ -156,44 +170,127 @@ export function PersonalDetailsForm() {
               )}
             />
         </div>
-         <div className="grid md:grid-cols-2 gap-4">
-            <FormField
+         <FormField
             control={control}
-            name="nomineeName"
+            name="aadhaarNumber"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Nominee Name</FormLabel>
+                <FormLabel>Aadhaar Number</FormLabel>
                 <FormControl>
-                    <Input placeholder="e.g., Jane Doe" {...field} />
+                    <Input type="text" maxLength={12} placeholder="Enter 12-digit Aadhaar number" {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
             )}
-            />
-            <FormField
-            control={control}
-            name="nomineeRelation"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Nominee Relationship</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select relationship" />
-                    </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                         {relationTypes.map(rel => <SelectItem key={rel} value={rel.toLowerCase()}>{rel}</SelectItem>)}
-                    </SelectContent>
-                </Select>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-        </div>
+        />
         <div className="grid md:grid-cols-2 gap-6 pt-4">
             <FileUploadItem fieldName="photo" label="Upload Your Recent Photograph" />
             <FileUploadItem fieldName="panCardUpload" label="Upload Your PAN Card" />
+        </div>
+        
+        <Separator className="my-8" />
+        
+        <div>
+            <h3 className="text-lg font-semibold text-primary mb-4">Nominee Details</h3>
+            <div className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                    <FormField
+                    control={control}
+                    name="nomineeName"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Nominee Name</FormLabel>
+                        <FormControl>
+                            <Input placeholder="e.g., Jane Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={control}
+                    name="nomineeRelation"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Nominee Relationship</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select relationship" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {relationTypes.map(rel => <SelectItem key={rel} value={rel.toLowerCase()}>{rel}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </div>
+                 <div className="grid md:grid-cols-2 gap-4">
+                    <FormField
+                        control={control}
+                        name="nomineePan"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Nominee's PAN Number</FormLabel>
+                            <FormControl>
+                                <Input placeholder="ABCDE1234F" {...field} onChange={(e) => field.onChange(e.target.value.toUpperCase())} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={control}
+                        name="nomineeAadhaar"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Nominee's Aadhaar Number</FormLabel>
+                            <FormControl>
+                                <Input type="text" maxLength={12} placeholder="Enter 12-digit Aadhaar number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                     <FormField
+                        control={control}
+                        name="nomineeEmail"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Nominee's Email</FormLabel>
+                             <div className="flex gap-2">
+                                <FormControl>
+                                    <Input type="email" placeholder="nominee@example.com" {...field} />
+                                </FormControl>
+                                <Button type="button" variant="outline" onClick={() => handleOtp('nomineeEmail')}>Verify</Button>
+                            </div>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={control}
+                        name="nomineeMobile"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Nominee's Mobile</FormLabel>
+                            <div className="flex gap-2">
+                                <FormControl>
+                                    <Input type="tel" placeholder="9876543210" {...field} />
+                                </FormControl>
+                                <Button type="button" variant="outline" onClick={() => handleOtp('nomineeMobile')}>Verify</Button>
+                            </div>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+            </div>
         </div>
       </div>
     </div>

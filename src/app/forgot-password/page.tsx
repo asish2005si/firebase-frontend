@@ -74,8 +74,9 @@ export default function ForgotPasswordPage() {
         title: "Password Updated",
         description: "Your password has been successfully updated."
     });
-    router.push("/login");
     setIsSubmitting(false);
+    resetForm.reset();
+    router.push("/login");
   }
 
   return (

@@ -14,6 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Phone, Mail, MessageSquare, Loader2 } from "lucide-react";
 import { submitSupportTicket } from "@/app/actions";
+import { ClientOnly } from "@/components/client-only";
 
 const faqs = [
   {
@@ -40,7 +41,7 @@ const supportTicketSchema = z.object({
   description: z.string().min(20, "Description must be at least 20 characters long."),
 });
 
-export default function CustomerCarePage() {
+function CustomerCareComponent() {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof supportTicketSchema>>({
@@ -72,7 +73,7 @@ export default function CustomerCarePage() {
   }
 
   return (
-    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8">
       <Card>
         <CardHeader>
           <CardTitle>Customer Care & Support</CardTitle>
@@ -192,5 +193,13 @@ export default function CustomerCarePage() {
         </Card>
       </div>
     </div>
-  );
+  )
+}
+
+export default function CustomerCarePage() {
+    return (
+        <ClientOnly>
+            <CustomerCareComponent />
+        </ClientOnly>
+    )
 }

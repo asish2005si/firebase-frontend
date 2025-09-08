@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { CreditCard, IndianRupee, Star, Calendar, Info } from "lucide-react";
+import { CreditCard, Star, Calendar, Info } from "lucide-react";
 import { creditCardTypes } from "@/lib/card-data";
 
 // Mock data for credit card

@@ -79,7 +79,7 @@ const FileUpload = ({ fieldName, label }: { fieldName: string, label: string }) 
 }
 
 export function DocumentUploadStep() {
-    const { watch } = useFormContext();
+    const { control, watch } = useFormContext();
     const loanType = watch("loanType");
 
     return (
@@ -95,7 +95,7 @@ export function DocumentUploadStep() {
                 
                 {loanType === 'home' && (
                     <FormField
-                        control={watch("control")}
+                        control={control}
                         name="propertyInfo"
                         render={({ field }) => (
                             <FormItem>
@@ -110,7 +110,7 @@ export function DocumentUploadStep() {
                 )}
                  {loanType === 'car' && (
                     <FormField
-                        control={watch("control")}
+                        control={control}
                         name="vehicleDetails"
                         render={({ field }) => (
                             <FormItem>
@@ -125,7 +125,7 @@ export function DocumentUploadStep() {
                 )}
                 {loanType === 'education' && (
                     <FormField
-                        control={watch("control")}
+                        control={control}
                         name="courseDetails"
                         render={({ field }) => (
                             <FormItem>

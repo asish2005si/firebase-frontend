@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, MessageSquare } from "lucide-react";
 import type { ApplicationData } from "@/lib/mock-application-data";
+import { useToast } from "@/hooks/use-toast";
 
 const DetailItem = ({ label, value, isHighlight = false }: { label: string; value?: string | number; isHighlight?: boolean }) => {
     if (!value) return null;
@@ -24,6 +25,15 @@ const formatCurrency = (amount: number) => {
 };
 
 export function StatusDetails({ application }: { application: ApplicationData }) {
+  const { toast } = useToast();
+
+  const handleDownload = () => {
+    toast({
+      title: "Downloading Receipt",
+      description: "Your application receipt PDF is being generated and will download shortly.",
+    });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -51,7 +61,7 @@ export function StatusDetails({ application }: { application: ApplicationData })
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
-            <Button>
+            <Button onClick={handleDownload}>
                 <Download className="mr-2 h-4 w-4" /> Download Receipt (PDF)
             </Button>
             {application.status === 'Rejected' && (

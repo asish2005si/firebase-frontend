@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,13 +21,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ClientOnly } from "@/components/client-only";
+import { Separator } from "@/components/ui/separator";
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address."),
+  username: z.string().min(1, "Username is required."),
   password: z.string().min(1, "Password is required."),
-  role: z.enum(["customer", "admin"], { required_error: "Please select a role." }),
 });
 
 function LoginComponent() {
@@ -41,9 +39,8 @@ function LoginComponent() {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
-      role: "customer",
     },
   });
 
@@ -51,22 +48,15 @@ function LoginComponent() {
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, 1500));
     
+    // In a real app, you'd check credentials. For demo, we'll simulate a successful login.
+    // And for this demo, we won't distinguish between customer/admin for simplicity now.
     const destination = redirectUrl || "/dashboard";
 
-    if (values.role === "admin") {
-      toast({
-        title: "Admin Login Successful",
-        description: "Redirecting to dashboard...",
-      });
-      router.push(destination);
-    } else {
-      toast({
-        title: "OTP Sent",
-        description: "Please check your email for the OTP.",
-      });
-      const otpUrl = `/otp?email=${encodeURIComponent(values.email)}`;
-      router.push(redirectUrl ? `${otpUrl}&redirect=${encodeURIComponent(redirectUrl)}` : otpUrl);
-    }
+    toast({
+      title: "Login Successful",
+      description: "Redirecting to your dashboard...",
+    });
+    router.push(destination);
 
     // Note: isSubmitting is not set back to false because of the navigation
   };
@@ -84,50 +74,28 @@ function LoginComponent() {
         <CardHeader className="text-center">
             <CardTitle className="text-2xl">Welcome Back!</CardTitle>
             <CardDescription>
-            Sign in to access your account.
+            Securely access your account anytime, anywhere.
             </CardDescription>
         </CardHeader>
         <CardContent>
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Role</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
+                 <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Username</FormLabel>
                         <FormControl>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select your role" />
-                        </SelectTrigger>
+                            <Input
+                            placeholder="Enter your username"
+                            {...field}
+                            disabled={isSubmitting}
+                            />
                         </FormControl>
-                        <SelectContent>
-                        <SelectItem value="customer">Customer</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Email Address</FormLabel>
-                    <FormControl>
-                        <Input
-                        type="email"
-                        placeholder="you@example.com"
-                        {...field}
-                        disabled={isSubmitting}
-                        />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
+                        <FormMessage />
+                        </FormItem>
+                    )}
                 />
                 <FormField
                 control={form.control}
@@ -160,14 +128,24 @@ function LoginComponent() {
                 </Button>
             </form>
             </Form>
-            <div className="mt-6 text-center text-sm">
-            New here?{" "}
-            <Link
-                href="/open-account"
-                className="font-medium text-primary hover:underline"
-            >
-                Open an Account
-            </Link>
+            <Separator className="my-6" />
+            <div className="text-center text-sm">
+                <p className="text-muted-foreground">Don't have online access yet?</p>
+                 <Link
+                    href="/register"
+                    className="font-medium text-primary hover:underline"
+                >
+                    Register for Online Banking
+                </Link>
+            </div>
+             <div className="mt-4 text-center text-sm">
+                 <p className="text-muted-foreground">New to Nexus Bank?</p>
+                <Link
+                    href="/open-account"
+                    className="font-medium text-primary hover:underline"
+                >
+                    Open a New Account
+                </Link>
             </div>
         </CardContent>
         </Card>

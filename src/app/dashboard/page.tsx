@@ -75,7 +75,7 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-4">
                     <Link href="/dashboard/payments?tab=transfer">
-                      <Button variant="outline" className="justify-start gap-2 w-full"><span className="font-bold">₹</span>Fund Transfer</Button>
+                      <Button variant="outline" className="justify-start gap-2 w-full"><IndianRupee/>Fund Transfer</Button>
                     </Link>
                     <Link href="/dashboard/payments?tab=bill">
                       <Button variant="outline" className="justify-start gap-2 w-full"><Receipt/>Bill Payments</Button>

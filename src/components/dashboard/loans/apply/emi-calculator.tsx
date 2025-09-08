@@ -64,4 +64,3 @@ export function EmiCalculator({ amount, rate, tenure }: EmiCalculatorProps) {
         </Card>
     );
 }
-

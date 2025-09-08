@@ -58,6 +58,16 @@ const kycSchema = z.object({
 }, {
     message: "Birth Certificate is required for student accounts.",
     path: ["birthCertificate"]
+}).refine(data => {
+    if (data.accountType && data.accountType !== 'student') {
+        const today = new Date();
+        const eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+        return data.dob <= eighteenYearsAgo;
+    }
+    return true;
+}, {
+    message: "You must be at least 18 years old for this account type.",
+    path: ["dob"],
 });
 
 

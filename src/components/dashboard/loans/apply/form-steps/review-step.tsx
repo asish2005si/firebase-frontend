@@ -1,4 +1,3 @@
-
 "use client";
 import { useFormContext } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -72,7 +71,7 @@ export function ReviewStep() {
       <div className="space-y-6">
         <Card>
             <CardHeader>
-                <CardTitle className="text-lg">Loan Details</CardTitle>
+                <CardTitle>Loan Details</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <DetailItem label="Loan Type" value={values.loanType} />
@@ -82,7 +81,7 @@ export function ReviewStep() {
         </Card>
         <Card>
             <CardHeader>
-                <CardTitle className="text-lg">Personal Details</CardTitle>
+                <CardTitle>Personal Details</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
                 <DetailItem label="Full Name" value={values.fullName} />
@@ -93,7 +92,7 @@ export function ReviewStep() {
         </Card>
         <Card>
             <CardHeader>
-                <CardTitle className="text-lg">Employment Details</CardTitle>
+                <CardTitle>Employment Details</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
                 <DetailItem label="Employment Type" value={values.employmentType} />
@@ -103,7 +102,7 @@ export function ReviewStep() {
         </Card>
          <Card>
             <CardHeader>
-                <CardTitle className="text-lg">Documents & Other Info</CardTitle>
+                <CardTitle>Documents & Other Info</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">

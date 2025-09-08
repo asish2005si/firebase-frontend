@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Suspense, useState } from "react";
@@ -70,10 +69,8 @@ function PaymentsComponent() {
 
 export default function PaymentsPage() {
     return (
-        <ClientOnly>
-            <Suspense fallback={<div>Loading...</div>}>
-                <PaymentsComponent />
-            </Suspense>
-        </ClientOnly>
+        <Suspense fallback={<div>Loading...</div>}>
+            <PaymentsComponent />
+        </Suspense>
     )
 }

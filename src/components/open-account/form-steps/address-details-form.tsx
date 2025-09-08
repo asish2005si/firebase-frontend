@@ -1,4 +1,3 @@
-
 "use client";
 import { useFormContext } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -6,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormHeader } from "../form-header";
 import { Textarea } from "@/components/ui/textarea";
-import { FileUploadItem } from "./document-upload-form";
 import { Button } from "@/components/ui/button";
+import { FileUploadItem } from "../form-steps/personal-details-form";
+
 
 export function AddressDetailsForm() {
   const { control, watch, setValue, trigger } = useFormContext();

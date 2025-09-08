@@ -1,4 +1,3 @@
-
 "use client";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,7 +5,7 @@ import { z } from "zod";
 import { AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { useMultistepForm } from "@/hooks/use-multistep-form";
 import { AccountTypeSelector } from "./account-type-selector";
@@ -131,6 +130,23 @@ const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     ],
 };
 
+const getFormSteps = (accountType: string, goTo: (index: number) => void) => {
+    const steps = [
+        <AccountTypeSelector key="accountType" />,
+        <PersonalDetailsForm key="personal" />,
+        <AddressDetailsForm key="address" />,
+    ];
+
+    if (accountType === 'savings') {
+        steps.push(<SavingsAccountDetailsForm key="savings-specific" />);
+    }
+    if (accountType === 'current') {
+        steps.push(<CurrentAccountDetailsForm key="current-specific" />);
+    }
+    steps.push(<ReviewDetailsForm key="review" goTo={goTo} />);
+    return steps;
+};
+
 export function KycForm() {
   const { toast } = useToast();
   const router = useRouter();
@@ -172,27 +188,23 @@ export function KycForm() {
   
   const accountType = methods.watch("accountType");
 
-  const formSteps = [
-    <AccountTypeSelector key="accountType" />,
-    <PersonalDetailsForm key="personal" />,
-    <AddressDetailsForm key="address" />,
-    ...(accountType === 'savings' ? [<SavingsAccountDetailsForm key="savings-specific" />] : []),
-    ...(accountType === 'current' ? [<CurrentAccountDetailsForm key="current-specific" />] : []),
-    <ReviewDetailsForm key="review" goTo={() => {}} />, // Pass a dummy function initially
-  ];
-
-  const { steps, currentStepIndex, step: currentStep, isFirstStep, isLastStep, back, next, goTo } = useMultistepForm(formSteps);
+  const {
+    steps,
+    currentStepIndex,
+    step,
+    isFirstStep,
+    isLastStep,
+    back,
+    next,
+    goTo,
+  } = useMultistepForm(
+    useMemo(() => getFormSteps(accountType, (index) => goTo(index)), [accountType])
+  );
 
   useEffect(() => {
+    // When account type changes, reset the form progress to the first step
     goTo(0);
-  }, [accountType]);
-
-  // Now, clone the current step and pass the actual goTo function to ReviewDetailsForm
-  const step = React.isValidElement(currentStep)
-    ? currentStep.type === ReviewDetailsForm
-      ? React.cloneElement(currentStep, { goTo })
-      : currentStep
-    : null;
+  }, [accountType, goTo]);
 
     async function processForm() {
         const fieldGroups = formStepsPerType[accountType || 'savings'];

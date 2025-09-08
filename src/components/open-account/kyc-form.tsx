@@ -16,6 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { SavingsAccountDetailsForm } from "./form-steps/savings-account-details-form";
+import { CurrentAccountDetailsForm } from "./form-steps/current-account-details-form";
 
 
 const kycSchema = z.object({
@@ -47,6 +48,13 @@ const kycSchema = z.object({
   occupation: z.string().optional(),
   nomineeName: z.string().optional(),
   nomineeRelation: z.string().optional(),
+  
+  // Current Account Specific
+  businessName: z.string().optional(),
+  businessType: z.enum(["proprietorship", "partnership", "llp", "company"]).optional(),
+  gstNumber: z.string().optional(),
+
+  // Deposit
   initialDeposit: z.coerce.number().optional(),
 
   // Other documents (for other account types, kept optional for now)
@@ -87,6 +95,31 @@ const kycSchema = z.object({
     return true;
 }, { message: "Minimum initial deposit is ₹1,000.", path: ["initialDeposit"]})
 .refine(data => {
+    if (data.accountType === 'current') {
+        return !!data.businessName && data.businessName.length > 2;
+    }
+    return true;
+}, { message: "Business name is required.", path: ["businessName"]})
+.refine(data => {
+    if (data.accountType === 'current') {
+        return !!data.businessType;
+    }
+    return true;
+}, { message: "Business type is required.", path: ["businessType"]})
+.refine(data => {
+    if (data.accountType === 'current') {
+        const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+        return !!data.gstNumber && gstRegex.test(data.gstNumber);
+    }
+    return true;
+}, { message: "A valid GST Number is required.", path: ["gstNumber"]})
+.refine(data => {
+    if (data.accountType === 'current') {
+        return !!data.initialDeposit && data.initialDeposit >= 5000;
+    }
+    return true;
+}, { message: "Minimum initial deposit is ₹5,000.", path: ["initialDeposit"]})
+.refine(data => {
     if (data.accountType && data.accountType !== 'student') {
         const today = new Date();
         const eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
@@ -109,12 +142,12 @@ const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
         ["occupation", "nomineeName", "nomineeRelation", "initialDeposit"],
         []
     ],
-    // Define steps for other account types if they differ
     current: [
         ["accountType"],
         ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
-        [] // No specific 4th step for current account in this example
+        ["businessName", "businessType", "gstNumber", "initialDeposit"],
+        []
     ],
     salary: [
         ["accountType"],
@@ -157,6 +190,9 @@ export function KycForm() {
         occupation: "",
         nomineeName: "",
         nomineeRelation: "",
+        businessName: "",
+        businessType: undefined,
+        gstNumber: "",
     },
     mode: "onTouched",
   });
@@ -172,7 +208,9 @@ export function KycForm() {
   if (accountType === 'savings') {
       formSteps.push(<SavingsAccountDetailsForm key="savings-specific" />)
   }
-  // Add other account type specific forms here if needed
+  if (accountType === 'current') {
+      formSteps.push(<CurrentAccountDetailsForm key="current-specific" />)
+  }
   
   formSteps.push(<ReviewDetails key="review" />);
 

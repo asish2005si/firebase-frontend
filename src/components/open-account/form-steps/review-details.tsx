@@ -98,6 +98,19 @@ export function ReviewDetails() {
                     </CardContent>
                 </Card>
             )}
+             {values.accountType === 'current' && (
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg">Current Account Details</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                        <DetailItem label="Business Name" value={values.businessName} />
+                        <DetailItem label="Business Type" value={values.businessType} />
+                        <DetailItem label="GST Number" value={values.gstNumber} />
+                        <DetailItem label="Initial Deposit" value={formatCurrency(values.initialDeposit)} />
+                    </CardContent>
+                </Card>
+            )}
              <Card>
                 <CardHeader>
                     <CardTitle className="text-lg">Contact & Address</CardTitle>

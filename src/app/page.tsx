@@ -7,6 +7,7 @@ import { ContactSection } from "@/components/sections/contact-section";
 import { ClientOnly } from "@/components/client-only";
 import { LoanSection } from "@/components/sections/loan-section";
 import { SmartCardSection } from "@/components/sections/smart-card-section";
+import { ApplicationStatusSection } from "@/components/sections/application-status-section";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
           <OpenAccountSection />
           <LoanSection />
           <SmartCardSection />
+          <ApplicationStatusSection />
           <ContactSection />
         </ClientOnly>
       </main>

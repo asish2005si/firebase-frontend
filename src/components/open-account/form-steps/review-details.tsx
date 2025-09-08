@@ -18,13 +18,20 @@ const FilePreviewItem = ({ label, fileList }: { label: string; fileList: FileLis
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     useEffect(() => {
+        let objectUrl: string | null = null;
         if (fileList && fileList.length > 0) {
             const file = fileList[0];
-            const url = URL.createObjectURL(file);
-            setPreviewUrl(url);
-
-            return () => URL.revokeObjectURL(url);
+            objectUrl = URL.createObjectURL(file);
+            setPreviewUrl(objectUrl);
         }
+
+        // Cleanup function
+        return () => {
+            if (objectUrl) {
+                URL.revokeObjectURL(objectUrl);
+                setPreviewUrl(null);
+            }
+        };
     }, [fileList]);
 
 
@@ -85,7 +92,7 @@ export function ReviewDetails() {
                     <DetailItem label="PAN Number" value={values.panNumber} />
                 </CardContent>
             </Card>
-            {values.accountType === 'savings' && (
+            {(values.accountType === 'savings' || values.accountType === 'salary' || values.accountType === 'student') && (
                  <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">Savings Account Details</CardTitle>
@@ -102,7 +109,7 @@ export function ReviewDetails() {
                  <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">Current Account Details</CardTitle>
-                    </CardHeader>
+                    </Header>
                     <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-6">
                         <DetailItem label="Business Name" value={values.businessName} />
                         <DetailItem label="Business Type" value={values.businessType} />

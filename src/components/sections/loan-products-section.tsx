@@ -121,54 +121,43 @@ export function LoanProductsSection() {
           {loanProducts.map((loan) => (
             <TabsContent key={loan.value} value={loan.value} className="mt-8">
               <Card className="overflow-hidden">
-                <div className="grid md:grid-cols-2">
-                    <div className="relative h-64 md:h-auto">
-                        <Image 
-                            src={loan.visual}
-                            alt={loan.title}
-                            fill
-                            className="object-cover"
-                            data-ai-hint={loan.visualHint}
-                        />
+                <div className="p-8 flex flex-col">
+                    <BadgePercent className="h-8 w-8 text-primary mb-4" />
+                    <h3 className="text-2xl font-bold font-headline text-primary">{loan.tagline}</h3>
+                    <p className="text-muted-foreground mt-2">{loan.description}</p>
+                    
+                    <div className="my-6 space-y-3">
+                        {loan.highlights.map(highlight => (
+                            <div key={highlight} className="flex items-center">
+                                <CheckCircle2 className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                                <span className="text-sm">{highlight}</span>
+                            </div>
+                        ))}
                     </div>
-                    <div className="p-8 flex flex-col">
-                        <BadgePercent className="h-8 w-8 text-primary mb-4" />
-                        <h3 className="text-2xl font-bold font-headline text-primary">{loan.tagline}</h3>
-                        <p className="text-muted-foreground mt-2">{loan.description}</p>
-                        
-                        <div className="my-6 space-y-3">
-                            {loan.highlights.map(highlight => (
-                                <div key={highlight} className="flex items-center">
-                                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                                    <span className="text-sm">{highlight}</span>
-                                </div>
-                            ))}
-                        </div>
-                        
-                        <Card className="bg-muted/50 my-4">
-                            <CardContent className="p-4">
-                                <div className="flex items-center text-yellow-500 mb-2">
-                                    {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
-                                </div>
-                                <blockquote className="text-sm italic">"{loan.testimonial.text}"</blockquote>
-                                <p className="text-right font-semibold text-primary mt-2">- {loan.testimonial.author}</p>
-                            </CardContent>
-                        </Card>
+                    
+                    <Card className="bg-muted/50 my-4">
+                        <CardContent className="p-4">
+                            <div className="flex items-center text-yellow-500 mb-2">
+                                {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
+                            </div>
+                            <blockquote className="text-sm italic">"{loan.testimonial.text}"</blockquote>
+                            <p className="text-right font-semibold text-primary mt-2">- {loan.testimonial.author}</p>
+                        </CardContent>
+                    </Card>
 
-                        <div className="bg-accent/10 border-l-4 border-accent text-accent-foreground p-3 rounded-r-md text-sm font-semibold flex items-center gap-3">
-                           <Gift className="h-5 w-5"/> {loan.festiveOffer}
-                        </div>
+                    <div className="bg-accent/10 border-l-4 border-accent text-accent-foreground p-3 rounded-r-md text-sm font-semibold flex items-center gap-3">
+                       <Gift className="h-5 w-5"/> {loan.festiveOffer}
+                    </div>
 
-                        <div className="flex flex-col sm:flex-row gap-4 mt-auto pt-6">
-                            <Link href={`/dashboard/loans/apply?type=${loan.value}`} className="w-full sm:w-auto">
-                                <Button size="lg" className="w-full">
-                                    Apply Now <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
-                            </Link>
-                            <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                                <Download className="ml-2 h-4 w-4" /> Download Brochure
+                    <div className="flex flex-col sm:flex-row gap-4 mt-auto pt-6">
+                        <Link href={`/dashboard/loans/apply?type=${loan.value}`} className="w-full sm:w-auto">
+                            <Button size="lg" className="w-full">
+                                Apply Now <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
-                        </div>
+                        </Link>
+                        <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                            <Download className="ml-2 h-4 w-4" /> Download Brochure
+                        </Button>
                     </div>
                 </div>
               </Card>

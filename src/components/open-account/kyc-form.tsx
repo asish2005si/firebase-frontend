@@ -6,7 +6,7 @@ import { z } from "zod";
 import { AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import React, { useMemo } from 'react';
+import React, { useMemo, ReactElement } from 'react';
 
 import { useMultistepForm } from "@/hooks/use-multistep-form";
 import { AccountTypeSelector } from "./account-type-selector";
@@ -190,7 +190,7 @@ export function KycForm() {
   const accountType = methods.watch("accountType");
 
   const stepsArray = useMemo(() => {
-    const baseSteps = [
+    const baseSteps: ReactElement[] = [
       <AccountTypeSelector key="accountType" />,
       <PersonalDetailsForm key="personal" />,
       <AddressDetailsForm key="address" />,
@@ -202,8 +202,11 @@ export function KycForm() {
       baseSteps.push(<CurrentAccountDetailsForm key="current-specific" />);
     }
     
-    baseSteps.push(<ReviewDetailsForm key="review" />);
-    baseSteps.push(<OtpVerificationStep key="otp" />);
+    // Add review and OTP steps only if an account type is selected
+    if (accountType) {
+        baseSteps.push(<ReviewDetailsForm key="review" />);
+        baseSteps.push(<OtpVerificationStep key="otp" />);
+    }
     
     return baseSteps;
   }, [accountType]);
@@ -255,17 +258,23 @@ export function KycForm() {
     }
   }
   
-  const currentStepWithProps = React.cloneElement(step, { goTo });
+  // Clone the current step to pass the goTo prop for the review page
+  const currentStepWithProps = React.isValidElement(step) 
+    ? React.cloneElement(step, { goTo: goTo } as { goTo: (index: number) => void }) 
+    : step;
+
 
   return (
     <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
             <div className="max-w-3xl mx-auto p-4 md:p-8 rounded-lg shadow-xl border bg-card">
                 <div className="mb-8">
-                    <Progress value={(currentStepIndex + 1) * (100 / steps.length)} className="mb-2" />
-                    <p className="text-sm text-center text-muted-foreground">
-                        Step {currentStepIndex + 1} of {steps.length}
-                    </p>
+                    <Progress value={steps.length > 0 ? (currentStepIndex + 1) * (100 / steps.length) : 0} className="mb-2" />
+                    {steps.length > 0 && (
+                        <p className="text-sm text-center text-muted-foreground">
+                            Step {currentStepIndex + 1} of {steps.length}
+                        </p>
+                    )}
                 </div>
                 <AnimatePresence mode="wait">
                     {currentStepWithProps}

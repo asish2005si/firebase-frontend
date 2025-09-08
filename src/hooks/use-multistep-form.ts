@@ -4,14 +4,11 @@ import { ReactElement, useState, Children, useEffect } from "react";
 export function useMultistepForm(steps: ReactElement[]) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
-  // Filter out null/undefined steps that may result from conditional rendering
   const validSteps = Children.toArray(steps).filter(Boolean) as ReactElement[];
 
   useEffect(() => {
-    // If the number of steps changes (e.g., due to accountType change),
-    // and the current step becomes invalid, reset to the last valid step.
     if (currentStepIndex >= validSteps.length) {
-      setCurrentStepIndex(validSteps.length - 1);
+      setCurrentStepIndex(validSteps.length > 0 ? validSteps.length - 1 : 0);
     }
   }, [validSteps.length, currentStepIndex]);
 

@@ -145,24 +145,6 @@ const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     ],
 };
 
-const getFormSteps = (accountType: string, goTo: (index: number) => void) => {
-    const steps = [
-        <AccountTypeSelector key="accountType" />,
-        <PersonalDetailsForm key="personal" />,
-        <AddressDetailsForm key="address" />,
-    ];
-
-    if (accountType === 'savings') {
-        steps.push(<SavingsAccountDetailsForm key="savings-specific" />);
-    } else if (accountType === 'current') {
-        steps.push(<CurrentAccountDetailsForm key="current-specific" />);
-    }
-
-    steps.push(<ReviewDetailsForm key="review" goTo={goTo} />);
-    steps.push(<OtpVerificationStep key="otp" />)
-    return steps;
-};
-
 export function KycForm() {
   const { toast } = useToast();
   const router = useRouter();
@@ -208,14 +190,31 @@ export function KycForm() {
   const accountType = methods.watch("accountType");
 
   const {
-    steps,
     currentStepIndex,
+    step,
+    steps,
     isFirstStep,
     isLastStep,
     back,
     next,
     goTo,
-  } = useMultistepForm(getFormSteps(accountType, (index: number) => goTo(index)));
+  } = useMultistepForm(
+    useMemo(() => {
+      const allSteps = [
+        <AccountTypeSelector key="accountType" />,
+        <PersonalDetailsForm key="personal" />,
+        <AddressDetailsForm key="address" />,
+      ];
+      if (accountType === 'savings') {
+        allSteps.push(<SavingsAccountDetailsForm key="savings-specific" />);
+      } else if (accountType === 'current') {
+        allSteps.push(<CurrentAccountDetailsForm key="current-specific" />);
+      }
+      allSteps.push(<ReviewDetailsForm key="review" goTo={goTo} />);
+      allSteps.push(<OtpVerificationStep key="otp" />);
+      return allSteps;
+    }, [accountType, goTo])
+  );
   
   const onSubmit = async (data: KycFormData) => {
       console.log("Form Submitted:", data);
@@ -243,7 +242,11 @@ export function KycForm() {
     const result = await methods.trigger(fieldsToValidate as (keyof KycFormData)[]);
 
     if (result) {
-        next();
+        if (isLastStep) {
+            await methods.handleSubmit(onSubmit)();
+        } else {
+            next();
+        }
     }
   }
 
@@ -258,7 +261,7 @@ export function KycForm() {
                     </p>
                 </div>
                 <AnimatePresence mode="wait">
-                    {steps[currentStepIndex]}
+                    {step}
                 </AnimatePresence>
                 <div className="mt-8 flex justify-between">
                     {!isFirstStep && (
@@ -284,5 +287,3 @@ export function KycForm() {
     </FormProvider>
   );
 }
-
-    

@@ -13,7 +13,7 @@ const loanProducts = [
     icon: <Home className="h-5 w-5" />,
     title: "Home Loan",
     tagline: "Your Dream Home, Closer Than Ever.",
-    description: "Flexible home loans to finance your dream home.",
+    description: "Flexible loans for your dream home.",
     interestRate: "Rates from 8.5% p.a.",
     highlights: [
       "Tenure up to 30 years",
@@ -27,7 +27,7 @@ const loanProducts = [
     icon: <Car className="h-5 w-5" />,
     title: "Car Loan",
     tagline: "Get Behind the Wheel, Faster.",
-    description: "Attractive loans and easy repayment for your new car.",
+    description: "Attractive loans for your new car.",
     interestRate: "Rates from 9.25% p.a.",
     highlights: [
       "Up to 100% on-road funding",
@@ -41,7 +41,7 @@ const loanProducts = [
     icon: <User className="h-5 w-5" />,
     title: "Personal Loan",
     tagline: "Your Goals, Your Loan, Your Terms.",
-    description: "The financial boost you need, right when you need it.",
+    description: "The financial boost you need, right away.",
     interestRate: "From 10.75% p.a.",
     highlights: [
       "Loans up to ₹25 Lakhs",
@@ -55,7 +55,7 @@ const loanProducts = [
     icon: <GraduationCap className="h-5 w-5" />,
     title: "Education Loan",
     tagline: "Invest in Your Future.",
-    description: "Covering courses in India and abroad with tax benefits.",
+    description: "Covering courses in India and abroad.",
     interestRate: "Subsidized rates for premier institutes.",
     highlights: [
       "Covers tuition & living costs",
@@ -116,9 +116,6 @@ export function LoanProductsSection() {
                                 Apply Now <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </Link>
-                        <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                            <Download className="ml-2 h-4 w-4" /> Download Brochure
-                        </Button>
                     </div>
                 </div>
               </Card>

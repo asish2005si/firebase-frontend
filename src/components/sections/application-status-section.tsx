@@ -16,7 +16,7 @@ import { StatusDetails } from "../application-status/status-details";
 import { StatusTimeline } from "../application-status/status-timeline";
 
 const statusSchema = z.object({
-  applicationId: z.string().min(1, "Application ID is required."),
+  applicationId: z.string().regex(/^NX-\d{4}-\d{3}$/, "Invalid Application ID. Expected format: NX-YYYY-XXX"),
 });
 
 export function ApplicationStatusSection() {
@@ -71,7 +71,7 @@ export function ApplicationStatusSection() {
                       <FormItem className="flex-grow">
                         <FormLabel className="sr-only">Application ID</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter Application ID (e.g., SB-2025-001)" {...field} disabled={isLoading}/>
+                          <Input placeholder="Enter Application ID (e.g., NX-2025-001)" {...field} disabled={isLoading}/>
                         </FormControl>
                         <FormMessage />
                       </FormItem>

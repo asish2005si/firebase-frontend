@@ -18,7 +18,7 @@ export type ApplicationData = {
   
 export const mockApplicationData: ApplicationData[] = [
     {
-      applicationId: "SB-2025-001",
+      applicationId: "NX-2025-001",
       accountType: "Savings Account",
       status: "Approved",
       fullName: "Ramesh Kumar",
@@ -33,7 +33,7 @@ export const mockApplicationData: ApplicationData[] = [
       ifscCode: "SBIN0009876",
     },
     {
-      applicationId: "SB-2025-002",
+      applicationId: "NX-2025-002",
       accountType: "Student Account",
       status: "Pending",
       fullName: "Priya Sharma",
@@ -45,7 +45,7 @@ export const mockApplicationData: ApplicationData[] = [
       applicationDate: "10-Sept-2025",
     },
     {
-      applicationId: "SB-2025-003",
+      applicationId: "NX-2025-003",
       accountType: "Current Account",
       status: "Rejected",
       reason: "Invalid GST Number provided. Please contact support to re-apply with a valid GSTIN.",

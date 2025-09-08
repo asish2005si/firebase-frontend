@@ -175,9 +175,14 @@ export function KycForm() {
     const onSubmit = async (data: KycFormData) => {
         console.log("Form Submitted:", data);
         await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        const currentYear = new Date().getFullYear();
+        const randomNumber = Math.floor(Math.random() * 900) + 100; // 100-999
+        const newApplicationId = `NX-${currentYear}-${String(randomNumber).padStart(3, '0')}`;
+        
         toast({
             title: "Application Submitted!",
-            description: "Your application (ID: SB12345) has been submitted for review.",
+            description: `Your application (ID: ${newApplicationId}) has been submitted for review.`,
         });
         router.push("/");
     }

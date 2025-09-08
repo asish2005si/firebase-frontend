@@ -17,7 +17,7 @@ const DetailItem = ({ label, value }: { label: string; value?: string | number }
 );
 
 
-const FilePreviewItem = ({ fileList }: { fileList?: FileList | null }) => {
+const FilePreviewItem = ({ label, fileList }: { label: string; fileList?: FileList | null }) => {
     const [preview, setPreview] = useState<string | null>(null);
 
     useEffect(() => {
@@ -30,25 +30,24 @@ const FilePreviewItem = ({ fileList }: { fileList?: FileList | null }) => {
         }
     }, [fileList]);
 
-    if (!preview) {
-         return (
-            <div className="flex items-center gap-2 mt-1 text-green-600">
-                <FileCheck2 className="h-5 w-5" />
-                <span className="font-medium text-sm">Uploaded</span>
-            </div>
-        )
-    }
-
-    const file = fileList?.[0];
-
     return (
-        <div className="relative w-24 h-24 mt-2">
-            {file && file.type.startsWith("image/") ? (
-                <Image src={preview} alt="Preview" fill style={{ objectFit: 'cover' }} className="rounded-md" />
+         <div>
+            <p className="text-sm text-muted-foreground">{label}</p>
+            {preview ? (
+                 <div className="relative w-24 h-24 mt-2">
+                    {fileList?.[0] && fileList[0].type.startsWith("image/") ? (
+                        <Image src={preview} alt="Preview" fill style={{ objectFit: 'cover' }} className="rounded-md" />
+                    ) : (
+                        <div className="w-full h-full rounded-md bg-muted flex flex-col items-center justify-center p-2 text-center">
+                            <FileCheck2 className="h-6 w-6 text-primary" />
+                            <p className="text-xs font-semibold truncate mt-1">{fileList?.[0]?.name}</p>
+                        </div>
+                    )}
+                </div>
             ) : (
-                <div className="w-full h-full rounded-md bg-muted flex flex-col items-center justify-center p-2 text-center">
-                    <FileCheck2 className="h-6 w-6 text-primary" />
-                    <p className="text-xs font-semibold truncate mt-1">{file?.name}</p>
+                 <div className="flex items-center gap-2 mt-1 text-green-600">
+                    <FileCheck2 className="h-5 w-5" />
+                    <span className="font-medium text-sm">Uploaded</span>
                 </div>
             )}
         </div>
@@ -108,9 +107,9 @@ export function ReviewDetailsForm({ goTo }: ReviewDetailsFormProps) {
                     <DetailItem label="Nominee Name" value={values.nomineeName} />
                     <DetailItem label="Nominee Relationship" value={values.nomineeRelation} />
                 </div>
-                 <div className="mt-4">
-                    <p className="text-sm text-muted-foreground">Photograph</p>
-                    <FilePreviewItem fileList={values.photo} />
+                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                    <FilePreviewItem label="Photograph" fileList={values.photo} />
+                    <FilePreviewItem label="PAN Card" fileList={values.panCardUpload} />
                 </div>
             </ReviewSection>
 
@@ -130,9 +129,9 @@ export function ReviewDetailsForm({ goTo }: ReviewDetailsFormProps) {
                         <DetailItem label="Communication Address" value={values.communicationAddress} />
                     </div>
                  )}
-                 <div className="mt-4">
-                    <p className="text-sm text-muted-foreground">Address Proof</p>
-                    <FilePreviewItem fileList={values.addressProof} />
+                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                    <FilePreviewItem label="Address Proof" fileList={values.addressProof} />
+                     <FilePreviewItem label="Aadhaar Card" fileList={values.aadhaarCardUpload} />
                 </div>
             </ReviewSection>
 

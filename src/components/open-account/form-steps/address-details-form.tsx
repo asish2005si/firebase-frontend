@@ -166,8 +166,9 @@ export function AddressDetailsForm() {
                 )}
             />
         </div>
-         <div className="pt-4">
-            <FileUploadItem fieldName="addressProof" label="Address Proof (e.g., Aadhaar, Electricity Bill, Rent Agreement)"/>
+         <div className="grid md:grid-cols-2 gap-6 pt-4">
+            <FileUploadItem fieldName="addressProof" label="Address Proof (e.g., Electricity Bill, Rent Agreement)"/>
+            <FileUploadItem fieldName="aadhaarCardUpload" label="Upload Your Aadhaar Card"/>
         </div>
       </div>
     </div>

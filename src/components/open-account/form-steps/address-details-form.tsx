@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormHeader } from "../form-header";
 import { Textarea } from "@/components/ui/textarea";
-import { DocumentUploadForm } from "./document-upload-form";
 import { FileUploadItem } from "./document-upload-form";
 
 export function AddressDetailsForm() {

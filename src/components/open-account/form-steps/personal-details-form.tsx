@@ -40,7 +40,7 @@ export function PersonalDetailsForm() {
           name="fatherName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Father&apos;s Name</FormLabel>
+              <FormLabel>Father's Name</FormLabel>
               <FormControl>
                 <Input placeholder="Richard Doe" {...field} />
               </FormControl>

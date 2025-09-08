@@ -126,6 +126,7 @@ export function KycForm() {
         accountType: "",
         fullName: "",
         fatherName: "",
+        dob: undefined,
         gender: undefined,
         maritalStatus: undefined,
         email: "",

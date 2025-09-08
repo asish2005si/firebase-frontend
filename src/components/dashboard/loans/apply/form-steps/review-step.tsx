@@ -4,6 +4,8 @@ import { useFormContext } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { FileCheck2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 
 const DetailItem = ({ label, value }: { label: string; value?: string | number }) => (
     <div>
@@ -12,19 +14,40 @@ const DetailItem = ({ label, value }: { label: string; value?: string | number }
     </div>
 );
 
-const DocumentStatusItem = ({ label, fileList }: { label: string; fileList?: FileList | null }) => (
-    <div>
-        <p className="text-sm text-muted-foreground">{label}</p>
-        {fileList && fileList.length > 0 ? (
-            <div className="flex items-center gap-2 mt-1 text-green-600">
-                <FileCheck2 className="h-5 w-5" />
-                <span className="font-medium text-sm">Uploaded</span>
-            </div>
-        ) : (
-            <p className="font-medium text-destructive text-sm">Not Uploaded</p>
-        )}
-    </div>
-);
+const DocumentStatusItem = ({ label, fileList }: { label: string; fileList?: FileList | null }) => {
+    const [preview, setPreview] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (fileList && fileList.length > 0) {
+            const file = fileList[0];
+            const objectUrl = URL.createObjectURL(file);
+            setPreview(objectUrl);
+
+            return () => URL.revokeObjectURL(objectUrl);
+        }
+    }, [fileList]);
+
+    return (
+        <div>
+            <p className="text-sm text-muted-foreground">{label}</p>
+            {preview ? (
+                 <div className="relative w-24 h-24 mt-2">
+                    {fileList?.[0] && fileList[0].type.startsWith("image/") ? (
+                        <Image src={preview} alt="Preview" fill style={{ objectFit: 'cover' }} className="rounded-md" />
+                    ) : (
+                        <div className="w-full h-full rounded-md bg-muted flex flex-col items-center justify-center p-2 text-center">
+                            <FileCheck2 className="h-6 w-6 text-primary" />
+                            <p className="text-xs font-semibold truncate mt-1">{fileList?.[0]?.name}</p>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                 <p className="font-medium text-destructive text-sm">Not Uploaded</p>
+            )}
+        </div>
+    );
+};
+
 
 const formatCurrency = (value?: number) => {
      if (!value) return "-";

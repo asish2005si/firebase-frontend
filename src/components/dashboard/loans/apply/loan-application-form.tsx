@@ -7,6 +7,7 @@ import { z } from "zod";
 import { AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
+import React from "react";
 
 import { useMultistepForm } from "@/hooks/use-multistep-form";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import { EmploymentDetailsStep } from "./form-steps/employment-details-step";
 import { DocumentUploadStep } from "./form-steps/document-upload-step";
 import { ReviewStep } from "./form-steps/review-step";
 import { useEffect } from "react";
+import { ClientOnly } from "@/components/client-only";
 
 const loanApplicationSchema = z.object({
     loanType: z.enum(["home", "personal", "car", "education"]),
@@ -88,7 +90,7 @@ const loanConfig = {
 }
 
 
-export function LoanApplicationForm() {
+function LoanApplicationFormComponent() {
     const { toast } = useToast();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -140,7 +142,7 @@ export function LoanApplicationForm() {
             console.error("Invalid loan type:", loanType);
             return;
         }
-        const fieldsToValidate = fieldGroups.slice(0, currentStepIndex + 1).flat();
+        const fieldsToValidate = fieldGroups[currentStepIndex];
         const result = await methods.trigger(fieldsToValidate as (keyof LoanFormData)[]);
         if (result) {
             next();
@@ -186,4 +188,12 @@ export function LoanApplicationForm() {
             </form>
         </FormProvider>
     );
+}
+
+export function LoanApplicationForm() {
+    return (
+        <ClientOnly>
+            <LoanApplicationFormComponent />
+        </ClientOnly>
+    )
 }

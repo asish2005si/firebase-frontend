@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Mail, Phone, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ClientOnly } from "../client-only";
 
 type Customer = {
     fullName: string;
@@ -22,7 +23,9 @@ export function CustomerProfile({ customer }: CustomerProfileProps) {
                 <CardTitle className="text-xl font-headline">Welcome back, {customer.fullName || 'Customer'}!</CardTitle>
                 <CardDescription>Here’s a summary of your profile information.</CardDescription>
             </div>
-            <p className="text-sm text-muted-foreground">Last Login: {new Date().toLocaleString()}</p>
+            <ClientOnly>
+                <p className="text-sm text-muted-foreground">Last Login: {new Date().toLocaleString()}</p>
+            </ClientOnly>
         </CardHeader>
         <CardContent className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 pt-2">
             <DetailItem label="Full Name" value={customer.fullName} />

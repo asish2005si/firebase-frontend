@@ -160,7 +160,7 @@ export function KycForm() {
   
   const accountType = methods.watch("accountType");
 
-  const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, goTo } = useMultistepForm([
+  const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next, goTo } = useMultistepForm([
       <AccountTypeSelector key="accountType" />,
       <PersonalDetailsForm key="personal" />,
       <AddressDetailsForm key="address" />,
@@ -171,30 +171,24 @@ export function KycForm() {
 
     async function processForm() {
         const fieldGroups = formStepsPerType[accountType || 'savings'];
-        // On the last step (review step), we don't validate, we submit.
+        if (!fieldGroups) {
+            // Handle case where accountType is not set, though the UI should prevent this.
+            return;
+        }
+
+        const fieldsToValidate = fieldGroups[currentStepIndex];
+
+        // For the last step (review step), there are no fields to validate, just proceed to submit.
         if (isLastStep) {
             methods.handleSubmit(onSubmit)();
             return;
         }
 
-        const currentFields = fieldGroups ? fieldGroups[currentStepIndex] : [];
+        // For other steps, validate the fields for the current step.
+        const result = await methods.trigger(fieldsToValidate as (keyof KycFormData)[]);
 
-        if (!currentFields || currentFields.length === 0) {
-            next();
-            return;
-        }
-        
-        const result = await methods.trigger(currentFields as (keyof KycFormData)[]);
-        
         if (result) {
             next();
-        }
-    }
-
-    const next = () => {
-        const nextStepIndex = currentStepIndex + 1;
-        if(nextStepIndex < steps.length) {
-            goTo(nextStepIndex);
         }
     }
 
@@ -202,13 +196,15 @@ export function KycForm() {
         console.log("Form Submitted:", data);
         await new Promise(resolve => setTimeout(resolve, 2000));
         
+        // In a real application, you would make an API call here to get the next sequential ID.
+        // For this demo, we'll simulate it with a random number.
         const currentYear = new Date().getFullYear();
-        const randomNumber = Math.floor(Math.random() * 900) + 100; // 100-999
-        const newApplicationId = `NX-${currentYear}-${String(randomNumber).padStart(3, '0')}`;
+        const sequentialNumber = Math.floor(Math.random() * 900) + 100; // Simulates a new sequential number (e.g., 101, 102...)
+        const newApplicationId = `NX-${currentYear}-${String(sequentialNumber).padStart(3, '0')}`;
         
         toast({
             title: "Application Submitted!",
-            description: `Your application (ID: ${newApplicationId}) has been submitted for review.`,
+            description: `Your application (ID: ${newApplicationId}) has been submitted for review. You can use this ID to track its status.`,
         });
         router.push("/");
     }

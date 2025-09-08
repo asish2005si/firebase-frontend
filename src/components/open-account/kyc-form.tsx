@@ -189,6 +189,25 @@ export function KycForm() {
   
   const accountType = methods.watch("accountType");
 
+  const stepsArray = useMemo(() => {
+    const baseSteps = [
+      <AccountTypeSelector key="accountType" />,
+      <PersonalDetailsForm key="personal" />,
+      <AddressDetailsForm key="address" />,
+    ];
+
+    if (accountType === 'savings') {
+      baseSteps.push(<SavingsAccountDetailsForm key="savings-specific" />);
+    } else if (accountType === 'current') {
+      baseSteps.push(<CurrentAccountDetailsForm key="current-specific" />);
+    }
+
+    baseSteps.push(<ReviewDetailsForm key="review" goTo={goTo} />);
+    baseSteps.push(<OtpVerificationStep key="otp" />);
+    
+    return baseSteps;
+  }, [accountType]);
+
   const {
     currentStepIndex,
     step,
@@ -198,24 +217,8 @@ export function KycForm() {
     back,
     next,
     goTo,
-  } = useMultistepForm(
-    useMemo(() => {
-      const allSteps = [
-        <AccountTypeSelector key="accountType" />,
-        <PersonalDetailsForm key="personal" />,
-        <AddressDetailsForm key="address" />,
-      ];
-      if (accountType === 'savings') {
-        allSteps.push(<SavingsAccountDetailsForm key="savings-specific" />);
-      } else if (accountType === 'current') {
-        allSteps.push(<CurrentAccountDetailsForm key="current-specific" />);
-      }
-      allSteps.push(<ReviewDetailsForm key="review" goTo={goTo} />);
-      allSteps.push(<OtpVerificationStep key="otp" />);
-      return allSteps;
-    }, [accountType, goTo])
-  );
-  
+  } = useMultistepForm(stepsArray);
+
   const onSubmit = async (data: KycFormData) => {
       console.log("Form Submitted:", data);
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -239,14 +242,15 @@ export function KycForm() {
     }
 
     const fieldsToValidate = fieldGroups[currentStepIndex];
+    if (fieldsToValidate.length === 0) { // For review step
+        next();
+        return;
+    }
+
     const result = await methods.trigger(fieldsToValidate as (keyof KycFormData)[]);
 
     if (result) {
-        if (isLastStep) {
-            await methods.handleSubmit(onSubmit)();
-        } else {
-            next();
-        }
+        next();
     }
   }
 
@@ -261,7 +265,7 @@ export function KycForm() {
                     </p>
                 </div>
                 <AnimatePresence mode="wait">
-                    {step}
+                    {React.cloneElement(step, { goTo })}
                 </AnimatePresence>
                 <div className="mt-8 flex justify-between">
                     {!isFirstStep && (
@@ -271,16 +275,23 @@ export function KycForm() {
                     )}
                     <div className="flex-grow"></div>
                     
-                    <Button 
-                      type={isLastStep ? "submit" : "button"} 
-                      onClick={isLastStep ? undefined : handleNextStep}
-                      disabled={methods.formState.isSubmitting || (isFirstStep && !accountType)}
-                    >
-                        {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {isLastStep 
-                            ? (methods.formState.isSubmitting ? "Verifying & Submitting..." : "Verify & Submit")
-                            : "Next Step"}
-                    </Button>
+                    {!isLastStep ? (
+                       <Button 
+                          type="button" 
+                          onClick={handleNextStep}
+                          disabled={methods.formState.isSubmitting || (isFirstStep && !accountType)}
+                        >
+                            Next Step
+                        </Button>
+                    ) : (
+                        <Button 
+                          type="submit" 
+                          disabled={methods.formState.isSubmitting}
+                        >
+                            {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {methods.formState.isSubmitting ? "Verifying & Submitting..." : "Verify & Submit"}
+                        </Button>
+                    )}
                 </div>
             </div>
         </form>

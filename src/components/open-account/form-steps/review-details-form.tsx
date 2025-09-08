@@ -17,6 +17,16 @@ const DetailItem = ({ label, value }: { label: string; value?: string | number }
     </div>
 );
 
+const formatCurrency = (value?: number) => {
+    if (!value) return "-";
+    const formatted = new Intl.NumberFormat('en-IN', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(value);
+    return `INR ${formatted}`;
+}
+
 
 const FilePreviewItem = ({ label, fileList }: { label: string; fileList?: FileList | null }) => {
     const [preview, setPreview] = useState<string | null>(null);
@@ -108,6 +118,7 @@ export function ReviewDetailsForm({ goTo }: ReviewDetailsFormProps) {
                     <DetailItem label="Marital Status" value={values.maritalStatus} />
                     <DetailItem label="PAN" value={values.panNumber} />
                     <DetailItem label="Aadhaar Number" value={values.aadhaarNumber} />
+                    <DetailItem label="Initial Deposit" value={formatCurrency(values.initialDeposit)} />
                 </div>
                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
                     <FilePreviewItem label="Photograph" fileList={values.photo} />
@@ -118,6 +129,7 @@ export function ReviewDetailsForm({ goTo }: ReviewDetailsFormProps) {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <DetailItem label="Nominee Name" value={values.nomineeName} />
                     <DetailItem label="Relationship" value={values.nomineeRelation} />
+                    <DetailItem label="Nominee DOB" value={values.nomineeDob ? format(values.nomineeDob, "PPP") : "-"} />
                     <DetailItem label="Nominee PAN" value={values.nomineePan} />
                     <DetailItem label="Nominee Aadhaar" value={values.nomineeAadhaar} />
                 </div>
@@ -164,3 +176,5 @@ export function ReviewDetailsForm({ goTo }: ReviewDetailsFormProps) {
     </div>
   );
 }
+
+    

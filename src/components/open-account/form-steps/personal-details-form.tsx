@@ -1,3 +1,4 @@
+
 "use client";
 import { useFormContext } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -156,19 +157,34 @@ export function PersonalDetailsForm() {
               )}
             />
         </div>
-         <FormField
-            control={control}
-            name="aadhaarNumber"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Aadhaar Number</FormLabel>
-                <FormControl>
-                    <Input type="text" maxLength={12} placeholder="Enter 12-digit Aadhaar number" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-        />
+        <div className="grid md:grid-cols-2 gap-4">
+            <FormField
+                control={control}
+                name="aadhaarNumber"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Aadhaar Number</FormLabel>
+                    <FormControl>
+                        <Input type="text" maxLength={12} placeholder="Enter 12-digit Aadhaar number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+            />
+             <FormField
+                control={control}
+                name="initialDeposit"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Initial Deposit</FormLabel>
+                    <FormControl>
+                        <Input type="number" placeholder="e.g. 5000" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+            />
+        </div>
         <div className="grid md:grid-cols-2 gap-6 pt-4">
             <FileUploadItem fieldName="photo" label="Upload Your Recent Photograph" />
             <FileUploadItem fieldName="panCardUpload" label="Upload Your PAN Card" />
@@ -214,13 +230,50 @@ export function PersonalDetailsForm() {
                     )}
                     />
                 </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                     <FormField
+                        control={control}
+                        name="nomineeDob"
+                        render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                            <FormLabel>Nominee Date of Birth</FormLabel>
+                            <Popover>
+                            <PopoverTrigger asChild>
+                                <FormControl>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                    "w-full pl-3 text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                    )}
+                                >
+                                    {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                                </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                                initialFocus
+                                />
+                            </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                </div>
                  <div className="grid md:grid-cols-2 gap-4">
                     <FormField
                         control={control}
                         name="nomineePan"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel>Nominee's PAN Number</FormLabel>
+                            <FormLabel>Nominee's PAN (Optional)</FormLabel>
                             <FormControl>
                                 <Input placeholder="ABCDE1234F" {...field} onChange={(e) => field.onChange(e.target.value.toUpperCase())} />
                             </FormControl>
@@ -233,7 +286,7 @@ export function PersonalDetailsForm() {
                         name="nomineeAadhaar"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel>Nominee's Aadhaar Number</FormLabel>
+                            <FormLabel>Nominee's Aadhaar (Optional)</FormLabel>
                             <FormControl>
                                 <Input type="text" maxLength={12} placeholder="Enter 12-digit Aadhaar number" {...field} />
                             </FormControl>
@@ -248,3 +301,5 @@ export function PersonalDetailsForm() {
     </div>
   );
 }
+
+    

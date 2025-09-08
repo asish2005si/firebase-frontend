@@ -6,7 +6,7 @@ import { z } from "zod";
 import { AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 
 import { useMultistepForm } from "@/hooks/use-multistep-form";
 import { AccountTypeSelector } from "./account-type-selector";
@@ -18,6 +18,7 @@ import { Loader2 } from "lucide-react";
 import { SavingsAccountDetailsForm } from "./form-steps/savings-account-details-form";
 import { CurrentAccountDetailsForm } from "./form-steps/current-account-details-form";
 import { ReviewDetailsForm } from "./form-steps/review-details-form";
+import { OtpVerificationStep } from "./form-steps/otp-verification-step";
 
 
 const kycSchema = z.object({
@@ -31,14 +32,16 @@ const kycSchema = z.object({
   maritalStatus: z.enum(["single", "married", "divorced", "widowed"], { required_error: "Please select a marital status."}),
   panNumber: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format."),
   aadhaarNumber: z.string().regex(/^\d{12}$/, "Aadhaar must be 12 digits."),
+  initialDeposit: z.coerce.number().min(1000, "Minimum initial deposit is INR 1,000."),
   photo: z.any().refine(files => files?.length > 0, "Photograph is required."),
   panCardUpload: z.any().refine(files => files?.length > 0, "PAN Card is required."),
   
   // Nominee Details
   nomineeName: z.string().min(2, "Nominee name is required."),
   nomineeRelation: z.string({ required_error: "Nominee relationship is required." }),
-  nomineePan: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format."),
-  nomineeAadhaar: z.string().regex(/^\d{12}$/, "Aadhaar must be 12 digits."),
+  nomineeDob: z.date({ required_error: "Nominee date of birth is required."}),
+  nomineePan: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format.").optional().or(z.literal('')),
+  nomineeAadhaar: z.string().regex(/^\d{12}$/, "Aadhaar must be 12 digits.").optional().or(z.literal('')),
 
   // Contact Details
   email: z.string().email("Invalid email address."),
@@ -61,6 +64,9 @@ const kycSchema = z.object({
   businessName: z.string().optional(),
   businessType: z.enum(["proprietorship", "partnership", "llp", "company"]).optional(),
   gstNumber: z.string().optional(),
+
+  // OTP
+  otp: z.string().optional(),
 
 }).refine(data => {
     if (!data.isSameAddress) {
@@ -105,6 +111,16 @@ const kycSchema = z.object({
 }, {
     message: "You must be at least 18 years old for this account type.",
     path: ["dob"],
+})
+.refine(data => {
+    // This is the final check before submission, so we validate OTP here
+    if (data.accountType) { // This check should happen on the last step
+        return !!data.otp && data.otp.length === 6;
+    }
+    return true;
+}, {
+    message: "A valid 6-digit OTP is required.",
+    path: ["otp"]
 });
 
 
@@ -113,21 +129,23 @@ type KycFormData = z.infer<typeof kycSchema>;
 const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     savings: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "photo", "panCardUpload", "nomineeName", "nomineeRelation", "nomineePan", "nomineeAadhaar"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "initialDeposit", "photo", "panCardUpload", "nomineeName", "nomineeRelation", "nomineeDob", "nomineePan", "nomineeAadhaar"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof", "aadhaarCardUpload"],
         ["occupation"],
         [], // Review step has no validation
+        ["otp"], // OTP step validation
     ],
     current: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "photo", "panCardUpload", "nomineeName", "nomineeRelation", "nomineePan", "nomineeAadhaar"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "initialDeposit", "photo", "panCardUpload", "nomineeName", "nomineeRelation", "nomineeDob", "nomineePan", "nomineeAadhaar"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof", "aadhaarCardUpload"],
         ["businessName", "businessType", "gstNumber"],
         [], // Review step has no validation
+        ["otp"], // OTP step validation
     ],
 };
 
-const getFormSteps = (accountType: string) => {
+const getFormSteps = (accountType: string, goTo: (index: number) => void) => {
     const steps = [
         <AccountTypeSelector key="accountType" />,
         <PersonalDetailsForm key="personal" />,
@@ -140,7 +158,8 @@ const getFormSteps = (accountType: string) => {
         steps.push(<CurrentAccountDetailsForm key="current-specific" />);
     }
 
-    steps.push(<ReviewDetailsForm key="review" />);
+    steps.push(<ReviewDetailsForm key="review" goTo={goTo} />);
+    steps.push(<OtpVerificationStep key="otp" />)
     return steps;
 };
 
@@ -159,6 +178,7 @@ export function KycForm() {
         maritalStatus: undefined,
         panNumber: "",
         aadhaarNumber: "",
+        initialDeposit: 1000,
         photo: null,
         panCardUpload: null,
         email: "",
@@ -174,18 +194,18 @@ export function KycForm() {
         occupation: "",
         nomineeName: "",
         nomineeRelation: "",
+        nomineeDob: undefined,
         nomineePan: "",
         nomineeAadhaar: "",
         businessName: "",
         businessType: undefined,
         gstNumber: "",
+        otp: "",
     },
     mode: "onTouched",
   });
   
   const accountType = methods.watch("accountType");
-
-  const formSteps = useMemo(() => getFormSteps(accountType), [accountType]);
 
   const {
     steps,
@@ -195,22 +215,8 @@ export function KycForm() {
     back,
     next,
     goTo,
-  } = useMultistepForm(formSteps);
-
-  const currentStepComponent = useMemo(() => {
-    const step = steps[currentStepIndex];
-    if (React.isValidElement(step) && step.type === ReviewDetailsForm) {
-      return React.cloneElement(step, { goTo });
-    }
-    return step;
-  }, [currentStepIndex, steps, goTo]);
-
-  useEffect(() => {
-    // Reset the form step to the beginning when account type changes
-    // This prevents validation issues with stale data from the previous flow
-    goTo(0);
-  }, [accountType, goTo]);
-
+  } = useMultistepForm(getFormSteps(accountType, (index: number) => goTo(index)));
+  
   const onSubmit = async (data: KycFormData) => {
       console.log("Form Submitted:", data);
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -252,7 +258,7 @@ export function KycForm() {
                     </p>
                 </div>
                 <AnimatePresence mode="wait">
-                    {currentStepComponent}
+                    {steps[currentStepIndex]}
                 </AnimatePresence>
                 <div className="mt-8 flex justify-between">
                     {!isFirstStep && (
@@ -264,12 +270,12 @@ export function KycForm() {
                     
                     <Button 
                       type={isLastStep ? "submit" : "button"} 
-                      onClick={isLastStep ? methods.handleSubmit(onSubmit) : handleNextStep}
+                      onClick={isLastStep ? undefined : handleNextStep}
                       disabled={methods.formState.isSubmitting || (isFirstStep && !accountType)}
                     >
                         {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         {isLastStep 
-                            ? (methods.formState.isSubmitting ? "Submitting..." : "Submit Application")
+                            ? (methods.formState.isSubmitting ? "Verifying & Submitting..." : "Verify & Submit")
                             : "Next Step"}
                     </Button>
                 </div>
@@ -278,3 +284,5 @@ export function KycForm() {
     </FormProvider>
   );
 }
+
+    

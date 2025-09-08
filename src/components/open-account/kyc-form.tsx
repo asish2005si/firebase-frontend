@@ -11,7 +11,6 @@ import { useMultistepForm } from "@/hooks/use-multistep-form";
 import { AccountTypeSelector } from "./account-type-selector";
 import { PersonalDetailsForm } from "./form-steps/personal-details-form";
 import { AddressDetailsForm } from "./form-steps/address-details-form";
-import { ReviewDetails } from "./form-steps/review-details";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -158,28 +157,24 @@ const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
         ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
         ["occupation", "nomineeName", "nomineeRelation", "initialDeposit"],
-        []
     ],
     current: [
         ["accountType"],
         ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
         ["businessName", "businessType", "gstNumber", "initialDeposit"],
-        []
     ],
     salary: [
         ["accountType"],
         ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
         ["occupation", "nomineeName", "nomineeRelation"],
-        []
     ],
     student: [
         ["accountType"],
         ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
         ["nomineeName", "nomineeRelation"],
-        []
     ],
 };
 
@@ -231,8 +226,6 @@ export function KycForm() {
   if (accountType === 'current') {
       formSteps.push(<CurrentAccountDetailsForm key="current-specific" />)
   }
-  
-  formSteps.push(<ReviewDetails key="review" />);
 
 
   const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } = useMultistepForm(formSteps);
@@ -242,14 +235,22 @@ export function KycForm() {
         const currentFields = fieldGroups ? fieldGroups[currentStepIndex] : [];
 
         if (!currentFields || currentFields.length === 0) {
-            next();
+            if (isLastStep) {
+                methods.handleSubmit(onSubmit)();
+            } else {
+                next();
+            }
             return;
         }
-
+        
         const result = await methods.trigger(currentFields as (keyof KycFormData)[]);
         
         if (result) {
-            next();
+            if (isLastStep) {
+                methods.handleSubmit(onSubmit)();
+            } else {
+                next();
+            }
         }
     }
 
@@ -289,7 +290,7 @@ export function KycForm() {
                     </Button>
                     )}
                     <div className="flex-grow"></div>
-                    <Button type={isLastStep ? "submit" : "button"} onClick={isLastStep ? undefined : processForm} disabled={methods.formState.isSubmitting || (currentStepIndex === 0 && !accountType)}>
+                    <Button type="button" onClick={processForm} disabled={methods.formState.isSubmitting || (currentStepIndex === 0 && !accountType)}>
                         {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         {isLastStep ? (methods.formState.isSubmitting ? "Submitting..." : "Submit Application") : "Next Step"}
                     </Button>
@@ -299,3 +300,5 @@ export function KycForm() {
     </FormProvider>
   );
 }
+
+    

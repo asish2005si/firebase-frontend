@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Phone, Mail, MessageSquare, Loader2 } from "lucide-react";
+import { Phone, Mail, Loader2 } from "lucide-react";
 import { submitSupportTicket } from "@/app/actions";
 import { ClientOnly } from "@/components/client-only";
 
@@ -120,7 +120,7 @@ function CustomerCareComponent() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Query Category</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
+                      <Select onValueChange={field.onChange} value={field.value} disabled={isSubmitting}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select a category" />

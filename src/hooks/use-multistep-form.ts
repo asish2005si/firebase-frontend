@@ -9,7 +9,7 @@ export function useMultistepForm(steps: ReactElement[]) {
 
   useEffect(() => {
     // If the number of steps changes (e.g., due to accountType change),
-    // ensure the currentStepIndex is not out of bounds.
+    // and the current step becomes invalid, reset to the last valid step.
     if (currentStepIndex >= validSteps.length) {
       setCurrentStepIndex(validSteps.length - 1);
     }

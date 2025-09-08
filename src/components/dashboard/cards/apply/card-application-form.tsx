@@ -35,7 +35,7 @@ const cardApplicationSchema = z.object({
 
 type CardFormData = z.infer<typeof cardApplicationSchema>;
 
-const formStepsPerType: Record<string, (keyof CardFormData)[][]> = {
+const formStepsValidation: Record<string, (keyof CardFormData)[][]> = {
     debit: [
         ["cardCategory", "cardType", "fullName"],
         ["consent"],
@@ -74,12 +74,17 @@ export function CardApplicationForm() {
     ]);
 
     async function processForm() {
+        if (isLastStep) {
+            await methods.handleSubmit(onSubmit)();
+            return;
+        }
+
         if (!cardCategory) {
             methods.trigger(["cardCategory"]);
             return;
         }
         
-        const fieldGroups = formStepsPerType[cardCategory];
+        const fieldGroups = formStepsValidation[cardCategory];
         const fieldsToValidate = fieldGroups[currentStepIndex];
         const result = await methods.trigger(fieldsToValidate as (keyof CardFormData)[]);
 
@@ -118,7 +123,7 @@ export function CardApplicationForm() {
                             </Button>
                         )}
                         <div className="flex-grow"></div>
-                        <Button type={isLastStep ? "submit" : "button"} onClick={isLastStep ? undefined : processForm} disabled={methods.formState.isSubmitting || (isFirstStep && !cardCategory)}>
+                        <Button type="button" onClick={processForm} disabled={methods.formState.isSubmitting || (isFirstStep && !cardCategory)}>
                             {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {isLastStep ? (methods.formState.isSubmitting ? "Submitting..." : "Submit Application") : "Next Step"}
                         </Button>

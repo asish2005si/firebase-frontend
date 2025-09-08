@@ -9,7 +9,7 @@ import Image from "next/image";
 import { UploadCloud, X, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const FileUploadItem = ({ fieldName, label }: { fieldName: string, label: string }) => {
+export const FileUploadItem = ({ fieldName, label }: { fieldName: string, label: string }) => {
     const { control, watch, setValue } = useFormContext();
     const fileList = watch(fieldName);
     const [preview, setPreview] = useState<string | null>(null);

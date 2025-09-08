@@ -14,6 +14,8 @@ import { FormHeader } from "../form-header";
 import { FileUploadItem } from "./document-upload-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+const relationTypes = ["Spouse", "Son", "Daughter", "Father", "Mother", "Brother", "Sister", "Other"];
+
 export function PersonalDetailsForm() {
   const { control } = useFormContext();
 
@@ -152,6 +154,41 @@ export function PersonalDetailsForm() {
                   <FormMessage />
                 </FormItem>
               )}
+            />
+        </div>
+         <div className="grid md:grid-cols-2 gap-4">
+            <FormField
+            control={control}
+            name="nomineeName"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Nominee Name</FormLabel>
+                <FormControl>
+                    <Input placeholder="e.g., Jane Doe" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={control}
+            name="nomineeRelation"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Nominee Relationship</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select relationship" />
+                    </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                         {relationTypes.map(rel => <SelectItem key={rel} value={rel.toLowerCase()}>{rel}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+                <FormMessage />
+                </FormItem>
+            )}
             />
         </div>
         <div className="pt-4">

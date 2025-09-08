@@ -29,7 +29,9 @@ const kycSchema = z.object({
   maritalStatus: z.enum(["single", "married", "divorced", "widowed"], { required_error: "Please select a marital status."}),
   panNumber: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format."),
   photo: z.any().refine(files => files?.length > 0, "Photograph is required."),
-  
+  nomineeName: z.string().min(2, "Nominee name is required."),
+  nomineeRelation: z.string({ required_error: "Nominee relationship is required." }),
+
   // Contact Details
   email: z.string().email("Invalid email address."),
   mobile: z.string().regex(/^\d{10}$/, "Mobile number must be 10 digits."),
@@ -45,8 +47,6 @@ const kycSchema = z.object({
 
   // Savings Account Specific
   occupation: z.string().optional(),
-  nomineeName: z.string().optional(),
-  nomineeRelation: z.string().optional(),
   
   // Current Account Specific
   businessName: z.string().optional(),
@@ -75,18 +75,6 @@ const kycSchema = z.object({
     }
     return true;
 }, { message: "Occupation is required for a Savings Account.", path: ["occupation"]})
-.refine(data => {
-    if (data.accountType === 'savings') {
-        return !!data.nomineeName && data.nomineeName.length > 0;
-    }
-    return true;
-}, { message: "Nominee name is required.", path: ["nomineeName"]})
-.refine(data => {
-    if (data.accountType === 'savings') {
-        return !!data.nomineeRelation && data.nomineeRelation.length > 0;
-    }
-    return true;
-}, { message: "Nominee relationship is required.", path: ["nomineeRelation"]})
 .refine(data => {
     if (data.accountType === 'savings') {
         return !!data.initialDeposit && data.initialDeposit >= 1000;
@@ -154,27 +142,27 @@ type KycFormData = z.infer<typeof kycSchema>;
 const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     savings: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo", "nomineeName", "nomineeRelation"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
-        ["occupation", "nomineeName", "nomineeRelation", "initialDeposit"],
+        ["occupation", "initialDeposit"],
     ],
     current: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo", "nomineeName", "nomineeRelation"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
         ["businessName", "businessType", "gstNumber", "initialDeposit"],
     ],
     salary: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo", "nomineeName", "nomineeRelation"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
-        ["occupation", "nomineeName", "nomineeRelation"],
+        ["occupation"],
     ],
     student: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo", "nomineeName", "nomineeRelation"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
-        ["nomineeName", "nomineeRelation"],
+        [],
     ],
 };
 

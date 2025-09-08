@@ -57,11 +57,13 @@ export default function ForgotPasswordPage() {
 
   const onRequestSubmit = async (values: z.infer<typeof requestSchema>) => {
     setIsSubmitting(true);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    
     toast({
         title: "Reset Link Sent",
         description: `A password reset link has been sent to ${values.email}.`
-    })
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    });
     
     setRequestSent(true);
     setIsSubmitting(false);
@@ -75,7 +77,7 @@ export default function ForgotPasswordPage() {
         description: "Your password has been successfully updated."
     });
     setIsSubmitting(false);
-    resetForm.reset();
+    resetForm.reset({ password: "", confirmPassword: "" });
     router.push("/login");
   }
 

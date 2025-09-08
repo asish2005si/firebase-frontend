@@ -10,13 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { CreditCard, IndianRupee, Star, Calendar, Info } from "lucide-react";
+import { creditCardTypes } from "@/lib/card-data";
 
 // Mock data for credit card
 const initialCreditCard = {
     cardNumber: "**** **** **** 5678",
     cardHolder: "Jane Doe",
     expiryDate: "10/29",
-    cardType: "Nexus Rewards Platinum",
+    cardTypeValue: "platinum-credit",
     totalLimit: 200000,
     availableLimit: 150000,
     unbilledAmount: 25000,
@@ -30,7 +31,8 @@ const formatCurrency = (amount: number) => {
 };
 
 export function CreditCardSection() {
-    const [card] = useState(initialCreditCard);
+    const [card, setCard] = useState(initialCreditCard);
+    const cardInfo = creditCardTypes.find(c => c.value === card.cardTypeValue) || creditCardTypes[0];
     const usagePercentage = ((card.totalLimit - card.availableLimit) / card.totalLimit) * 100;
 
     return (
@@ -44,7 +46,7 @@ export function CreditCardSection() {
                     {/* Card Visual */}
                     <div className="p-6 rounded-xl bg-gradient-to-br from-gray-800 via-gray-900 to-black text-white shadow-lg">
                         <div className="flex justify-between items-center mb-4">
-                            <p className="font-bold text-lg">{card.cardType}</p>
+                            <p className="font-bold text-lg">{cardInfo.title}</p>
                             <Star className="w-8 h-8 text-yellow-400" />
                         </div>
                         <p className="font-mono text-xl tracking-widest">{card.cardNumber}</p>

@@ -12,6 +12,7 @@ import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { CreditCard, Lock, Unlock, Settings, Pin, ShieldCheck, Truck, Globe } from "lucide-react";
+import { debitCardTypes } from "@/lib/card-data";
 
 // Mock data for debit card
 const initialDebitCard = {
@@ -23,6 +24,7 @@ const initialDebitCard = {
     isBlocked: false,
     deliveryStatus: "Delivered",
     internationalUsage: false,
+    cardTypeValue: "platinum-debit",
     limits: {
         atm: 25000,
         pos: 50000,
@@ -36,6 +38,7 @@ const formatCurrency = (amount: number) => {
 
 export function DebitCardSection() {
     const [card, setCard] = useState(initialDebitCard);
+    const cardInfo = debitCardTypes.find(c => c.value === card.cardTypeValue) || debitCardTypes[0];
     const { toast } = useToast();
 
     const handleToggleBlock = () => {
@@ -67,8 +70,8 @@ export function DebitCardSection() {
                    {/* Card Visual */}
                     <div className="p-6 rounded-xl bg-gradient-to-tr from-primary to-secondary text-primary-foreground shadow-lg">
                         <div className="flex justify-between items-center mb-4">
+                            <p className="font-bold text-lg">{cardInfo.title}</p>
                             <CreditCard className="w-8 h-8" />
-                            <p className="font-bold text-lg">Nexus Bank</p>
                         </div>
                         <p className="font-mono text-xl tracking-widest">{card.cardNumber}</p>
                         <div className="flex justify-between items-end mt-4">

@@ -2,9 +2,10 @@
 "use client";
 import { useFormContext } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { FormField, FormControl, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+import { FormField, FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
+import { creditCardTypes, debitCardTypes } from "@/lib/card-data";
 
 const DetailItem = ({ label, value }: { label: string; value?: string | number }) => (
     <div>
@@ -17,6 +18,13 @@ const DetailItem = ({ label, value }: { label: string; value?: string | number }
 export function ReviewAndSubmitStep() {
   const { control, getValues } = useFormContext();
   const values = getValues();
+  
+  const getCardTitle = () => {
+    if (values.cardCategory === 'virtual') return "Virtual Card";
+
+    const allCards = [...debitCardTypes, ...creditCardTypes];
+    return allCards.find(card => card.value === values.cardType)?.title || values.cardType;
+  }
 
   return (
     <div>
@@ -30,7 +38,8 @@ export function ReviewAndSubmitStep() {
                 <CardTitle className="text-lg">Application Details</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-                <DetailItem label="Card Type" value={values.cardType} />
+                <DetailItem label="Card Category" value={values.cardCategory} />
+                <DetailItem label="Card Type" value={getCardTitle()} />
                 <DetailItem label="Name on Card" value={values.fullName} />
             </CardContent>
         </Card>

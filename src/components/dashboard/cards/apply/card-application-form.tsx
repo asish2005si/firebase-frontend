@@ -18,24 +18,34 @@ import { ReviewAndSubmitStep } from "./form-steps/review-submit-step";
 
 
 const cardApplicationSchema = z.object({
-    cardType: z.enum(["debit", "credit", "virtual"], { required_error: "Please select a card type." }),
+    cardCategory: z.enum(["debit", "credit", "virtual"], { required_error: "Please select a card category." }),
+    cardType: z.string().optional(),
     fullName: z.string().min(1, "Full name on card is required."),
     consent: z.boolean().refine(val => val === true, { message: "You must agree to the terms and conditions."}),
+}).superRefine((data, ctx) => {
+    if (data.cardCategory !== 'virtual' && !data.cardType) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["cardType"],
+            message: "Please select a specific card type.",
+        });
+    }
 });
+
 
 type CardFormData = z.infer<typeof cardApplicationSchema>;
 
 const formStepsPerType: Record<string, (keyof CardFormData)[][]> = {
     debit: [
-        ["cardType", "fullName"],
+        ["cardCategory", "cardType", "fullName"],
         ["consent"],
     ],
     credit: [
-       ["cardType", "fullName"],
+       ["cardCategory", "cardType", "fullName"],
        ["consent"],
     ],
     virtual: [
-        ["cardType", "fullName"],
+        ["cardCategory", "fullName"],
         ["consent"],
     ],
 };
@@ -48,6 +58,7 @@ export function CardApplicationForm() {
     const methods = useForm<CardFormData>({
         resolver: zodResolver(cardApplicationSchema),
         defaultValues: {
+            cardCategory: undefined,
             cardType: undefined,
             fullName: "Jane Doe", // Pre-fill from user session in a real app
             consent: false,
@@ -55,7 +66,7 @@ export function CardApplicationForm() {
         mode: "onTouched",
     });
 
-    const cardType = methods.watch("cardType");
+    const cardCategory = methods.watch("cardCategory");
     
     const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } = useMultistepForm([
         <SelectCardStep key="select" />,
@@ -63,12 +74,12 @@ export function CardApplicationForm() {
     ]);
 
     async function processForm() {
-        if (!cardType) {
-            methods.trigger(["cardType"]);
+        if (!cardCategory) {
+            methods.trigger(["cardCategory"]);
             return;
         }
         
-        const fieldGroups = formStepsPerType[cardType];
+        const fieldGroups = formStepsPerType[cardCategory];
         const fieldsToValidate = fieldGroups[currentStepIndex];
         const result = await methods.trigger(fieldsToValidate as (keyof CardFormData)[]);
 
@@ -82,7 +93,7 @@ export function CardApplicationForm() {
         await new Promise(resolve => setTimeout(resolve, 2000));
         toast({
             title: "Application Submitted!",
-            description: `Your application for a ${data.cardType} card has been submitted. You will be notified of the status shortly.`,
+            description: `Your application for a ${data.cardType || data.cardCategory} card has been submitted. You will be notified of the status shortly.`,
         });
         router.push("/dashboard/cards");
     };
@@ -90,7 +101,7 @@ export function CardApplicationForm() {
     return (
         <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)}>
-                <div className="max-w-2xl mx-auto p-4 md:p-8 rounded-lg">
+                <div className="max-w-4xl mx-auto p-4 md:p-8 rounded-lg">
                     <div className="mb-8">
                         <Progress value={(currentStepIndex + 1) * (100 / steps.length)} className="mb-2" />
                         <p className="text-sm text-center text-muted-foreground">
@@ -107,7 +118,7 @@ export function CardApplicationForm() {
                             </Button>
                         )}
                         <div className="flex-grow"></div>
-                        <Button type={isLastStep ? "submit" : "button"} onClick={isLastStep ? undefined : processForm} disabled={methods.formState.isSubmitting || (isFirstStep && !cardType)}>
+                        <Button type={isLastStep ? "submit" : "button"} onClick={isLastStep ? undefined : processForm} disabled={methods.formState.isSubmitting || (isFirstStep && !cardCategory)}>
                             {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {isLastStep ? (methods.formState.isSubmitting ? "Submitting..." : "Submit Application") : "Next Step"}
                         </Button>

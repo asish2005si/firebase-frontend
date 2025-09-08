@@ -1,3 +1,4 @@
+
 "use client";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,7 +6,7 @@ import { z } from "zod";
 import { AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { useMultistepForm } from "@/hooks/use-multistep-form";
 import { AccountTypeSelector } from "./account-type-selector";
@@ -60,10 +61,6 @@ const kycSchema = z.object({
   businessName: z.string().optional(),
   businessType: z.enum(["proprietorship", "partnership", "llp", "company"]).optional(),
   gstNumber: z.string().optional(),
-
-  // Other documents (for other account types, kept optional for now)
-  birthCertificate: z.any().optional(),
-
 
 }).refine(data => {
     if (!data.isSameAddress) {
@@ -198,54 +195,37 @@ export function KycForm() {
     next,
     goTo,
   } = useMultistepForm(
-    useMemo(() => getFormSteps(accountType, (index) => goTo(index)), [accountType])
+    useMemo(() => getFormSteps(accountType, goTo), [accountType, goTo])
   );
 
-  useEffect(() => {
-    // When account type changes, reset the form progress to the first step
-    goTo(0);
-  }, [accountType, goTo]);
+  const onSubmit = async (data: KycFormData) => {
+      console.log("Form Submitted:", data);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const currentYear = new Date().getFullYear();
+      const sequentialNumber = Math.floor(Math.random() * 900) + 100;
+      const newApplicationId = `NX-${currentYear}-${String(sequentialNumber).padStart(3, '0')}`;
+      
+      toast({
+          title: "Application Submitted!",
+          description: `Your application (ID: ${newApplicationId}) has been submitted for review. You can use this ID to track its status.`,
+      });
+      router.push("/");
+  }
 
-    async function processForm() {
-        const fieldGroups = formStepsPerType[accountType || 'savings'];
-        if (!fieldGroups) {
-            // Handle case where accountType is not set, though the UI should prevent this.
-            return;
-        }
-
-        const fieldsToValidate = fieldGroups[currentStepIndex];
-
-        // For the last step (review step), there are no fields to validate, just proceed to submit.
-        if (isLastStep) {
-            await methods.handleSubmit(onSubmit)();
-            return;
-        }
-
-        // For other steps, validate the fields for the current step.
-        const result = await methods.trigger(fieldsToValidate as (keyof KycFormData)[]);
-
-        if (result) {
-            next();
-        }
+  async function handleNextStep() {
+    const fieldGroups = formStepsPerType[accountType || 'savings'];
+    if (!fieldGroups) {
+        return;
     }
 
-    const onSubmit = async (data: KycFormData) => {
-        console.log("Form Submitted:", data);
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // In a real application, you would make an API call here to get the next sequential ID.
-        // For this demo, we'll simulate it with a random number.
-        const currentYear = new Date().getFullYear();
-        const sequentialNumber = Math.floor(Math.random() * 900) + 100; // Simulates a new sequential number (e.g., 101, 102...)
-        const newApplicationId = `NX-${currentYear}-${String(sequentialNumber).padStart(3, '0')}`;
-        
-        toast({
-            title: "Application Submitted!",
-            description: `Your application (ID: ${newApplicationId}) has been submitted for review. You can use this ID to track its status.`,
-        });
-        router.push("/");
-    }
+    const fieldsToValidate = fieldGroups[currentStepIndex];
+    const result = await methods.trigger(fieldsToValidate as (keyof KycFormData)[]);
 
+    if (result) {
+        next();
+    }
+  }
 
   return (
     <FormProvider {...methods}>
@@ -267,10 +247,16 @@ export function KycForm() {
                     </Button>
                     )}
                     <div className="flex-grow"></div>
-                    <Button type="button" onClick={processForm} disabled={methods.formState.isSubmitting || (currentStepIndex === 0 && !accountType)}>
-                        {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {isLastStep ? (methods.formState.isSubmitting ? "Submitting..." : "Submit Application") : "Next Step"}
-                    </Button>
+                    {isLastStep ? (
+                       <Button type="submit" disabled={methods.formState.isSubmitting}>
+                         {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                         {methods.formState.isSubmitting ? "Submitting..." : "Submit Application"}
+                       </Button>
+                    ) : (
+                      <Button type="button" onClick={handleNextStep} disabled={methods.formState.isSubmitting || (currentStepIndex === 0 && !accountType)}>
+                        Next Step
+                      </Button>
+                    )}
                 </div>
             </div>
         </form>

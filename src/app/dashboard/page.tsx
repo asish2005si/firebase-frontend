@@ -80,7 +80,9 @@ export default function DashboardPage() {
                     <Link href="/dashboard/payments?tab=bill">
                       <Button variant="outline" className="justify-start gap-2 w-full"><Receipt/>Bill Payments</Button>
                     </Link>
-                    <Button variant="outline" className="justify-start gap-2"><CreditCard/>Card Services</Button>
+                    <Link href="/dashboard/cards">
+                        <Button variant="outline" className="justify-start gap-2"><CreditCard/>Card Services</Button>
+                    </Link>
                     <Button variant="outline" className="justify-start gap-2"><ArrowRight/>Cheque Book Request</Button>
                 </CardContent>
             </Card>

@@ -53,6 +53,7 @@ import { ClientOnly } from "../client-only";
 const navItems = [
     { href: "/dashboard", icon: CircleUser, label: "My Accounts & Profile" },
     { href: "/dashboard/payments", icon: Banknote, label: "Payments / Transfers" },
+    { href: "/dashboard/cards", icon: CreditCard, label: "Card Services" },
     { href: "/dashboard/deposits", icon: PiggyBank, label: "Deposit & Investment" },
     { href: "/dashboard/statements", icon: ListOrdered, label: "Statements" },
     { href: "/dashboard/loans", icon: BadgeIndianRupee, label: "Loans" },

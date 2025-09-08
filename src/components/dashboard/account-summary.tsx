@@ -24,11 +24,10 @@ export function CustomerProfile({ customer }: CustomerProfileProps) {
             </div>
             <p className="text-sm text-muted-foreground">Last Login: 05-Sep-2025 [12:45 AM IST]</p>
         </CardHeader>
-        <CardContent className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 pt-2">
+        <CardContent className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 pt-2">
             <DetailItem label="Full Name" value={customer.fullName} />
             <DetailItem label="Account Number" value={customer.accountNumber} />
             <DetailItem label="Email Address" value={customer.email} />
-            <Button variant="outline" size="sm" className="max-w-fit">View Profile Status</Button>
         </CardContent>
     </Card>
   )

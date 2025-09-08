@@ -26,12 +26,19 @@ type OpenFdFormProps = {
   onFormClose: () => void;
 };
 
-// Simplified interest rate based on tenure
 const getInterestRate = (tenure: number) => {
     if (tenure < 2) return 6.8;
     if (tenure < 3) return 7.1;
     if (tenure < 5) return 7.0;
     return 7.5;
+}
+
+const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        minimumFractionDigits: 0,
+    }).format(amount);
 }
 
 export function OpenFdForm({ addFd, onFormClose }: OpenFdFormProps) {
@@ -69,7 +76,7 @@ export function OpenFdForm({ addFd, onFormClose }: OpenFdFormProps) {
     
     toast({
         title: "Fixed Deposit Created!",
-        description: `Your FD of ₹${values.amount.toLocaleString('en-IN')} for ${values.tenure} year(s) has been successfully created.`
+        description: `Your FD of ${formatCurrency(values.amount)} for ${values.tenure} year(s) has been successfully created.`
     });
     onFormClose();
     setIsSubmitting(false);

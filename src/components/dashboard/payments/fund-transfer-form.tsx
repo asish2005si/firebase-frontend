@@ -108,6 +108,14 @@ type FundTransferFormProps = {
   onSuccessfulTransfer: (payment: Omit<Payment, 'id' | 'date'>) => void;
 };
 
+const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        minimumFractionDigits: 0,
+    }).format(amount);
+}
+
 
 export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps) {
   const { toast } = useToast();
@@ -142,7 +150,7 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
 
     toast({
         title: "Transfer Successful!",
-        description: `₹${values.amount.toLocaleString('en-IN')} has been successfully transferred to ${values.recipientName}.`
+        description: `${formatCurrency(values.amount)} has been successfully transferred to ${values.recipientName}.`
     });
 
     form.reset({

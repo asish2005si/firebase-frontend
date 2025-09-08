@@ -45,6 +45,14 @@ type BillPaymentFormProps = {
   onSuccessfulPayment: (payment: Omit<Payment, 'id' | 'date'>) => void;
 }
 
+const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        minimumFractionDigits: 0,
+    }).format(amount);
+}
+
 export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,7 +80,7 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
 
     toast({
         title: "Bill Paid Successfully!",
-        description: `Your payment of ₹${values.amount.toLocaleString('en-IN')} for ${values.biller} was successful.`
+        description: `Your payment of ${formatCurrency(values.amount)} for ${values.biller} was successful.`
     });
     form.reset({
       consumerNumber: "",

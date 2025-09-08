@@ -112,7 +112,6 @@ const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
         style: 'currency',
         currency: 'INR',
-        minimumFractionDigits: 0,
     }).format(amount);
 }
 
@@ -284,9 +283,9 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Amount (₹)</FormLabel>
+                    <FormLabel>Amount</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="₹ Enter Amount" {...field} disabled={isSubmitting}/>
+                      <Input type="number" placeholder="Enter Amount" {...field} disabled={isSubmitting}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

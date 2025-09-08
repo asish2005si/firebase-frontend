@@ -26,14 +26,14 @@ const initialDebitCard = {
     internationalUsage: false,
     cardTypeValue: "platinum-debit",
     limits: {
-        atm: 25000,
-        pos: 50000,
-        online: 50000,
+        atm: 0,
+        pos: 0,
+        online: 0,
     }
 };
 
 const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(amount);
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
 };
 
 export function DebitCardSection() {

@@ -15,7 +15,7 @@ const customer = {
 
 const account = {
     type: "Savings Account",
-    number: "123456789012345",
+    number: "",
     balance: 0,
 };
 

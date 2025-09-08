@@ -18,22 +18,22 @@ const initialCreditCard = {
     cardHolder: "",
     expiryDate: "10/29",
     cardTypeValue: "platinum-credit",
-    totalLimit: 200000,
-    availableLimit: 150000,
-    unbilledAmount: 25000,
-    billDueDate: "2025-09-20",
-    dueAmount: 25000,
-    rewardPoints: 1250,
+    totalLimit: 0,
+    availableLimit: 0,
+    unbilledAmount: 0,
+    billDueDate: "",
+    dueAmount: 0,
+    rewardPoints: 0,
 };
 
 const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(amount);
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
 };
 
 export function CreditCardSection() {
     const [card, setCard] = useState(initialCreditCard);
     const cardInfo = creditCardTypes.find(c => c.value === card.cardTypeValue) || creditCardTypes[0];
-    const usagePercentage = ((card.totalLimit - card.availableLimit) / card.totalLimit) * 100;
+    const usagePercentage = card.totalLimit > 0 ? ((card.totalLimit - card.availableLimit) / card.totalLimit) * 100 : 0;
 
     return (
         <Card className="mt-6 border-0 shadow-none">
@@ -83,7 +83,7 @@ export function CreditCardSection() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                          <InfoItem icon={<IndianRupee />} label="Outstanding Amount" value={formatCurrency(card.dueAmount)} />
-                         <InfoItem icon={<Calendar />} label="Bill Due Date" value={new Date(card.billDueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} />
+                         <InfoItem icon={<Calendar />} label="Bill Due Date" value={card.billDueDate ? new Date(card.billDueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : "-"} />
                          <InfoItem icon={<Star />} label="Reward Points" value={`${card.rewardPoints} Points`} />
                     </CardContent>
                     <CardContent className="flex gap-4">

@@ -37,7 +37,6 @@ const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
         style: 'currency',
         currency: 'INR',
-        minimumFractionDigits: 0,
     }).format(amount);
 }
 
@@ -91,7 +90,7 @@ export function OpenFdForm({ addFd, onFormClose }: OpenFdFormProps) {
                 name="amount"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Deposit Amount (₹)</FormLabel>
+                        <FormLabel>Deposit Amount</FormLabel>
                         <FormControl>
                             <Input type="number" placeholder="e.g., 50000" {...field} onChange={e => field.onChange(Number(e.target.value))}/>
                         </FormControl>

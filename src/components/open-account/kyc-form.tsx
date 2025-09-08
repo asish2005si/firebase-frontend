@@ -6,7 +6,7 @@ import { z } from "zod";
 import { AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 
 import { useMultistepForm } from "@/hooks/use-multistep-form";
 import { AccountTypeSelector } from "./account-type-selector";
@@ -127,7 +127,7 @@ const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     ],
 };
 
-const getFormSteps = (accountType: string, goTo: (index: number) => void) => {
+const getFormSteps = (accountType: string) => {
     const steps = [
         <AccountTypeSelector key="accountType" />,
         <PersonalDetailsForm key="personal" />,
@@ -140,7 +140,7 @@ const getFormSteps = (accountType: string, goTo: (index: number) => void) => {
     if (accountType === 'current') {
         steps.push(<CurrentAccountDetailsForm key="current-specific" />);
     }
-    steps.push(<ReviewDetailsForm key="review" goTo={goTo} />);
+    steps.push(<ReviewDetailsForm key="review" />);
     return steps;
 };
 
@@ -185,18 +185,32 @@ export function KycForm() {
   
   const accountType = methods.watch("accountType");
 
+  const memoizedSteps = useMemo(() => getFormSteps(accountType), [accountType]);
+
   const {
     steps,
     currentStepIndex,
-    step,
     isFirstStep,
     isLastStep,
     back,
     next,
     goTo,
-  } = useMultistepForm(
-    useMemo(() => getFormSteps(accountType, goTo), [accountType, goTo])
-  );
+  } = useMultistepForm(memoizedSteps);
+
+  const step = useMemo(() => {
+    const currentStep = steps[currentStepIndex];
+    if (React.isValidElement(currentStep) && currentStep.type === ReviewDetailsForm) {
+      return React.cloneElement(currentStep, { goTo });
+    }
+    return currentStep;
+  }, [currentStepIndex, steps, goTo]);
+
+
+  useEffect(() => {
+    // When account type changes, we might have a different number of steps.
+    // Reset to the first step to avoid being on an invalid step index.
+    goTo(0);
+  }, [accountType, goTo]);
 
   const onSubmit = async (data: KycFormData) => {
       console.log("Form Submitted:", data);
@@ -215,7 +229,9 @@ export function KycForm() {
 
   async function handleNextStep() {
     const fieldGroups = formStepsPerType[accountType || 'savings'];
-    if (!fieldGroups) {
+    if (!fieldGroups || currentStepIndex >= fieldGroups.length) {
+        // This case can happen if the steps change, just go to the next page.
+        next();
         return;
     }
 
@@ -247,16 +263,17 @@ export function KycForm() {
                     </Button>
                     )}
                     <div className="flex-grow"></div>
-                    {isLastStep ? (
-                       <Button type="submit" disabled={methods.formState.isSubmitting}>
-                         {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                         {methods.formState.isSubmitting ? "Submitting..." : "Submit Application"}
-                       </Button>
-                    ) : (
-                      <Button type="button" onClick={handleNextStep} disabled={methods.formState.isSubmitting || (currentStepIndex === 0 && !accountType)}>
-                        Next Step
-                      </Button>
-                    )}
+                    
+                    <Button 
+                      type={isLastStep ? "submit" : "button"} 
+                      onClick={isLastStep ? methods.handleSubmit(onSubmit) : handleNextStep}
+                      disabled={methods.formState.isSubmitting || (isFirstStep && !accountType)}
+                    >
+                        {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isLastStep 
+                            ? (methods.formState.isSubmitting ? "Submitting..." : "Submit Application")
+                            : "Next Step"}
+                    </Button>
                 </div>
             </div>
         </form>

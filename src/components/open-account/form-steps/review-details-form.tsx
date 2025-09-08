@@ -56,13 +56,15 @@ const FilePreviewItem = ({ label, fileList }: { label: string; fileList?: FileLi
 };
 
 
-const ReviewSection = ({ title, stepIndex, goTo, children }: { title: string, stepIndex: number, goTo: (index: number) => void, children: React.ReactNode }) => (
+const ReviewSection = ({ title, stepIndex, goTo, children }: { title: string, stepIndex: number, goTo?: (index: number) => void, children: React.ReactNode }) => (
     <Card>
         <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle className="text-lg">{title}</CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => goTo(stepIndex)}>
-                <Pencil className="mr-2 h-4 w-4" /> Edit
-            </Button>
+            {goTo && (
+                <Button variant="ghost" size="sm" onClick={() => goTo(stepIndex)}>
+                    <Pencil className="mr-2 h-4 w-4" /> Edit
+                </Button>
+            )}
         </CardHeader>
         <CardContent>
             {children}
@@ -71,7 +73,7 @@ const ReviewSection = ({ title, stepIndex, goTo, children }: { title: string, st
 );
 
 type ReviewDetailsFormProps = {
-    goTo: (index: number) => void;
+    goTo?: (index: number) => void;
 };
 
 

@@ -75,8 +75,10 @@ export function ReviewDetails() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <DetailItem label="Full Name" value={values.fullName} />
+                    <DetailItem label="Father's Name" value={values.fatherName} />
                     <DetailItem label="Date of Birth" value={values.dob ? format(values.dob, "PPP") : "-"} />
                     <DetailItem label="Gender" value={values.gender} />
+                    <DetailItem label="Marital Status" value={values.maritalStatus} />
                     <DetailItem label="Email" value={values.email} />
                     <DetailItem label="Mobile" value={values.mobile} />
                 </CardContent>
@@ -99,7 +101,7 @@ export function ReviewDetails() {
                 <CardHeader>
                     <CardTitle className="text-lg">Uploaded Documents</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     <FilePreviewItem label="Photograph" fileList={values.photo} />
                     <FilePreviewItem label="Aadhaar Card" fileList={values.aadhaar} />
                     {values.accountType === 'student' ? (
@@ -107,6 +109,7 @@ export function ReviewDetails() {
                     ) : (
                         <FilePreviewItem label="PAN Card" fileList={values.pan} />
                     )}
+                    <FilePreviewItem label="Address Proof" fileList={values.addressProof} />
                 </CardContent>
             </Card>
 

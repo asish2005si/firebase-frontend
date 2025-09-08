@@ -35,6 +35,19 @@ export function PersonalDetailsForm() {
             </FormItem>
           )}
         />
+         <FormField
+          control={control}
+          name="fatherName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Father&apos;s Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Richard Doe" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="grid md:grid-cols-2 gap-4">
           <FormField
             control={control}
@@ -93,6 +106,31 @@ export function PersonalDetailsForm() {
               </FormItem>
             )}
           />
+        </div>
+         <div className="grid md:grid-cols-2 gap-4">
+             <FormField
+                control={control}
+                name="maritalStatus"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Marital Status</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                        <SelectTrigger>
+                        <SelectValue placeholder="Select your marital status" />
+                        </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                        <SelectItem value="single">Single</SelectItem>
+                        <SelectItem value="married">Married</SelectItem>
+                        <SelectItem value="divorced">Divorced</SelectItem>
+                        <SelectItem value="widowed">Widowed</SelectItem>
+                    </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
         </div>
         <div className="grid md:grid-cols-2 gap-4">
             <FormField

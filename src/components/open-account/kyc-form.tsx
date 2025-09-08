@@ -19,21 +19,33 @@ import { Loader2 } from "lucide-react";
 
 const kycSchema = z.object({
   accountType: z.string().min(1, "Please select an account type."),
+  
+  // Personal Details
   fullName: z.string().min(2, "Full name must be at least 2 characters."),
+  fatherName: z.string().min(2, "Father's name must be at least 2 characters."),
   dob: z.date({ required_error: "Date of birth is required."}),
   gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender."}),
+  maritalStatus: z.enum(["single", "married", "divorced", "widowed"], { required_error: "Please select a marital status."}),
+
+  // Contact Details
   email: z.string().email("Invalid email address."),
   mobile: z.string().regex(/^\d{10}$/, "Mobile number must be 10 digits."),
+
+  // Address Details
   permanentAddress: z.string().min(10, "Permanent address must be at least 10 characters."),
   isSameAddress: z.boolean().default(false),
   communicationAddress: z.string().optional(),
   state: z.string().min(2, "State is required."),
   city: z.string().min(2, "City is required."),
   pincode: z.string().regex(/^\d{6}$/, "PIN code must be 6 digits."),
+  
+  // Documents
   aadhaar: z.any().refine(files => files?.length > 0, "Aadhaar card is required."),
   pan: z.any().optional(),
   photo: z.any().refine(files => files?.length > 0, "Photograph is required."),
   birthCertificate: z.any().optional(),
+  addressProof: z.any().refine(files => files?.length > 0, "Address proof is required."),
+
 }).refine(data => {
     if (!data.isSameAddress) {
         return !!data.communicationAddress && data.communicationAddress.length >= 10;
@@ -76,29 +88,29 @@ type KycFormData = z.infer<typeof kycSchema>;
 const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     savings: [
         ["accountType"],
-        ["fullName", "dob", "gender", "email", "mobile"],
-        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "email", "mobile"],
+        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
         ["aadhaar", "pan", "photo"],
         []
     ],
     current: [
         ["accountType"],
-        ["fullName", "dob", "gender", "email", "mobile"],
-        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "email", "mobile"],
+        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
         ["aadhaar", "pan", "photo"],
         []
     ],
     salary: [
-         ["accountType"],
-        ["fullName", "dob", "gender", "email", "mobile"],
-        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode"],
+        ["accountType"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "email", "mobile"],
+        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
         ["aadhaar", "pan", "photo"],
         []
     ],
     student: [
-         ["accountType"],
-        ["fullName", "dob", "gender", "email", "mobile"],
-        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode"],
+        ["accountType"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "email", "mobile"],
+        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
         ["aadhaar", "birthCertificate", "photo"],
         []
     ],
@@ -113,7 +125,9 @@ export function KycForm() {
     defaultValues: {
         accountType: "",
         fullName: "",
+        fatherName: "",
         gender: undefined,
+        maritalStatus: undefined,
         email: "",
         mobile: "",
         permanentAddress: "",
@@ -126,6 +140,7 @@ export function KycForm() {
         pan: null,
         photo: null,
         birthCertificate: null,
+        addressProof: null,
     },
     mode: "onTouched",
   });

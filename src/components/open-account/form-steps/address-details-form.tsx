@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormHeader } from "../form-header";
 import { Textarea } from "@/components/ui/textarea";
+import { DocumentUploadForm } from "./document-upload-form";
+import { FileUploadItem } from "./document-upload-form";
 
 export function AddressDetailsForm() {
   const { control, watch, setValue } = useFormContext();
@@ -122,6 +124,9 @@ export function AddressDetailsForm() {
                     </FormItem>
                 )}
             />
+        </div>
+         <div className="pt-4">
+            <FileUploadItem fieldName="addressProof" label="Address Proof (e.g., Electricity Bill, Rent Agreement)"/>
         </div>
       </div>
     </div>

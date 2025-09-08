@@ -14,6 +14,7 @@ const navLinks = [
   { href: "#open-account", label: "Open Account" },
   { href: "#loans", label: "Loans" },
   { href: "#cards", label: "Cards" },
+  { href: "#customer-care", label: "Support" },
   { href: "#contact", label: "Contact Us" },
 ];
 

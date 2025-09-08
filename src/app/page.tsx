@@ -8,6 +8,7 @@ import { ClientOnly } from "@/components/client-only";
 import { LoanProductsSection } from "@/components/sections/loan-products-section";
 import { SmartCardSection } from "@/components/sections/smart-card-section";
 import { ApplicationStatusSection } from "@/components/sections/application-status-section";
+import { CustomerCareSection } from "@/components/sections/customer-care-section";
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
           <LoanProductsSection />
           <SmartCardSection />
           <ApplicationStatusSection />
+          <CustomerCareSection />
           <ContactSection />
         </ClientOnly>
       </main>

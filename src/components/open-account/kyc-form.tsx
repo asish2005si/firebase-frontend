@@ -120,7 +120,7 @@ const kycSchema = z.object({
     return true;
 }, { message: "Minimum initial deposit is ₹5,000.", path: ["initialDeposit"]})
 .refine(data => {
-    if (data.accountType && data.accountType !== 'student') {
+    if (data.accountType === 'savings' || data.accountType === 'salary' || data.accountType === 'current') {
         const today = new Date();
         const eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
         return data.dob <= eighteenYearsAgo;
@@ -129,7 +129,25 @@ const kycSchema = z.object({
 }, {
     message: "You must be at least 18 years old for this account type.",
     path: ["dob"],
-});
+})
+.refine(data => {
+    if (data.accountType === 'student') {
+        const today = new Date();
+        const tenYearsAgo = new Date(today.getFullYear() - 10, today.getMonth(), today.getDate());
+        const twentyFiveYearsAgo = new Date(today.getFullYear() - 25, today.getMonth(), today.getDate());
+        return data.dob <= tenYearsAgo && data.dob >= twentyFiveYearsAgo;
+    }
+    return true;
+}, {
+    message: "You must be between 10 and 25 years old for a Student Account.",
+    path: ["dob"],
+})
+.refine(data => {
+    if (data.accountType === 'salary') {
+        return data.occupation === 'salaried';
+    }
+    return true;
+}, { message: "You must be a salaried individual to open a Salary Account.", path: ["occupation"]});
 
 
 type KycFormData = z.infer<typeof kycSchema>;
@@ -153,12 +171,14 @@ const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
         ["accountType"],
         ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
-         []
+        ["occupation", "nomineeName", "nomineeRelation"],
+        []
     ],
     student: [
         ["accountType"],
         ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
+        ["nomineeName", "nomineeRelation"],
         []
     ],
 };
@@ -205,7 +225,7 @@ export function KycForm() {
       <AddressDetailsForm key="address" />,
   ];
 
-  if (accountType === 'savings') {
+  if (accountType === 'savings' || accountType === 'salary' || accountType === 'student') {
       formSteps.push(<SavingsAccountDetailsForm key="savings-specific" />)
   }
   if (accountType === 'current') {

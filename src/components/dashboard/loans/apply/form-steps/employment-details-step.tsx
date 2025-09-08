@@ -53,7 +53,7 @@ export function EmploymentDetailsStep() {
                     name="monthlyIncome"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Gross Monthly Income (₹)</FormLabel>
+                        <FormLabel>Gross Monthly Income (INR)</FormLabel>
                         <FormControl>
                             <Input type="number" placeholder="Enter your monthly income" {...field} />
                         </FormControl>

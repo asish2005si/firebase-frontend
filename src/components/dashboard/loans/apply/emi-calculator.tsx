@@ -12,10 +12,12 @@ type EmiCalculatorProps = {
 };
 
 const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
+    const formatted = new Intl.NumberFormat('en-IN', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     }).format(value);
+    return `INR ${formatted}`;
 }
 
 export function EmiCalculator({ amount, rate, tenure }: EmiCalculatorProps) {

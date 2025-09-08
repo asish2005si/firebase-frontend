@@ -27,7 +27,12 @@ const initialCreditCard = {
 };
 
 const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
+    const formatted = new Intl.NumberFormat('en-IN', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(amount);
+    return `INR ${formatted}`;
 };
 
 export function CreditCardSection() {

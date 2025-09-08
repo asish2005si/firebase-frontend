@@ -21,7 +21,7 @@ import { useEffect } from "react";
 
 const loanApplicationSchema = z.object({
     loanType: z.enum(["home", "personal", "car", "education"]),
-    amount: z.coerce.number().min(10000, "Loan amount must be at least ₹10,000."),
+    amount: z.coerce.number().min(10000, "Loan amount must be at least INR 10,000."),
     tenure: z.coerce.number().min(1, "Tenure must be at least 1 year."),
 
     fullName: z.string().min(2, "Full name is required."),
@@ -35,7 +35,7 @@ const loanApplicationSchema = z.object({
 
     employmentType: z.enum(["salaried", "self-employed"]),
     companyName: z.string().min(2, "Company name is required."),
-    monthlyIncome: z.coerce.number().min(15000, "Monthly income must be at least ₹15,000."),
+    monthlyIncome: z.coerce.number().min(15000, "Monthly income must be at least INR 15,000."),
 
     panCard: z.any().refine(files => files?.length > 0, "PAN Card is required."),
     aadhaarCard: z.any().refine(files => files?.length > 0, "Aadhaar Card is required."),

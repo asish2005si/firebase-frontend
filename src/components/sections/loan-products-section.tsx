@@ -44,7 +44,7 @@ const loanProducts = [
     description: "The financial boost you need, right away.",
     interestRate: "From 10.75% p.a.",
     highlights: [
-      "Loans up to ₹25 Lakhs",
+      "Loans up to INR 25 Lakhs",
       "No collateral required",
       "Instant approval for select customers",
     ],

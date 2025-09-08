@@ -32,7 +32,7 @@ export function LoanDetailsStep() {
                     name="amount"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Loan Amount (₹)</FormLabel>
+                            <FormLabel>Loan Amount (INR)</FormLabel>
                             <FormControl>
                                 <Input type="number" placeholder="e.g., 500000" {...field} onChange={e => field.onChange(Number(e.target.value))}/>
                             </FormControl>

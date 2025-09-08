@@ -18,10 +18,12 @@ const DetailItem = ({ label, value, isHighlight = false }: { label: string; valu
 }
 
 const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
+    const formatted = new Intl.NumberFormat('en-IN', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     }).format(amount);
+    return `INR ${formatted}`;
 };
 
 export function StatusDetails({ application }: { application: ApplicationData }) {

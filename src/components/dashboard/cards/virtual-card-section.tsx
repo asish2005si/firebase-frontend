@@ -14,11 +14,16 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { AnimatePresence, motion } from "framer-motion";
 
 const generateCardSchema = z.object({
-  limit: z.coerce.number().min(100, "Minimum limit is ₹100").max(50000, "Maximum limit is ₹50,000"),
+  limit: z.coerce.number().min(100, "Minimum limit is INR 100").max(50000, "Maximum limit is INR 50,000"),
 });
 
 const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
+    const formatted = new Intl.NumberFormat('en-IN', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(amount);
+    return `INR ${formatted}`;
 };
 
 export function VirtualCardSection() {

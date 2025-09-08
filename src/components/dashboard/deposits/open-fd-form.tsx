@@ -16,7 +16,7 @@ import { MaturityCalculator } from "./maturity-calculator";
 import type { FixedDeposit } from "@/types/deposits";
 
 const fdSchema = z.object({
-  amount: z.coerce.number().min(5000, "Minimum deposit is ₹5,000.").max(10000000, "Maximum deposit is ₹1,00,00,000."),
+  amount: z.coerce.number().min(5000, "Minimum deposit is INR 5,000.").max(10000000, "Maximum deposit is INR 1,00,00,000."),
   tenure: z.coerce.number().min(1, "Minimum tenure is 1 year.").max(10, "Maximum tenure is 10 years."),
   interestPayout: z.enum(["cumulative", "quarterly", "monthly"]),
 });
@@ -34,10 +34,12 @@ const getInterestRate = (tenure: number) => {
 }
 
 const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
+    const formatted = new Intl.NumberFormat('en-IN', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     }).format(amount);
+    return `INR ${formatted}`;
 }
 
 export function OpenFdForm({ addFd, onFormClose }: OpenFdFormProps) {

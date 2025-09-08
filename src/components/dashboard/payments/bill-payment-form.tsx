@@ -31,7 +31,7 @@ const billPaymentSchema = z.object({
   category: z.string({ required_error: "Please select a bill category." }),
   biller: z.string({ required_error: "Please select a biller." }),
   consumerNumber: z.string().min(5, "A valid consumer number is required."),
-  amount: z.coerce.number().min(1, "Amount must be at least ₹1."),
+  amount: z.coerce.number().min(1, "Amount must be at least INR 1."),
 });
 
 const billers: Record<string, string[]> = {
@@ -46,10 +46,12 @@ type BillPaymentFormProps = {
 }
 
 const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
+    const formatted = new Intl.NumberFormat('en-IN', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     }).format(amount);
+    return `INR ${formatted}`;
 }
 
 export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {

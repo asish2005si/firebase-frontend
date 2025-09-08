@@ -63,7 +63,7 @@ const transferSchema = z.object({
   recipientAccount: z.string().regex(/^\d{9,18}$/, "Invalid account number (must be 9-18 digits)."),
   bankName: z.string().optional(),
   ifsc: z.string().optional(),
-  amount: z.coerce.number().min(1, "Amount must be at least ₹1."),
+  amount: z.coerce.number().min(1, "Amount must be at least INR 1."),
   remarks: z.string().optional(),
 }).superRefine((data, ctx) => {
     if (data.transferType === "other") {
@@ -109,10 +109,12 @@ type FundTransferFormProps = {
 };
 
 const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
+    const formatted = new Intl.NumberFormat('en-IN', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     }).format(amount);
+    return `INR ${formatted}`;
 }
 
 

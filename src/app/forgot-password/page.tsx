@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -27,7 +28,9 @@ const requestSchema = z.object({
 });
 
 const resetSchema = z.object({
-    password: z.string().min(8, "Password must be at least 8 characters."),
+    password: z.string().min(8, "Password must be at least 8 characters long.")
+        .regex(/[0-9]/, "Password must include at least one number.")
+        .regex(/[^a-zA-Z0-9]/, "Password must include at least one special character."),
     confirmPassword: z.string()
 }).refine(data => data.password === data.confirmPassword, {
     message: "Passwords do not match.",
@@ -146,6 +149,9 @@ export default function ForgotPasswordPage() {
                                 disabled={isSubmitting}
                                 />
                             </FormControl>
+                             <FormDescription>
+                                Password must be at least 8 characters, include a number, and a special character.
+                            </FormDescription>
                             <FormMessage />
                             </FormItem>
                         )}

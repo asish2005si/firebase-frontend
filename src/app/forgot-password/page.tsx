@@ -33,9 +33,9 @@ const resetSchema = z.object({
         .regex(/[0-9]/, "Password must include at least one number.")
         .regex(/[^a-zA-Z0-9]/, "Password must include at least one special character."),
     confirmPassword: z.string()
-}).refine(data => data.password === data.confirmPassword, {
+}).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match.",
-    path: ["confirmPassword"]
+    path: ["confirmPassword"], // path of error
 });
 
 
@@ -76,7 +76,7 @@ export default function ForgotPasswordPage() {
         title: "Password Updated",
         description: "Your password has been successfully updated."
     });
-    resetForm.reset();
+    resetForm.reset({ password: "", confirmPassword: "" });
     setIsSubmitting(false);
     router.push("/login");
   }

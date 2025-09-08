@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ClientOnly } from "@/components/client-only";
 
 const requestSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -86,113 +87,115 @@ export default function ForgotPasswordPage() {
               <span className="text-3xl font-bold font-headline">Nexus Bank</span>
             </Link>
         </div>
-        <Card>
-            {!requestSent ? (
-                 <>
-                    <CardHeader className="text-center">
-                        <CardTitle className="text-2xl">Forgot Password</CardTitle>
-                        <CardDescription>
-                        Enter your email to receive a password reset link.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Form {...requestForm}>
-                        <form onSubmit={requestForm.handleSubmit(onRequestSubmit)} className="space-y-6">
-                            <FormField
-                            control={requestForm.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Email Address</FormLabel>
-                                <FormControl>
-                                    <Input
-                                    type="email"
-                                    placeholder="you@example.com"
-                                    {...field}
-                                    disabled={isSubmitting}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                            />
-                            <Button type="submit" className="w-full" disabled={isSubmitting}>
-                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                {isSubmitting ? "Sending Link..." : "Send Reset Link"}
-                            </Button>
-                        </form>
-                        </Form>
-                    </CardContent>
-                 </>
-            ) : (
-                <>
-                <CardHeader className="text-center">
-                    <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-                    <CardDescription>
-                        Create a new, strong password.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Form {...resetForm}>
-                    <form onSubmit={resetForm.handleSubmit(onResetSubmit)} className="space-y-6">
-                        <FormField
-                        control={resetForm.control}
-                        name="password"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>New Password</FormLabel>
-                            <FormControl>
-                                <Input
-                                type="password"
-                                placeholder="••••••••"
-                                {...field}
-                                disabled={isSubmitting}
-                                />
-                            </FormControl>
-                             <FormDescription>
-                                Password must be at least 8 characters, include a number, and a special character.
-                            </FormDescription>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-                         <FormField
-                        control={resetForm.control}
-                        name="confirmPassword"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Confirm New Password</FormLabel>
-                            <FormControl>
-                                <Input
-                                type="password"
-                                placeholder="••••••••"
-                                {...field}
-                                disabled={isSubmitting}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
-                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isSubmitting ? "Resetting..." : "Reset Password"}
-                        </Button>
-                    </form>
-                    </Form>
-                </CardContent>
-              </>
-            )}
-           
-            <CardContent className="mt-0 pt-0 text-center text-sm">
-                 <Link
-                href="/login"
-                className="font-medium text-primary hover:underline"
-              >
-                Back to Login
-              </Link>
-            </CardContent>
-        </Card>
+        <ClientOnly>
+          <Card>
+              {!requestSent ? (
+                   <>
+                      <CardHeader className="text-center">
+                          <CardTitle className="text-2xl">Forgot Password</CardTitle>
+                          <CardDescription>
+                          Enter your email to receive a password reset link.
+                          </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                          <Form {...requestForm}>
+                          <form onSubmit={requestForm.handleSubmit(onRequestSubmit)} className="space-y-6">
+                              <FormField
+                              control={requestForm.control}
+                              name="email"
+                              render={({ field }) => (
+                                  <FormItem>
+                                  <FormLabel>Email Address</FormLabel>
+                                  <FormControl>
+                                      <Input
+                                      type="email"
+                                      placeholder="you@example.com"
+                                      {...field}
+                                      disabled={isSubmitting}
+                                      />
+                                  </FormControl>
+                                  <FormMessage />
+                                  </FormItem>
+                              )}
+                              />
+                              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                  {isSubmitting ? "Sending Link..." : "Send Reset Link"}
+                              </Button>
+                          </form>
+                          </Form>
+                      </CardContent>
+                   </>
+              ) : (
+                  <>
+                  <CardHeader className="text-center">
+                      <CardTitle className="text-2xl">Reset Your Password</CardTitle>
+                      <CardDescription>
+                          Create a new, strong password.
+                      </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                      <Form {...resetForm}>
+                      <form onSubmit={resetForm.handleSubmit(onResetSubmit)} className="space-y-6">
+                          <FormField
+                          control={resetForm.control}
+                          name="password"
+                          render={({ field }) => (
+                              <FormItem>
+                              <FormLabel>New Password</FormLabel>
+                              <FormControl>
+                                  <Input
+                                  type="password"
+                                  placeholder="••••••••"
+                                  {...field}
+                                  disabled={isSubmitting}
+                                  />
+                              </FormControl>
+                               <FormDescription>
+                                  Password must be at least 8 characters, include a number, and a special character.
+                              </FormDescription>
+                              <FormMessage />
+                              </FormItem>
+                          )}
+                          />
+                           <FormField
+                          control={resetForm.control}
+                          name="confirmPassword"
+                          render={({ field }) => (
+                              <FormItem>
+                              <FormLabel>Confirm New Password</FormLabel>
+                              <FormControl>
+                                  <Input
+                                  type="password"
+                                  placeholder="••••••••"
+                                  {...field}
+                                  disabled={isSubmitting}
+                                  />
+                              </FormControl>
+                              <FormMessage />
+                              </FormItem>
+                          )}
+                          />
+                          <Button type="submit" className="w-full" disabled={isSubmitting}>
+                              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                              {isSubmitting ? "Resetting..." : "Reset Password"}
+                          </Button>
+                      </form>
+                      </Form>
+                  </CardContent>
+                </>
+              )}
+             
+              <CardContent className="mt-0 pt-0 text-center text-sm">
+                   <Link
+                  href="/login"
+                  className="font-medium text-primary hover:underline"
+                >
+                  Back to Login
+                </Link>
+              </CardContent>
+          </Card>
+        </ClientOnly>
       </div>
     </div>
   );

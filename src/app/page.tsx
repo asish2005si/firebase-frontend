@@ -5,7 +5,7 @@ import { HeroSection } from "@/components/sections/hero-section";
 import { OpenAccountSection } from "@/components/sections/open-account-section";
 import { ContactSection } from "@/components/sections/contact-section";
 import { ClientOnly } from "@/components/client-only";
-import { LoanSection } from "@/components/sections/loan-section";
+import { LoanProductsSection } from "@/components/sections/loan-products-section";
 import { SmartCardSection } from "@/components/sections/smart-card-section";
 import { ApplicationStatusSection } from "@/components/sections/application-status-section";
 
@@ -17,7 +17,7 @@ export default function Home() {
         <ClientOnly>
           <HeroSection />
           <OpenAccountSection />
-          <LoanSection />
+          <LoanProductsSection />
           <SmartCardSection />
           <ApplicationStatusSection />
           <ContactSection />

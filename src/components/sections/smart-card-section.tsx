@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { CreditCard, ShieldCheck, Zap, ArrowRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const features = [
   {
@@ -55,9 +56,11 @@ export function SmartCardSection() {
             ))}
           </div>
           <div className="pt-6">
-            <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg">
-              Apply for a Card Now <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link href="/login?redirect=/dashboard/cards/apply">
+                <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg">
+                    Apply for a Card Now <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+            </Link>
           </div>
         </div>
         <div className="hidden lg:flex justify-center items-center">

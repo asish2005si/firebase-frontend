@@ -11,11 +11,12 @@ import { useMultistepForm } from "@/hooks/use-multistep-form";
 import { AccountTypeSelector } from "./account-type-selector";
 import { PersonalDetailsForm } from "./form-steps/personal-details-form";
 import { AddressDetailsForm } from "./form-steps/address-details-form";
-import { DocumentUploadForm } from "./form-steps/document-upload-form";
 import { ReviewDetails } from "./form-steps/review-details";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { SavingsAccountDetailsForm } from "./form-steps/savings-account-details-form";
+
 
 const kycSchema = z.object({
   accountType: z.string().min(1, "Please select an account type."),
@@ -26,7 +27,9 @@ const kycSchema = z.object({
   dob: z.date({ required_error: "Date of birth is required."}),
   gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender."}),
   maritalStatus: z.enum(["single", "married", "divorced", "widowed"], { required_error: "Please select a marital status."}),
-
+  panNumber: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format."),
+  photo: z.any().refine(files => files?.length > 0, "Photograph is required."),
+  
   // Contact Details
   email: z.string().email("Invalid email address."),
   mobile: z.string().regex(/^\d{10}$/, "Mobile number must be 10 digits."),
@@ -38,13 +41,18 @@ const kycSchema = z.object({
   state: z.string().min(2, "State is required."),
   city: z.string().min(2, "City is required."),
   pincode: z.string().regex(/^\d{6}$/, "PIN code must be 6 digits."),
-  
-  // Documents
-  aadhaar: z.any().refine(files => files?.length > 0, "Aadhaar card is required."),
-  pan: z.any().optional(),
-  photo: z.any().refine(files => files?.length > 0, "Photograph is required."),
-  birthCertificate: z.any().optional(),
   addressProof: z.any().refine(files => files?.length > 0, "Address proof is required."),
+
+  // Savings Account Specific
+  occupation: z.string().optional(),
+  nomineeName: z.string().optional(),
+  nomineeRelation: z.string().optional(),
+  initialDeposit: z.coerce.number().optional(),
+
+  // Other documents (for other account types, kept optional for now)
+  aadhaar: z.any().optional(),
+  birthCertificate: z.any().optional(),
+
 
 }).refine(data => {
     if (!data.isSameAddress) {
@@ -55,22 +63,30 @@ const kycSchema = z.object({
     message: "Communication address must be at least 10 characters.",
     path: ["communicationAddress"]
 }).refine(data => {
-    if (data.accountType && data.accountType !== 'student') {
-        return data.pan?.length > 0;
+    if (data.accountType === 'savings') {
+        return !!data.occupation && data.occupation.length > 0;
     }
     return true;
-}, {
-    message: "PAN card is required for this account type.",
-    path: ["pan"]
-}).refine(data => {
-    if (data.accountType === 'student') {
-        return data.birthCertificate?.length > 0;
+}, { message: "Occupation is required for a Savings Account.", path: ["occupation"]})
+.refine(data => {
+    if (data.accountType === 'savings') {
+        return !!data.nomineeName && data.nomineeName.length > 0;
     }
     return true;
-}, {
-    message: "Birth Certificate is required for student accounts.",
-    path: ["birthCertificate"]
-}).refine(data => {
+}, { message: "Nominee name is required.", path: ["nomineeName"]})
+.refine(data => {
+    if (data.accountType === 'savings') {
+        return !!data.nomineeRelation && data.nomineeRelation.length > 0;
+    }
+    return true;
+}, { message: "Nominee relationship is required.", path: ["nomineeRelation"]})
+.refine(data => {
+    if (data.accountType === 'savings') {
+        return !!data.initialDeposit && data.initialDeposit >= 1000;
+    }
+    return true;
+}, { message: "Minimum initial deposit is ₹1,000.", path: ["initialDeposit"]})
+.refine(data => {
     if (data.accountType && data.accountType !== 'student') {
         const today = new Date();
         const eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
@@ -88,30 +104,28 @@ type KycFormData = z.infer<typeof kycSchema>;
 const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     savings: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "email", "mobile"],
-        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
-        ["aadhaar", "pan", "photo"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
+        ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
+        ["occupation", "nomineeName", "nomineeRelation", "initialDeposit"],
         []
     ],
+    // Define steps for other account types if they differ
     current: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "email", "mobile"],
-        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
-        ["aadhaar", "pan", "photo"],
-        []
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
+        ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
+        [] // No specific 4th step for current account in this example
     ],
     salary: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "email", "mobile"],
-        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
-        ["aadhaar", "pan", "photo"],
-        []
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
+        ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
+         []
     ],
     student: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "email", "mobile"],
-        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
-        ["aadhaar", "birthCertificate", "photo"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "photo"],
+        ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof"],
         []
     ],
 };
@@ -129,6 +143,8 @@ export function KycForm() {
         dob: undefined,
         gender: undefined,
         maritalStatus: undefined,
+        panNumber: "",
+        photo: null,
         email: "",
         mobile: "",
         permanentAddress: "",
@@ -137,35 +153,42 @@ export function KycForm() {
         state: "",
         city: "",
         pincode: "",
-        aadhaar: null,
-        pan: null,
-        photo: null,
-        birthCertificate: null,
         addressProof: null,
+        occupation: "",
+        nomineeName: "",
+        nomineeRelation: "",
     },
     mode: "onTouched",
   });
   
   const accountType = methods.watch("accountType");
 
-  const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } =
-    useMultistepForm([
+  const formSteps = [
       <AccountTypeSelector key="accountType" />,
       <PersonalDetailsForm key="personal" />,
       <AddressDetailsForm key="address" />,
-      <DocumentUploadForm key="docs" />,
-      <ReviewDetails key="review" />,
-    ]);
+  ];
+
+  if (accountType === 'savings') {
+      formSteps.push(<SavingsAccountDetailsForm key="savings-specific" />)
+  }
+  // Add other account type specific forms here if needed
+  
+  formSteps.push(<ReviewDetails key="review" />);
+
+
+  const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } = useMultistepForm(formSteps);
 
     async function processForm() {
-        const stepFields = accountType ? formStepsPerType[accountType]?.[currentStepIndex] : formStepsPerType.savings[currentStepIndex];
+        const fieldGroups = formStepsPerType[accountType || 'savings'];
+        const currentFields = fieldGroups ? fieldGroups[currentStepIndex] : [];
 
-        if (!stepFields) {
+        if (!currentFields || currentFields.length === 0) {
             next();
             return;
         }
 
-        const result = await methods.trigger(stepFields as (keyof KycFormData)[]);
+        const result = await methods.trigger(currentFields as (keyof KycFormData)[]);
         
         if (result) {
             next();

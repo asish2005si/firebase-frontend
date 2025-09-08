@@ -11,6 +11,9 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FormHeader } from "../form-header";
+import { FileUploadItem } from "./document-upload-form";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 
 export function PersonalDetailsForm() {
   const { control } = useFormContext();
@@ -18,9 +21,16 @@ export function PersonalDetailsForm() {
   return (
     <div>
         <FormHeader 
-            title="Personal Details"
+            title="Personal Information"
             description="Please provide your personal information as it appears on your official documents."
         />
+        <Alert className="mb-6">
+            <Info className="h-4 w-4" />
+            <AlertTitle>Heads up!</AlertTitle>
+            <AlertDescription>
+                Your details must match your Aadhaar/PAN for successful e-KYC verification.
+            </AlertDescription>
+        </Alert>
       <div className="space-y-4">
         <FormField
           control={control}
@@ -40,7 +50,7 @@ export function PersonalDetailsForm() {
           name="fatherName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Father's Name</FormLabel>
+              <FormLabel>Father's/Mother's Name</FormLabel>
               <FormControl>
                 <Input placeholder="Richard Doe" {...field} />
               </FormControl>
@@ -131,34 +141,22 @@ export function PersonalDetailsForm() {
                 </FormItem>
                 )}
             />
+            <FormField
+              control={control}
+              name="panNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>PAN Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="ABCDE1234F" {...field} onChange={(e) => field.onChange(e.target.value.toUpperCase())} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
         </div>
-        <div className="grid md:grid-cols-2 gap-4">
-            <FormField
-                control={control}
-                name="email"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Email Address</FormLabel>
-                    <FormControl>
-                        <Input type="email" placeholder="you@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-            />
-            <FormField
-                control={control}
-                name="mobile"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Mobile Number</FormLabel>
-                    <FormControl>
-                        <Input type="tel" placeholder="9876543210" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-            />
+        <div className="pt-4">
+            <FileUploadItem fieldName="photo" label="Upload Your Recent Photograph" />
         </div>
       </div>
     </div>

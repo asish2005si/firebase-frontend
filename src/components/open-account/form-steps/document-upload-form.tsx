@@ -3,7 +3,6 @@
 import { useFormContext } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { FormHeader } from "../form-header";
 import { useState } from "react";
 import Image from "next/image";
 import { UploadCloud, X, FileText } from "lucide-react";
@@ -76,29 +75,4 @@ export const FileUploadItem = ({ fieldName, label }: { fieldName: string, label:
             )}
         />
     )
-}
-
-export function DocumentUploadForm() {
-  const { watch } = useFormContext();
-  const accountType = watch("accountType");
-
-  return (
-    <div>
-        <FormHeader 
-            title="Upload Documents"
-            description="Please upload clear copies of the required documents for KYC verification."
-        />
-        <div className="space-y-6">
-            <div className="grid md:grid-cols-3 gap-6">
-                <FileUploadItem fieldName="photo" label="Passport-size Photograph" />
-                <FileUploadItem fieldName="aadhaar" label="Aadhaar Card" />
-                {accountType === 'student' ? (
-                     <FileUploadItem fieldName="birthCertificate" label="Student ID / Birth Certificate" />
-                ) : (
-                    <FileUploadItem fieldName="pan" label="PAN Card" />
-                )}
-            </div>
-        </div>
-    </div>
-  );
 }

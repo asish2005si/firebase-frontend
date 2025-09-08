@@ -7,19 +7,61 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FormHeader } from "../form-header";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUploadItem } from "./document-upload-form";
+import { Button } from "@/components/ui/button";
 
 export function AddressDetailsForm() {
-  const { control, watch, setValue } = useFormContext();
+  const { control, watch, setValue, trigger } = useFormContext();
   const isSameAddress = watch("isSameAddress");
   const permanentAddress = watch("permanentAddress");
+
+  const handleOtp = async (field: 'mobile' | 'email') => {
+      const result = await trigger(field);
+      if (result) {
+          alert(`OTP verification simulation for ${field}. In a real app, an OTP would be sent.`)
+      }
+  }
 
   return (
     <div>
         <FormHeader 
-            title="Address Details"
-            description="Enter your permanent and communication address."
+            title="Contact & Address Details"
+            description="Enter your contact information and current address."
         />
       <div className="space-y-4">
+        <div className="grid md:grid-cols-2 gap-4">
+            <FormField
+                control={control}
+                name="email"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Email Address</FormLabel>
+                    <div className="flex gap-2">
+                        <FormControl>
+                            <Input type="email" placeholder="you@example.com" {...field} />
+                        </FormControl>
+                        <Button type="button" variant="outline" onClick={() => handleOtp('email')}>Verify</Button>
+                    </div>
+                    <FormMessage />
+                    </FormItem>
+                )}
+            />
+            <FormField
+                control={control}
+                name="mobile"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Mobile Number</FormLabel>
+                     <div className="flex gap-2">
+                        <FormControl>
+                            <Input type="tel" placeholder="9876543210" {...field} />
+                        </FormControl>
+                        <Button type="button" variant="outline" onClick={() => handleOtp('mobile')}>Verify</Button>
+                    </div>
+                    <FormMessage />
+                    </FormItem>
+                )}
+            />
+        </div>
         <FormField
           control={control}
           name="permanentAddress"
@@ -125,7 +167,7 @@ export function AddressDetailsForm() {
             />
         </div>
          <div className="pt-4">
-            <FileUploadItem fieldName="addressProof" label="Address Proof (e.g., Electricity Bill, Rent Agreement)"/>
+            <FileUploadItem fieldName="addressProof" label="Address Proof (e.g., Aadhaar, Electricity Bill, Rent Agreement)"/>
         </div>
       </div>
     </div>

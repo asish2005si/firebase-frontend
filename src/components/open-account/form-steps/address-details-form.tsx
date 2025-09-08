@@ -8,8 +8,9 @@ import { FormHeader } from "../form-header";
 import { Textarea } from "@/components/ui/textarea";
 
 export function AddressDetailsForm() {
-  const { control, watch } = useFormContext();
+  const { control, watch, setValue } = useFormContext();
   const isSameAddress = watch("isSameAddress");
+  const permanentAddress = watch("permanentAddress");
 
   return (
     <div>
@@ -25,7 +26,16 @@ export function AddressDetailsForm() {
             <FormItem>
               <FormLabel>Permanent Address</FormLabel>
               <FormControl>
-                <Textarea placeholder="123, Main Street..." {...field} />
+                <Textarea 
+                  placeholder="123, Main Street..." 
+                  {...field} 
+                  onChange={(e) => {
+                    field.onChange(e);
+                    if (isSameAddress) {
+                      setValue("communicationAddress", e.target.value, { shouldValidate: true });
+                    }
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -37,7 +47,17 @@ export function AddressDetailsForm() {
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0">
               <FormControl>
-                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                <Checkbox 
+                  checked={field.value} 
+                  onCheckedChange={(checked) => {
+                    field.onChange(checked);
+                    if (checked) {
+                      setValue("communicationAddress", permanentAddress, { shouldValidate: true });
+                    } else {
+                       setValue("communicationAddress", "", { shouldValidate: true });
+                    }
+                  }} 
+                />
               </FormControl>
               <div className="space-y-1 leading-none">
                 <FormLabel>

@@ -24,35 +24,35 @@ const kycSchema = z.object({
   gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender."}),
   email: z.string().email("Invalid email address."),
   mobile: z.string().regex(/^\d{10}$/, "Mobile number must be 10 digits."),
-  permanentAddress: z.string().min(5, "Permanent address is required."),
+  permanentAddress: z.string().min(10, "Permanent address must be at least 10 characters."),
   isSameAddress: z.boolean().default(false),
   communicationAddress: z.string().optional(),
   state: z.string().min(2, "State is required."),
   city: z.string().min(2, "City is required."),
   pincode: z.string().regex(/^\d{6}$/, "PIN code must be 6 digits."),
-  aadhaar: z.any().refine(file => file?.length == 1, "Aadhaar card is required."),
+  aadhaar: z.any().refine(files => files?.length > 0, "Aadhaar card is required."),
   pan: z.any().optional(),
-  photo: z.any().refine(file => file?.length == 1, "Photograph is required."),
+  photo: z.any().refine(files => files?.length > 0, "Photograph is required."),
   birthCertificate: z.any().optional(),
 }).refine(data => {
-    if (data.isSameAddress === false) {
-        return !!data.communicationAddress && data.communicationAddress.length >= 5;
+    if (!data.isSameAddress) {
+        return !!data.communicationAddress && data.communicationAddress.length >= 10;
     }
     return true;
 }, {
-    message: "Communication address is required.",
+    message: "Communication address must be at least 10 characters.",
     path: ["communicationAddress"]
 }).refine(data => {
-    if (data.accountType !== 'student') {
-        return data.pan?.length == 1;
+    if (data.accountType && data.accountType !== 'student') {
+        return data.pan?.length > 0;
     }
     return true;
 }, {
-    message: "PAN card is required.",
+    message: "PAN card is required for this account type.",
     path: ["pan"]
 }).refine(data => {
     if (data.accountType === 'student') {
-        return data.birthCertificate?.length == 1;
+        return data.birthCertificate?.length > 0;
     }
     return true;
 }, {
@@ -63,13 +63,36 @@ const kycSchema = z.object({
 
 type KycFormData = z.infer<typeof kycSchema>;
 
-const formSteps: (keyof KycFormData)[][] = [
-    ["accountType"],
-    ["fullName", "dob", "gender", "email", "mobile"],
-    ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode"],
-    ["aadhaar", "pan", "photo", "birthCertificate"],
-    []
-];
+const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
+    savings: [
+        ["accountType"],
+        ["fullName", "dob", "gender", "email", "mobile"],
+        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode"],
+        ["aadhaar", "pan", "photo"],
+        []
+    ],
+    current: [
+        ["accountType"],
+        ["fullName", "dob", "gender", "email", "mobile"],
+        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode"],
+        ["aadhaar", "pan", "photo"],
+        []
+    ],
+    salary: [
+         ["accountType"],
+        ["fullName", "dob", "gender", "email", "mobile"],
+        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode"],
+        ["aadhaar", "pan", "photo"],
+        []
+    ],
+    student: [
+         ["accountType"],
+        ["fullName", "dob", "gender", "email", "mobile"],
+        ["permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode"],
+        ["aadhaar", "birthCertificate", "photo"],
+        []
+    ],
+};
 
 export function KycForm() {
   const { toast } = useToast();
@@ -96,6 +119,8 @@ export function KycForm() {
     },
     mode: "onTouched",
   });
+  
+  const accountType = methods.watch("accountType");
 
   const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } =
     useMultistepForm([
@@ -107,9 +132,16 @@ export function KycForm() {
     ]);
 
     async function processForm() {
-        const fieldsToValidate = formSteps.slice(0, currentStepIndex + 1).flat();
-        const result = await methods.trigger(fieldsToValidate as (keyof KycFormData)[]);
-        if(result) {
+        const stepFields = accountType ? formStepsPerType[accountType]?.[currentStepIndex] : formStepsPerType.savings[currentStepIndex];
+
+        if (!stepFields) {
+            next();
+            return;
+        }
+
+        const result = await methods.trigger(stepFields as (keyof KycFormData)[]);
+        
+        if (result) {
             next();
         }
     }
@@ -145,7 +177,7 @@ export function KycForm() {
                     </Button>
                     )}
                     <div className="flex-grow"></div>
-                    <Button type={isLastStep ? "submit" : "button"} onClick={isLastStep ? undefined : processForm} disabled={methods.formState.isSubmitting}>
+                    <Button type={isLastStep ? "submit" : "button"} onClick={isLastStep ? undefined : processForm} disabled={methods.formState.isSubmitting || (currentStepIndex === 0 && !accountType)}>
                         {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         {isLastStep ? (methods.formState.isSubmitting ? "Submitting..." : "Submit Application") : "Next Step"}
                     </Button>

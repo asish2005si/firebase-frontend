@@ -5,27 +5,46 @@ import { FormHeader } from "../form-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import Image from "next/image";
+import { FileText, CheckCircle2 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const DetailItem = ({ label, value }: { label: string; value: string | undefined }) => (
     <div>
         <p className="text-sm text-muted-foreground">{label}</p>
-        <p className="font-medium">{value || "-"}</p>
+        <p className="font-medium capitalize">{value || "-"}</p>
     </div>
 )
 
 const FilePreviewItem = ({ label, fileList }: { label: string; fileList: FileList | null }) => {
-    if (!fileList || fileList.length === 0) return <DetailItem label={label} value="Not uploaded" />;
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (fileList && fileList.length > 0) {
+            const file = fileList[0];
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+
+            return () => URL.revokeObjectURL(url);
+        }
+    }, [fileList]);
+
+
+    if (!fileList || fileList.length === 0) {
+        return <DetailItem label={label} value="Not uploaded" />;
+    }
 
     const file = fileList[0];
-    const previewUrl = URL.createObjectURL(file);
 
     return (
-         <div>
+         <div className="space-y-2">
             <p className="text-sm text-muted-foreground">{label}</p>
-            {file.type.startsWith("image/") ? (
-                <Image src={previewUrl} alt={`${label} preview`} width={100} height={100} className="mt-1 rounded-md border" />
+            {previewUrl && file.type.startsWith("image/") ? (
+                <Image src={previewUrl} alt={`${label} preview`} width={100} height={100} className="rounded-md border object-cover aspect-square" />
             ) : (
-                <p className="font-medium">{file.name}</p>
+                <div className="flex items-center gap-2 p-2 rounded-md border bg-muted">
+                    <FileText className="h-6 w-6 text-muted-foreground" />
+                    <p className="text-sm font-medium truncate">{file.name}</p>
+                </div>
             )}
         </div>
     )
@@ -54,7 +73,7 @@ export function ReviewDetails() {
                 <CardHeader>
                     <CardTitle className="text-lg">Personal Details</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-2 gap-4">
+                <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <DetailItem label="Full Name" value={values.fullName} />
                     <DetailItem label="Date of Birth" value={values.dob ? format(values.dob, "PPP") : "-"} />
                     <DetailItem label="Gender" value={values.gender} />
@@ -80,13 +99,23 @@ export function ReviewDetails() {
                 <CardHeader>
                     <CardTitle className="text-lg">Uploaded Documents</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-3 gap-4">
-                    <FilePreviewItem label="Aadhaar Card" fileList={values.aadhaar} />
-                    {values.accountType === 'student' && <FilePreviewItem label="Birth Certificate" fileList={values.birthCertificate} />}
-                    {values.accountType !== 'student' && <FilePreviewItem label="PAN Card" fileList={values.pan} />}
+                <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-6">
                     <FilePreviewItem label="Photograph" fileList={values.photo} />
+                    <FilePreviewItem label="Aadhaar Card" fileList={values.aadhaar} />
+                    {values.accountType === 'student' ? (
+                        <FilePreviewItem label="Birth Certificate / Student ID" fileList={values.birthCertificate} />
+                    ) : (
+                        <FilePreviewItem label="PAN Card" fileList={values.pan} />
+                    )}
                 </CardContent>
             </Card>
+
+             <div className="flex items-start space-x-3 space-y-0 rounded-md border p-4">
+                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
+                 <div className="space-y-1 leading-none">
+                     <p className="font-medium">I hereby declare that the information provided is true and correct.</p>
+                </div>
+            </div>
         </div>
     </div>
   );

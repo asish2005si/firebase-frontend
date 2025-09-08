@@ -34,6 +34,13 @@ export function StatusDetails({ application }: { application: ApplicationData })
     });
   };
 
+  const handleSupport = () => {
+    toast({
+        title: "Support Request",
+        description: "We have received your request. Our team will get in touch with you shortly.",
+    });
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -65,7 +72,7 @@ export function StatusDetails({ application }: { application: ApplicationData })
                 <Download className="mr-2 h-4 w-4" /> Download Receipt (PDF)
             </Button>
             {application.status === 'Rejected' && (
-                <Button variant="destructive">
+                <Button variant="destructive" onClick={handleSupport}>
                     <MessageSquare className="mr-2 h-4 w-4" /> Contact Support
                 </Button>
             )}

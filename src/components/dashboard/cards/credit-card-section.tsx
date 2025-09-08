@@ -15,7 +15,7 @@ import { creditCardTypes } from "@/lib/card-data";
 // Mock data for credit card
 const initialCreditCard = {
     cardNumber: "**** **** **** 5678",
-    cardHolder: "Jane Doe",
+    cardHolder: "",
     expiryDate: "10/29",
     cardTypeValue: "platinum-credit",
     totalLimit: 200000,

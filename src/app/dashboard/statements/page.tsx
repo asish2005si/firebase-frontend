@@ -17,23 +17,13 @@ import { DateRange } from "react-day-picker";
 import { subDays } from "date-fns";
 import { ClientOnly } from "@/components/client-only";
 
-const initialTransactions: Transaction[] = [
-    { id: "TXN75620", date: "2024-07-28", description: "UPI/Google Pay/Amazon", type: "debit", amount: 1250.00, balance: 148750.75 },
-    { id: "TXN75619", date: "2024-07-27", description: "Salary Credit July", type: "credit", amount: 75000.00, balance: 150000.75 },
-    { id: "TXN75618", date: "2024-07-26", description: "Rent Payment", type: "debit", amount: 20000.00, balance: 75000.75 },
-    { id: "TXN75617", date: "2024-07-25", description: "Online Shopping", type: "debit", amount: 3500.00, balance: 95000.75 },
-    { id: "TXN75616", date: "2024-07-24", description: "ATM Withdrawal", type: "debit", amount: 5000.00, balance: 98500.75 },
-    { id: "TXN75615", date: "2024-07-23", description: "Investment SIP", type: "debit", amount: 10000.00, balance: 103500.75 },
-    { id: "TXN75614", date: "2024-07-01", description: "Fund Transfer to Jane", type: "debit", amount: 5000.00, balance: 113500.75 },
-    { id: "TXN75613", date: "2024-06-28", description: "Salary Credit June", type: "credit", amount: 75000.00, balance: 118500.75 },
-    { id: "TXN75612", date: "2024-05-28", description: "Salary Credit May", type: "credit", amount: 75000.00, balance: 43500.75 },
-];
+const initialTransactions: Transaction[] = [];
 
 const customerInfo = {
-    fullName: "Jane Doe",
-    accountNumber: "123456789012345",
+    fullName: "",
+    accountNumber: "",
     accountType: "Savings Account",
-    branch: "Mumbai, Fort",
+    branch: "",
 };
   
 export default function StatementsPage() {

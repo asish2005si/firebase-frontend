@@ -19,10 +19,10 @@ export function CustomerProfile({ customer }: CustomerProfileProps) {
     <Card>
         <CardHeader className="flex flex-row justify-between items-center">
             <div>
-                <CardTitle className="text-xl font-headline">Welcome back, {customer.fullName}!</CardTitle>
+                <CardTitle className="text-xl font-headline">Welcome back, {customer.fullName || 'Customer'}!</CardTitle>
                 <CardDescription>Here’s a summary of your profile information.</CardDescription>
             </div>
-            <p className="text-sm text-muted-foreground">Last Login: 05-Sep-2025 [12:45 AM IST]</p>
+            <p className="text-sm text-muted-foreground">Last Login: {new Date().toLocaleString()}</p>
         </CardHeader>
         <CardContent className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 pt-2">
             <DetailItem label="Full Name" value={customer.fullName} />
@@ -36,6 +36,6 @@ export function CustomerProfile({ customer }: CustomerProfileProps) {
 const DetailItem = ({ label, value }: { label: string, value: string }) => (
     <div>
         <p className="text-sm text-muted-foreground">{label}</p>
-        <p className="font-medium text-foreground">{value}</p>
+        <p className="font-medium text-foreground">{value || '-'}</p>
     </div>
 )

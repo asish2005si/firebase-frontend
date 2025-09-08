@@ -42,7 +42,7 @@ export function PersonalDetailsForm() {
             <FormItem>
               <FormLabel>Full Name</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} />
+                <Input placeholder="Enter your full name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -55,7 +55,7 @@ export function PersonalDetailsForm() {
             <FormItem>
               <FormLabel>Father's/Mother's Name</FormLabel>
               <FormControl>
-                <Input placeholder="Richard Doe" {...field} />
+                <Input placeholder="Enter your father's or mother's name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -189,7 +189,7 @@ export function PersonalDetailsForm() {
                         <FormItem>
                         <FormLabel>Nominee Name</FormLabel>
                         <FormControl>
-                            <Input placeholder="e.g., Jane Doe" {...field} />
+                            <Input placeholder="Enter nominee's full name" {...field} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>

@@ -6,17 +6,17 @@ import { CreditCard, Landmark, ArrowRight, IndianRupee, Receipt } from "lucide-r
 import Link from "next/link";
 
 const customer = {
-  fullName: "Jane Doe",
-  accountNumber: "123456789012345",
-  email: "jane.doe@example.com",
-  contactNumber: "+91 9876543210",
-  address: "123, Sunshine Apartments, Mumbai, Maharashtra, 400001",
+  fullName: "",
+  accountNumber: "",
+  email: "",
+  contactNumber: "",
+  address: "",
 };
 
 const account = {
     type: "Savings Account",
     number: "123456789012345",
-    balance: 150000.75,
+    balance: 0,
 };
 
 const formatCurrency = (amount: number) => {

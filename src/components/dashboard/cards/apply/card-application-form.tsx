@@ -60,7 +60,7 @@ export function CardApplicationForm() {
         defaultValues: {
             cardCategory: undefined,
             cardType: undefined,
-            fullName: "Jane Doe", // Pre-fill from user session in a real app
+            fullName: "", 
             consent: false,
         },
         mode: "onTouched",

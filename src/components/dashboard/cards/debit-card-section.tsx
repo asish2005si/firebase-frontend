@@ -17,7 +17,7 @@ import { debitCardTypes } from "@/lib/card-data";
 // Mock data for debit card
 const initialDebitCard = {
     cardNumber: "**** **** **** 8432",
-    cardHolder: "Jane Doe",
+    cardHolder: "",
     expiryDate: "12/28",
     cvv: "***",
     isActive: true,

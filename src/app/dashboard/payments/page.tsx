@@ -10,15 +10,16 @@ import { BillPaymentForm } from "@/components/dashboard/payments/bill-payment-fo
 import { PaymentHistory } from "@/components/dashboard/payments/payment-history";
 import { ClientOnly } from "@/components/client-only";
 
-const initialPaymentHistory = [
-    { id: "PAY84321", date: "2024-07-29", type: "Bill Payment", description: "Adani Electricity", amount: 1500.00, status: "Success" },
-    { id: "TRN99823", date: "2024-07-28", type: "Fund Transfer", description: "John Doe", amount: 10000.00, status: "Success" },
-    { id: "PAY84320", date: "2024-07-25", type: "Bill Payment", description: "Airtel Postpaid", amount: 599.00, status: "Success" },
-    { id: "TRN99822", date: "2024-07-22", type: "Fund Transfer", description: "Jane Smith", amount: 2500.00, status: "Failed" },
-    { id: "PAY84319", date: "2024-07-20", type: "Bill Payment", description: "Mahanagar Gas", amount: 850.00, status: "Success" },
-];
+const initialPaymentHistory = [];
 
-export type Payment = typeof initialPaymentHistory[0];
+export type Payment = {
+    id: string;
+    date: string;
+    type: string;
+    description: string;
+    amount: number;
+    status: string;
+};
 
 function PaymentsComponent() {
   const searchParams = useSearchParams();

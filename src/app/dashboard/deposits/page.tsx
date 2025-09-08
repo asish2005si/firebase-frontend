@@ -8,16 +8,9 @@ import { FixedDeposits } from "@/components/dashboard/deposits/fixed-deposits";
 import { RecurringDeposits } from "@/components/dashboard/deposits/recurring-deposits";
 import type { FixedDeposit, RecurringDeposit } from "@/types/deposits";
 
-const initialFixedDeposits: FixedDeposit[] = [
-    { id: "FD7362", amount: 100000, tenure: 1, interestRate: 7.1, startDate: "2023-11-15", maturityDate: "2024-11-15", maturityAmount: 107299, status: "Active" },
-    { id: "FD8934", amount: 50000, tenure: 3, interestRate: 7.0, startDate: "2021-08-20", maturityDate: "2024-08-20", maturityAmount: 61543, status: "Matured" },
-    { id: "FD1234", amount: 250000, tenure: 5, interestRate: 7.5, startDate: "2020-01-10", maturityDate: "2025-01-10", maturityAmount: 362458, status: "Active" },
-];
+const initialFixedDeposits: FixedDeposit[] = [];
 
-const initialRecurringDeposits: RecurringDeposit[] = [
-    { id: "RD4521", monthlyInstallment: 5000, tenure: 2, interestRate: 6.8, startDate: "2023-01-01", nextDueDate: "2024-08-01", amountDeposited: 95000, maturityAmount: 128956, status: "Active" },
-    { id: "RD9982", monthlyInstallment: 10000, tenure: 5, interestRate: 7.2, startDate: "2019-09-10", nextDueDate: "", amountDeposited: 600000, maturityAmount: 725432, status: "Matured" },
-];
+const initialRecurringDeposits: RecurringDeposit[] = [];
 
 export default function DepositsPage() {
     const [fds, setFds] = useState<FixedDeposit[]>(initialFixedDeposits);

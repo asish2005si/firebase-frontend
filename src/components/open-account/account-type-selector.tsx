@@ -2,7 +2,7 @@
 "use client";
 import { useFormContext } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PiggyBank, WalletCards, Briefcase, GraduationCap, ShieldCheck } from "lucide-react";
+import { PiggyBank, Briefcase, ShieldCheck } from "lucide-react";
 import { FormHeader } from "./form-header";
 import { cn } from "@/lib/utils";
 import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
@@ -17,16 +17,6 @@ const accountTypes = [
     value: "current",
     icon: <Briefcase className="h-8 w-8" />,
     title: "Current Account",
-  },
-  {
-    value: "salary",
-    icon: <WalletCards className="h-8 w-8" />,
-    title: "Salary Account",
-  },
-  {
-    value: "student",
-    icon: <GraduationCap className="h-8 w-8" />,
-    title: "Student Account",
   },
 ];
 

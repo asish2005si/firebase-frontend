@@ -6,7 +6,7 @@ import { z } from "zod";
 import { AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 
 import { useMultistepForm } from "@/hooks/use-multistep-form";
 import { AccountTypeSelector } from "./account-type-selector";
@@ -127,23 +127,6 @@ const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     ],
 };
 
-const getFormSteps = (accountType: string) => {
-    const steps = [
-        <AccountTypeSelector key="accountType" />,
-        <PersonalDetailsForm key="personal" />,
-        <AddressDetailsForm key="address" />,
-    ];
-
-    if (accountType === 'savings') {
-        steps.push(<SavingsAccountDetailsForm key="savings-specific" />);
-    }
-    if (accountType === 'current') {
-        steps.push(<CurrentAccountDetailsForm key="current-specific" />);
-    }
-    steps.push(<ReviewDetailsForm key="review" />);
-    return steps;
-};
-
 export function KycForm() {
   const { toast } = useToast();
   const router = useRouter();
@@ -185,8 +168,6 @@ export function KycForm() {
   
   const accountType = methods.watch("accountType");
 
-  const memoizedSteps = useMemo(() => getFormSteps(accountType), [accountType]);
-
   const {
     steps,
     currentStepIndex,
@@ -195,22 +176,14 @@ export function KycForm() {
     back,
     next,
     goTo,
-  } = useMultistepForm(memoizedSteps);
-
-  const step = useMemo(() => {
-    const currentStep = steps[currentStepIndex];
-    if (React.isValidElement(currentStep) && currentStep.type === ReviewDetailsForm) {
-      return React.cloneElement(currentStep, { goTo });
-    }
-    return currentStep;
-  }, [currentStepIndex, steps, goTo]);
-
-
-  useEffect(() => {
-    // When account type changes, we might have a different number of steps.
-    // Reset to the first step to avoid being on an invalid step index.
-    goTo(0);
-  }, [accountType, goTo]);
+  } = useMultistepForm([
+        <AccountTypeSelector key="accountType" />,
+        <PersonalDetailsForm key="personal" />,
+        <AddressDetailsForm key="address" />,
+        ...(accountType === 'savings' ? [<SavingsAccountDetailsForm key="savings-specific" />] : []),
+        ...(accountType === 'current' ? [<CurrentAccountDetailsForm key="current-specific" />] : []),
+        <ReviewDetailsForm key="review" goTo={goTo} />,
+  ]);
 
   const onSubmit = async (data: KycFormData) => {
       console.log("Form Submitted:", data);
@@ -230,7 +203,6 @@ export function KycForm() {
   async function handleNextStep() {
     const fieldGroups = formStepsPerType[accountType || 'savings'];
     if (!fieldGroups || currentStepIndex >= fieldGroups.length) {
-        // This case can happen if the steps change, just go to the next page.
         next();
         return;
     }
@@ -254,7 +226,7 @@ export function KycForm() {
                     </p>
                 </div>
                 <AnimatePresence mode="wait">
-                    {step}
+                    {steps[currentStepIndex]}
                 </AnimatePresence>
                 <div className="mt-8 flex justify-between">
                     {!isFirstStep && (

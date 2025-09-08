@@ -32,7 +32,7 @@ const features = [
 
 export function SmartCardSection() {
   return (
-    <section id="cards" className="py-20 bg-gradient-to-r from-blue-100 to-sky-100 dark:from-blue-900/50 dark:to-sky-900/50">
+    <section id="cards" className="py-20 bg-gradient-to-r from-blue-100 to-sky-100 dark:from-background dark:to-muted">
       <div className="container grid lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
           <h2 className="text-3xl md:text-4xl font-bold text-primary font-headline">

@@ -6,7 +6,7 @@ import { z } from "zod";
 import { AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 
 import { useMultistepForm } from "@/hooks/use-multistep-form";
 import { AccountTypeSelector } from "./account-type-selector";
@@ -127,6 +127,23 @@ const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     ],
 };
 
+const getFormSteps = (accountType: string) => {
+    const steps = [
+        <AccountTypeSelector key="accountType" />,
+        <PersonalDetailsForm key="personal" />,
+        <AddressDetailsForm key="address" />,
+    ];
+
+    if (accountType === 'savings') {
+        steps.push(<SavingsAccountDetailsForm key="savings-specific" />);
+    } else if (accountType === 'current') {
+        steps.push(<CurrentAccountDetailsForm key="current-specific" />);
+    }
+
+    steps.push(<ReviewDetailsForm key="review" />);
+    return steps;
+};
+
 export function KycForm() {
   const { toast } = useToast();
   const router = useRouter();
@@ -168,6 +185,8 @@ export function KycForm() {
   
   const accountType = methods.watch("accountType");
 
+  const formSteps = useMemo(() => getFormSteps(accountType), [accountType]);
+
   const {
     steps,
     currentStepIndex,
@@ -176,14 +195,21 @@ export function KycForm() {
     back,
     next,
     goTo,
-  } = useMultistepForm([
-        <AccountTypeSelector key="accountType" />,
-        <PersonalDetailsForm key="personal" />,
-        <AddressDetailsForm key="address" />,
-        ...(accountType === 'savings' ? [<SavingsAccountDetailsForm key="savings-specific" />] : []),
-        ...(accountType === 'current' ? [<CurrentAccountDetailsForm key="current-specific" />] : []),
-        <ReviewDetailsForm key="review" goTo={goTo} />,
-  ]);
+  } = useMultistepForm(formSteps);
+
+  const currentStepComponent = useMemo(() => {
+    const step = steps[currentStepIndex];
+    if (React.isValidElement(step) && step.type === ReviewDetailsForm) {
+      return React.cloneElement(step, { goTo });
+    }
+    return step;
+  }, [currentStepIndex, steps, goTo]);
+
+  useEffect(() => {
+    // Reset the form step to the beginning when account type changes
+    // This prevents validation issues with stale data from the previous flow
+    goTo(0);
+  }, [accountType, goTo]);
 
   const onSubmit = async (data: KycFormData) => {
       console.log("Form Submitted:", data);
@@ -226,7 +252,7 @@ export function KycForm() {
                     </p>
                 </div>
                 <AnimatePresence mode="wait">
-                    {steps[currentStepIndex]}
+                    {currentStepComponent}
                 </AnimatePresence>
                 <div className="mt-8 flex justify-between">
                     {!isFirstStep && (

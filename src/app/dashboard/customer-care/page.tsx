@@ -13,7 +13,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Phone, Mail, Loader2 } from "lucide-react";
-import { submitSupportTicket } from "@/app/actions";
 
 const faqs = [
   {
@@ -34,42 +33,8 @@ const faqs = [
   }
 ];
 
-const supportTicketSchema = z.object({
-  category: z.string({ required_error: "Please select a category." }),
-  subject: z.string().min(5, "Subject must be at least 5 characters."),
-  description: z.string().min(20, "Description must be at least 20 characters long."),
-});
-
 export default function CustomerCarePage() {
   const { toast } = useToast();
-
-  const form = useForm<z.infer<typeof supportTicketSchema>>({
-    resolver: zodResolver(supportTicketSchema),
-    defaultValues: {
-      category: "",
-      subject: "",
-      description: "",
-    },
-  });
-
-  const { isSubmitting } = form.formState;
-
-  async function onSubmit(values: z.infer<typeof supportTicketSchema>) {
-    const result = await submitSupportTicket(values);
-    if (result.success) {
-      toast({
-        title: "Ticket Created!",
-        description: result.message,
-      });
-      form.reset();
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Submission Failed",
-        description: result.message,
-      });
-    }
-  }
 
   return (
       <div className="flex flex-col gap-8">
@@ -104,74 +69,7 @@ export default function CustomerCarePage() {
         </CardContent>
       </Card>
 
-      <div className="grid md:grid-cols-2 gap-8 items-start">
-        <Card>
-          <CardHeader>
-            <CardTitle>Raise a Support Ticket</CardTitle>
-            <CardDescription>For specific queries, please fill out the form below.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="category"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Query Category</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value} disabled={isSubmitting}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="account_services">Account Services</SelectItem>
-                          <SelectItem value="fund_transfer">Fund Transfer / Payments</SelectItem>
-                          <SelectItem value="loans">Loans & Deposits</SelectItem>
-                          <SelectItem value="technical_issue">Technical Issue</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
-                  control={form.control}
-                  name="subject"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Subject</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., Issue with last transaction" {...field} disabled={isSubmitting} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Please describe your issue in detail..." className="min-h-[120px]" {...field} disabled={isSubmitting} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {isSubmitting ? "Submitting..." : "Submit Ticket"}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-        
+      <div className="grid grid-cols-1 gap-8 items-start">
         <Card>
           <CardHeader>
             <CardTitle>Frequently Asked Questions</CardTitle>

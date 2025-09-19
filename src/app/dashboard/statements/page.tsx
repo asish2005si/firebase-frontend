@@ -67,7 +67,14 @@ export default function StatementsPage() {
 
   const summary = useMemo(() => {
     if (filteredTransactions.length === 0) {
-        return { openingBalance: 0, closingBalance: 0, totalCredits: 0, totalDebits: 0 };
+        // Find the latest transaction before the start date to estimate an opening balance
+        const transactionsBeforeRange = transactions
+            .filter(t => dateRange?.from && new Date(t.date) < dateRange.from)
+            .sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        
+        const openingBalance = transactionsBeforeRange.length > 0 ? transactionsBeforeRange[0].balance : 0;
+        
+        return { openingBalance, closingBalance: openingBalance, totalCredits: 0, totalDebits: 0 };
     }
     
     const sorted = [...filteredTransactions].sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -83,7 +90,7 @@ export default function StatementsPage() {
 
     return { openingBalance, closingBalance, totalCredits, totalDebits };
 
-  }, [filteredTransactions]);
+  }, [filteredTransactions, transactions, dateRange]);
   
   return (
     <div className="flex flex-col gap-8">

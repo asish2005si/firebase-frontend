@@ -20,7 +20,7 @@ export function CustomerProfile({ customer }: CustomerProfileProps) {
   const [lastLogin, setLastLogin] = useState("");
 
   useEffect(() => {
-    // This will only run on the client, after hydration
+    // This will only run on the client, after hydration, to avoid mismatch
     const now = new Date();
     // Move one day back to simulate a previous login
     now.setDate(now.getDate() - 1);

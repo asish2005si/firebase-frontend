@@ -56,16 +56,9 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ className, ...props }) => (
-          <ChevronLeft className={cn("h-4 w-4", className)} {...props} />
-        ),
-        IconRight: ({ className, ...props }) => (
-          <ChevronRight className={cn("h-4 w-4", className)} {...props} />
-        ),
+        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
+        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
       }}
-      captionLayout="dropdown-buttons"
-      fromYear={new Date().getFullYear() - 80}
-      toYear={new Date().getFullYear()}
       {...props}
     />
   )
@@ -73,5 +66,3 @@ function Calendar({
 Calendar.displayName = "Calendar"
 
 export { Calendar }
-
-

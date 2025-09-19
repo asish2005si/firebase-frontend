@@ -35,6 +35,7 @@ import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetContent,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import { ThemeToggle } from "../theme-toggle";
 import { useToast } from "@/hooks/use-toast";

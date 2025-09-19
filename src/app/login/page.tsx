@@ -163,15 +163,6 @@ export default function LoginPage() {
                           Open a New Account
                       </Link>
                   </div>
-                   <Separator className="my-6" />
-                   <div className="text-center text-sm">
-                      <Link
-                          href="/admin/login"
-                          className="font-medium text-muted-foreground hover:text-foreground"
-                      >
-                          Switch to Admin Login
-                      </Link>
-                  </div>
               </CardContent>
               </Card>
             </ClientOnly>

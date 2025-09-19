@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -6,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { ApplicationData } from "@/lib/mock-application-data";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { CheckCircle, XCircle, Loader2, FileCheck2, User, CreditCard, PenSquare, Home, Shield } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { updateApplicationStatus } from "@/app/actions/applications";
@@ -24,6 +25,18 @@ const DetailItem = ({ label, value, isHighlight = false }: { label: string; valu
         </div>
     );
 }
+
+const DocumentItem = ({ label, icon }: { label: string; icon: React.ReactNode }) => (
+    <div className="flex flex-col items-center justify-center gap-2 p-4 border rounded-lg bg-muted/50 text-center">
+        <div className="text-primary">{icon}</div>
+        <p className="text-sm font-medium">{label}</p>
+        <div className="flex items-center gap-1 text-xs text-green-600">
+            <FileCheck2 className="h-3 w-3" />
+            <span>Uploaded</span>
+        </div>
+    </div>
+);
+
 
 const formatCurrency = (amount: number) => {
     if (typeof amount !== 'number') return '-';
@@ -131,6 +144,16 @@ export function AdminApplicationView({ application }: { application: Application
             </>
         )}
 
+        <Separator />
+        <h3 className="text-lg font-semibold text-foreground">Uploaded Documents</h3>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <DocumentItem label="Photograph" icon={<User className="h-6 w-6" />} />
+            <DocumentItem label="PAN Card" icon={<CreditCard className="h-6 w-6" />} />
+            <DocumentItem label="Signature" icon={<PenSquare className="h-6 w-6" />} />
+            <DocumentItem label="Address Proof" icon={<Home className="h-6 w-6" />} />
+            <DocumentItem label="Aadhaar Card" icon={<Shield className="h-6 w-6" />} />
+        </div>
+
         {application.status === 'Rejected' && application.reason && (
              <>
                 <Separator />
@@ -189,3 +212,4 @@ export function AdminApplicationView({ application }: { application: Application
     </>
   );
 }
+

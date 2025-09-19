@@ -21,8 +21,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ClientOnly } from "@/components/client-only";
 import { Separator } from "@/components/ui/separator";
+import { ClientOnly } from "@/components/client-only";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required."),
@@ -63,34 +63,52 @@ export default function LoginPage() {
   };
 
   return (
-    <ClientOnly>
        <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-            <Link href="/" className="flex items-center gap-2 justify-center text-primary">
-              <Landmark className="h-8 w-8" />
-              <span className="text-3xl font-bold font-headline">Nexus Bank</span>
-            </Link>
-        </div>
-        <Card>
-        <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Welcome Back!</CardTitle>
-            <CardDescription>
-            Securely access your account anytime, anywhere.
-            </CardDescription>
-        </CardHeader>
-        <CardContent>
-            <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                 <FormField
+        <ClientOnly>
+          <div className="w-full max-w-md">
+            <div className="text-center mb-8">
+                <Link href="/" className="flex items-center gap-2 justify-center text-primary">
+                  <Landmark className="h-8 w-8" />
+                  <span className="text-3xl font-bold font-headline">Nexus Bank</span>
+                </Link>
+            </div>
+            <Card>
+            <CardHeader className="text-center">
+                <CardTitle className="text-2xl">Welcome Back!</CardTitle>
+                <CardDescription>
+                Securely access your account anytime, anywhere.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="username"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Username</FormLabel>
+                            <FormControl>
+                                <Input
+                                placeholder="Enter your username"
+                                {...field}
+                                disabled={isSubmitting}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
                     control={form.control}
-                    name="username"
+                    name="password"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel>Password</FormLabel>
                         <FormControl>
                             <Input
-                            placeholder="Enter your username"
+                            type="password"
+                            placeholder="••••••••"
                             {...field}
                             disabled={isSubmitting}
                             />
@@ -98,61 +116,43 @@ export default function LoginPage() {
                         <FormMessage />
                         </FormItem>
                     )}
-                />
-                <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                        <Input
-                        type="password"
-                        placeholder="••••••••"
-                        {...field}
-                        disabled={isSubmitting}
-                        />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <div className="text-right text-sm">
-                <Link href="/forgot-password"
-                    className="font-medium text-primary hover:underline"
-                >
-                    Forgot Password?
-                </Link>
+                    />
+                    <div className="text-right text-sm">
+                    <Link href="/forgot-password"
+                        className="font-medium text-primary hover:underline"
+                    >
+                        Forgot Password?
+                    </Link>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isSubmitting ? "Signing In..." : "Login"}
+                    </Button>
+                </form>
+                </Form>
+                <Separator className="my-6" />
+                <div className="text-center text-sm">
+                    <p className="text-muted-foreground">Don't have online access yet?</p>
+                    <Link
+                        href="/register"
+                        className="font-medium text-primary hover:underline"
+                    >
+                        Register for Online Banking
+                    </Link>
                 </div>
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isSubmitting ? "Signing In..." : "Login"}
-                </Button>
-            </form>
-            </Form>
-            <Separator className="my-6" />
-            <div className="text-center text-sm">
-                <p className="text-muted-foreground">Don't have online access yet?</p>
-                 <Link
-                    href="/register"
-                    className="font-medium text-primary hover:underline"
-                >
-                    Register for Online Banking
-                </Link>
-            </div>
-             <div className="mt-4 text-center text-sm">
-                 <p className="text-muted-foreground">New to Nexus Bank?</p>
-                <Link
-                    href="/open-account"
-                    className="font-medium text-primary hover:underline"
-                >
-                    Open a New Account
-                </Link>
-            </div>
-        </CardContent>
-        </Card>
-      </div>
+                <div className="mt-4 text-center text-sm">
+                    <p className="text-muted-foreground">New to Nexus Bank?</p>
+                    <Link
+                        href="/open-account"
+                        className="font-medium text-primary hover:underline"
+                    >
+                        Open a New Account
+                    </Link>
+                </div>
+            </CardContent>
+            </Card>
+          </div>
+        </ClientOnly>
     </div>
-    </ClientOnly>
   );
 }

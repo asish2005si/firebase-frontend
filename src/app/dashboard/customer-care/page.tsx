@@ -1,18 +1,9 @@
 
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Phone, Mail, Loader2 } from "lucide-react";
+import { Phone, Mail } from "lucide-react";
 
 const faqs = [
   {
@@ -34,8 +25,6 @@ const faqs = [
 ];
 
 export default function CustomerCarePage() {
-  const { toast } = useToast();
-
   return (
       <div className="flex flex-col gap-8">
       <Card>

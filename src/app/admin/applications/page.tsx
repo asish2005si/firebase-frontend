@@ -1,3 +1,4 @@
+
 import { getApplications } from "@/app/actions/applications";
 import { AdminApplicationsTable } from "@/components/admin/admin-applications-table";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -9,9 +10,9 @@ export default async function AdminDashboardPage() {
     const applications = await getApplications();
 
     const totalApplications = applications.length;
-    const pendingApplications = applications.filter(app => app.status === 'Pending').length;
-    const approvedApplications = applications.filter(app => app.status === 'Approved').length;
-    const rejectedApplications = applications.filter(app => app.status === 'Rejected').length;
+    const pendingApps = applications.filter(app => app.status === 'Pending');
+    const approvedApps = applications.filter(app => app.status === 'Approved');
+    const rejectedApps = applications.filter(app => app.status === 'Rejected');
     
     // Sort applications by date, most recent first
     const recentApplications = [...applications].sort((a, b) => new Date(b.applicationDate).getTime() - new Date(a.applicationDate).getTime());
@@ -35,7 +36,7 @@ export default async function AdminDashboardPage() {
                         <Clock className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{pendingApplications}</div>
+                        <div className="text-2xl font-bold">{pendingApps.length}</div>
                     </CardContent>
                 </Card>
                 <Card>
@@ -44,7 +45,7 @@ export default async function AdminDashboardPage() {
                         <CheckCircle className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{approvedApplications}</div>
+                        <div className="text-2xl font-bold">{approvedApps.length}</div>
                     </CardContent>
                 </Card>
                 <Card>
@@ -53,17 +54,36 @@ export default async function AdminDashboardPage() {
                         <XCircle className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{rejectedApplications}</div>
+                        <div className="text-2xl font-bold">{rejectedApps.length}</div>
                     </CardContent>
                 </Card>
             </div>
              <Card>
                 <CardHeader>
-                    <CardTitle>Recent Applications</CardTitle>
-                    <CardDescription>A list of the most recently submitted account applications.</CardDescription>
+                    <CardTitle>Manage Applications</CardTitle>
+                    <CardDescription>View and manage all account applications.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <AdminApplicationsTable applications={recentApplications} />
+                    <Tabs defaultValue="all">
+                        <TabsList className="grid w-full grid-cols-4">
+                            <TabsTrigger value="all">All</TabsTrigger>
+                            <TabsTrigger value="pending">Pending</TabsTrigger>
+                            <TabsTrigger value="approved">Approved</TabsTrigger>
+                            <TabsTrigger value="rejected">Rejected</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="all" className="mt-4">
+                            <AdminApplicationsTable applications={recentApplications} />
+                        </TabsContent>
+                        <TabsContent value="pending" className="mt-4">
+                            <AdminApplicationsTable applications={pendingApps} />
+                        </TabsContent>
+                        <TabsContent value="approved" className="mt-4">
+                            <AdminApplicationsTable applications={approvedApps} />
+                        </TabsContent>
+                        <TabsContent value="rejected" className="mt-4">
+                            <AdminApplicationsTable applications={rejectedApps} />
+                        </TabsContent>
+                    </Tabs>
                 </CardContent>
             </Card>
         </div>

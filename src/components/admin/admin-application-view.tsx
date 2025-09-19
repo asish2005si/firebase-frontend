@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -7,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { ApplicationData } from "@/lib/mock-application-data";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, Loader2, FileCheck2, User, CreditCard, PenSquare, Home, Shield } from "lucide-react";
+import { CheckCircle, XCircle, Loader2, FileCheck2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { updateApplicationStatus } from "@/app/actions/applications";
@@ -15,6 +14,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import Image from "next/image";
 
 const DetailItem = ({ label, value, isHighlight = false }: { label: string; value?: string | number; isHighlight?: boolean }) => {
     if (!value && value !== 0) return null;
@@ -26,14 +26,13 @@ const DetailItem = ({ label, value, isHighlight = false }: { label: string; valu
     );
 }
 
-const DocumentItem = ({ label, icon }: { label: string; icon: React.ReactNode }) => (
-    <div className="flex flex-col items-center justify-center gap-2 p-4 border rounded-lg bg-muted/50 text-center">
-        <div className="text-primary">{icon}</div>
-        <p className="text-sm font-medium">{label}</p>
-        <div className="flex items-center gap-1 text-xs text-green-600">
-            <FileCheck2 className="h-3 w-3" />
-            <span>Uploaded</span>
+const DocumentItem = ({ label, imageUrl }: { label: string; imageUrl: string }) => (
+    <div className="flex flex-col items-center justify-center gap-2 p-2 border rounded-lg bg-muted/50 text-center">
+        <div className="relative w-full h-24 rounded-md overflow-hidden">
+             <Image src={imageUrl} alt={label} layout="fill" objectFit="cover" />
         </div>
+        <p className="text-sm font-medium mt-2">{label}</p>
+        <a href={imageUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">View Document</a>
     </div>
 );
 
@@ -146,12 +145,12 @@ export function AdminApplicationView({ application }: { application: Application
 
         <Separator />
         <h3 className="text-lg font-semibold text-foreground">Uploaded Documents</h3>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <DocumentItem label="Photograph" icon={<User className="h-6 w-6" />} />
-            <DocumentItem label="PAN Card" icon={<CreditCard className="h-6 w-6" />} />
-            <DocumentItem label="Signature" icon={<PenSquare className="h-6 w-6" />} />
-            <DocumentItem label="Address Proof" icon={<Home className="h-6 w-6" />} />
-            <DocumentItem label="Aadhaar Card" icon={<Shield className="h-6 w-6" />} />
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+            <DocumentItem label="Photograph" imageUrl="https://placehold.co/400x400/EFEFEF/333333/png?text=Photo" />
+            <DocumentItem label="PAN Card" imageUrl="https://placehold.co/600x400/EFEFEF/333333/png?text=PAN+Card" />
+            <DocumentItem label="Signature" imageUrl="https://placehold.co/600x200/EFEFEF/333333/png?text=Signature" />
+            <DocumentItem label="Address Proof" imageUrl="https://placehold.co/400x600/EFEFEF/333333/png?text=Address+Proof" />
+            <DocumentItem label="Aadhaar Card" imageUrl="https://placehold.co/600x400/EFEFEF/333333/png?text=Aadhaar" />
         </div>
 
         {application.status === 'Rejected' && application.reason && (

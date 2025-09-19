@@ -20,6 +20,7 @@ export function CustomerProfile({ customer }: CustomerProfileProps) {
   const [lastLogin, setLastLogin] = useState("");
 
   useEffect(() => {
+    // This will only run on the client, after hydration
     setLastLogin(new Date().toLocaleString());
   }, []);
 

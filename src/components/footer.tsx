@@ -9,6 +9,7 @@ export function Footer() {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
+    // This will only run on the client, after hydration
     setCurrentYear(new Date().getFullYear());
   }, []);
 

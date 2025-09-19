@@ -15,7 +15,7 @@ import {
   LifeBuoy,
   Settings,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -32,10 +32,12 @@ import {
   SheetDescription,
   SheetTitle,
   SheetTrigger,
+  SheetClose,
 } from "@/components/ui/sheet";
 import { ThemeToggle } from "../theme-toggle";
 import { ClientOnly } from "../client-only";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const navItems = [
     { href: "/dashboard", icon: CircleUser, label: "My Accounts & Profile" },
@@ -50,6 +52,7 @@ const navItems = [
 
 export function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const { toast } = useToast();
 
   const handleLogout = () => {
@@ -64,7 +67,7 @@ export function Header() {
     <header className="flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 sticky top-0 z-30">
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
         <Link
-          href="/"
+          href="/dashboard"
           className="flex items-center gap-2 text-lg font-semibold md:text-base"
         >
           <Landmark className="h-6 w-6 text-primary" />
@@ -74,7 +77,10 @@ export function Header() {
             <Link
               key={item.label}
               href={item.href}
-              className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+              className={cn(
+                "flex items-center gap-2 transition-colors hover:text-foreground",
+                pathname === item.href ? "text-foreground font-semibold" : "text-muted-foreground"
+                )}
             >
                 <item.icon className="h-5 w-5" />
                 {item.label}
@@ -93,22 +99,26 @@ export function Header() {
           <SheetDescription className="sr-only">Main navigation links for the dashboard.</SheetDescription>
           <nav className="grid gap-6 text-lg font-medium">
             <Link
-              href="/"
+              href="/dashboard"
               className="flex items-center gap-2 text-lg font-semibold"
             >
               <Landmark className="h-6 w-6" />
-              <span className="sr-only">Nexus Bank</span>
+              <span>Nexus Bank</span>
             </Link>
             {navItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-            >
-                <item.icon className="h-5 w-5" />
-                {item.label}
-            </Link>
-        ))}
+            <SheetClose asChild key={item.label}>
+                <Link
+                href={item.href}
+                className={cn(
+                    "flex items-center gap-4 px-2.5 hover:text-foreground",
+                    pathname === item.href ? "text-foreground" : "text-muted-foreground"
+                )}
+                >
+                    <item.icon className="h-5 w-5" />
+                    {item.label}
+                </Link>
+            </SheetClose>
+            ))}
           </nav>
         </SheetContent>
       </Sheet>

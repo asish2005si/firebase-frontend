@@ -28,6 +28,7 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { IfscFinder } from "./ifsc-finder";
 import type { Payment } from "@/app/dashboard/payments/page";
+import { OtpDialog } from "./otp-dialog";
 
 const otherBanks = [
     "Allahabad Bank", "Andhra Bank", "Axis Bank", "Bandhan Bank", "Bank of Baroda",
@@ -104,6 +105,8 @@ const transferSchema = z.object({
     }
 });
 
+export type TransferFormData = z.infer<typeof transferSchema>;
+
 type FundTransferFormProps = {
   onSuccessfulTransfer: (payment: Omit<Payment, 'id' | 'date'>) => void;
 };
@@ -122,8 +125,10 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isIfscFinderOpen, setIsIfscFinderOpen] = useState(false);
+  const [showOtpDialog, setShowOtpDialog] = useState(false);
+  const [formData, setFormData] = useState<TransferFormData | null>(null);
 
-  const form = useForm<z.infer<typeof transferSchema>>({
+  const form = useForm<TransferFormData>({
     resolver: zodResolver(transferSchema),
     defaultValues: {
       transferType: "internal",
@@ -138,20 +143,32 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
 
   const transferType = form.watch("transferType");
   
-  const onSubmit = async (values: z.infer<typeof transferSchema>) => {
+  const onSubmit = async (values: TransferFormData) => {
+    setFormData(values);
+    setShowOtpDialog(true);
+    toast({
+        title: "OTP Sent",
+        description: "An OTP has been sent to your registered contact method to authorize this transaction.",
+    });
+  }
+
+  const handleOtpVerification = async () => {
+    if (!formData) return;
+
     setIsSubmitting(true);
+    setShowOtpDialog(false);
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     onSuccessfulTransfer({
         type: "Fund Transfer",
-        description: values.recipientName,
-        amount: values.amount,
+        description: formData.recipientName,
+        amount: formData.amount,
         status: "Success",
     });
 
     toast({
         title: "Transfer Successful!",
-        description: `${formatCurrency(values.amount)} has been successfully transferred to ${values.recipientName}.`
+        description: `${formatCurrency(formData.amount)} has been successfully transferred to ${formData.recipientName}.`
     });
 
     form.reset({
@@ -163,10 +180,12 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
         amount: undefined,
         remarks: "",
     });
+    setFormData(null);
     setIsSubmitting(false);
   }
 
   return (
+    <>
     <Card className="mt-6 border-0 shadow-none">
       <CardHeader>
         <CardTitle>Transfer Funds</CardTitle>
@@ -315,5 +334,13 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
         </Form>
       </CardContent>
     </Card>
+
+    <OtpDialog
+        isOpen={showOtpDialog}
+        onClose={() => setShowOtpDialog(false)}
+        onVerify={handleOtpVerification}
+        isVerifying={isSubmitting}
+    />
+    </>
   );
 }

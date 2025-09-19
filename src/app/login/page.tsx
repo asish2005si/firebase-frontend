@@ -51,11 +51,12 @@ export default function LoginPage() {
     
     if (result.success) {
         toast({
-          title: "Login Successful",
-          description: "Redirecting to your dashboard...",
+          title: "OTP Required",
+          description: "An OTP has been sent to your registered contact method.",
         });
         const destination = redirectUrl || "/dashboard";
-        router.push(destination);
+        // Redirect to OTP page for 2FA
+        router.push(`/otp?email=${result.email}&redirect=${destination}`);
     } else {
         toast({
           variant: "destructive",

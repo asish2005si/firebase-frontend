@@ -26,6 +26,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Payment } from "@/app/dashboard/payments/page";
+import { OtpDialog } from "./otp-dialog";
 
 const billPaymentSchema = z.object({
   category: z.string({ required_error: "Please select a bill category." }),
@@ -40,6 +41,8 @@ const billers: Record<string, string[]> = {
     "Gas": ["Mahanagar Gas", "Adani Gas"],
     "Internet": ["JioFiber", "Airtel Xstream Fiber", "Hathway Broadband"],
 }
+
+export type BillPaymentFormData = z.infer<typeof billPaymentSchema>;
 
 type BillPaymentFormProps = {
   onSuccessfulPayment: (payment: Omit<Payment, 'id' | 'date'>) => void;
@@ -57,8 +60,10 @@ const formatCurrency = (amount: number) => {
 export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showOtpDialog, setShowOtpDialog] = useState(false);
+  const [formData, setFormData] = useState<BillPaymentFormData | null>(null);
 
-  const form = useForm<z.infer<typeof billPaymentSchema>>({
+  const form = useForm<BillPaymentFormData>({
     resolver: zodResolver(billPaymentSchema),
     defaultValues: {
       consumerNumber: "",
@@ -68,31 +73,45 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
 
   const selectedCategory = form.watch("category");
 
-  const onSubmit = async (values: z.infer<typeof billPaymentSchema>) => {
-    setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    onSuccessfulPayment({
-        type: "Bill Payment",
-        description: values.biller,
-        amount: values.amount,
-        status: "Success",
-    });
-
+  const onSubmit = async (values: BillPaymentFormData) => {
+    setFormData(values);
+    setShowOtpDialog(true);
     toast({
-        title: "Bill Paid Successfully!",
-        description: `Your payment of ${formatCurrency(values.amount)} for ${values.biller} was successful.`
+        title: "OTP Sent",
+        description: "An OTP has been sent to authorize this payment.",
     });
-    form.reset({
-      consumerNumber: "",
-      amount: undefined,
-      category: undefined,
-      biller: undefined,
-    });
-    setIsSubmitting(false);
+  }
+
+  const handleOtpVerification = async () => {
+      if (!formData) return;
+      
+      setIsSubmitting(true);
+      setShowOtpDialog(false);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      onSuccessfulPayment({
+          type: "Bill Payment",
+          description: formData.biller,
+          amount: formData.amount,
+          status: "Success",
+      });
+
+      toast({
+          title: "Bill Paid Successfully!",
+          description: `Your payment of ${formatCurrency(formData.amount)} for ${formData.biller} was successful.`
+      });
+      form.reset({
+        consumerNumber: "",
+        amount: undefined,
+        category: undefined,
+        biller: undefined,
+      });
+      setFormData(null);
+      setIsSubmitting(false);
   }
 
   return (
+    <>
     <Card className="mt-6 border-0 shadow-none">
       <CardHeader>
         <CardTitle>Pay Your Bills</CardTitle>
@@ -183,11 +202,18 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
 
             <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isSubmitting ? "Paying..." : "Pay Bill"}
+              {isSubmitting ? "Processing..." : "Pay Bill"}
             </Button>
           </form>
         </Form>
       </CardContent>
     </Card>
+     <OtpDialog
+        isOpen={showOtpDialog}
+        onClose={() => setShowOtpDialog(false)}
+        onVerify={handleOtpVerification}
+        isVerifying={isSubmitting}
+    />
+    </>
   );
 }

@@ -49,8 +49,8 @@ function OTPFormComponent() {
     // Simulate OTP check
     if (values.otp === "123456") { // Hardcoded OTP for demo
       toast({
-        title: "Login Successful!",
-        description: "Welcome to Nexus Bank.",
+        title: "Verification Successful!",
+        description: "Your action has been confirmed.",
       });
       router.push(redirectUrl || "/dashboard");
     } else {
@@ -84,7 +84,7 @@ function OTPFormComponent() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Two-Factor Authentication</CardTitle>
             <CardDescription>
-              A 6-digit OTP has been sent to {email ? <strong>{email}</strong> : 'your email'}.
+              A 6-digit OTP has been sent to {email ? <strong>{email}</strong> : 'your registered contact method'}.
             </CardDescription>
           </CardHeader>
           <CardContent>

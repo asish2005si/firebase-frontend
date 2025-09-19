@@ -19,6 +19,7 @@ export async function registerUser(data: any) {
             accountNumber: data.accountNumber,
             username: data.username,
             password: hashedPassword,
+            email: data.mobileOrEmail, // Assuming mobileOrEmail can be an email
         });
 
         await db.write('users', users);
@@ -46,7 +47,8 @@ export async function loginUser(data: any) {
         }
 
         // In a real app, you would create a session/token here
-        return { success: true, message: 'Login successful!' };
+        // For OTP, we return success and the user's email (or other contact info)
+        return { success: true, message: 'Login successful! OTP required.', email: user.email };
     } catch (error) {
         console.error('Login error:', error);
         return { success: false, message: 'An unexpected error occurred.' };

@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Download, Home, Car, User, GraduationCap, BadgePercent, Gift } from "lucide-react";
+import { ArrowRight, CheckCircle2, Download, Home, Car, User, GraduationCap, BadgePercent, Gift, CalendarClock, IndianRupee } from "lucide-react";
 
 const loanProducts = [
   {
@@ -13,12 +13,11 @@ const loanProducts = [
     icon: <Home className="h-5 w-5" />,
     title: "Home Loan",
     tagline: "Your Dream Home, Closer Than Ever.",
-    description: "Flexible loans for your dream home.",
-    interestRate: "Rates from 8.5% p.a.",
-    highlights: [
-      "Tenure up to 30 years",
-      "Special rates for women",
-      "Minimal documentation",
+    description: "Flexible loans for your dream home with attractive interest rates and flexible tenure options to suit your needs.",
+    details: [
+      { icon: <BadgePercent />, text: "Rates from 8.5% p.a. (Fixed/Floating)" },
+      { icon: <CalendarClock />, text: "Tenure up to 30 years" },
+      { icon: <IndianRupee />, text: "Max amount based on income" },
     ],
     festiveOffer: "Zero processing fees this month!",
   },
@@ -27,12 +26,11 @@ const loanProducts = [
     icon: <Car className="h-5 w-5" />,
     title: "Car Loan",
     tagline: "Get Behind the Wheel, Faster.",
-    description: "Attractive loans for your new car.",
-    interestRate: "Rates from 9.25% p.a.",
-    highlights: [
-      "Up to 100% on-road funding",
-      "Tenure up to 7 years",
-      "Quick disbursal",
+    description: "Attractive loans for your new car with competitive interest rates and up to 100% on-road funding.",
+    details: [
+      { icon: <BadgePercent />, text: "Rates from 9.25% p.a." },
+      { icon: <CalendarClock />, text: "Tenure up to 7 years" },
+      { icon: <IndianRupee />, text: "Up to 100% on-road funding" },
     ],
     festiveOffer: "Free car accessory kit with every loan!",
   },
@@ -41,12 +39,11 @@ const loanProducts = [
     icon: <User className="h-5 w-5" />,
     title: "Personal Loan",
     tagline: "Your Goals, Your Loan, Your Terms.",
-    description: "The financial boost you need, right away.",
-    interestRate: "From 10.75% p.a.",
-    highlights: [
-      "Loans up to INR 25 Lakhs",
-      "No collateral required",
-      "Instant approval for select customers",
+    description: "The financial boost you need for weddings, vacations, or any personal need, right away.",
+    details: [
+      { icon: <BadgePercent />, text: "Rates from 10.75% p.a." },
+      { icon: <CalendarClock />, text: "Tenure up to 5 years" },
+      { icon: <CheckCircle2 />, text: "Minimal documentation" },
     ],
     festiveOffer: "50% off processing fees on all loans.",
   },
@@ -55,12 +52,11 @@ const loanProducts = [
     icon: <GraduationCap className="h-5 w-5" />,
     title: "Education Loan",
     tagline: "Invest in Your Future.",
-    description: "Covering courses in India and abroad.",
-    interestRate: "Subsidized rates for premier institutes.",
-    highlights: [
-      "Covers tuition & living costs",
-      "Moratorium period",
-      "Tax benefits under Sec 80E",
+    description: "Covering courses in India and abroad with flexible repayment options after your studies.",
+    details: [
+      { icon: <BadgePercent />, text: "Subsidized interest rates" },
+      { icon: <CalendarClock />, text: "Flexible repayment options" },
+      { icon: <CheckCircle2 />, text: "Covers tuition, fees, & living costs" },
     ],
     festiveOffer: "Free international student card.",
   },
@@ -98,10 +94,10 @@ export function LoanProductsSection() {
                     <p className="text-muted-foreground mt-2">{loan.description}</p>
                     
                     <div className="my-6 space-y-3">
-                        {loan.highlights.map(highlight => (
-                            <div key={highlight} className="flex items-center">
-                                <CheckCircle2 className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                                <span className="text-sm">{highlight}</span>
+                        {loan.details.map((detail, i) => (
+                            <div key={i} className="flex items-center gap-3">
+                                <div className="text-primary">{detail.icon}</div>
+                                <span>{detail.text}</span>
                             </div>
                         ))}
                     </div>

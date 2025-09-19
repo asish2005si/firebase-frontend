@@ -1,17 +1,11 @@
 
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CreditCard, ShieldCheck, Zap, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import placeholderImages from "@/app/lib/placeholder-images.json";
 
 const features = [
   {
@@ -32,8 +26,9 @@ const features = [
 ];
 
 export function SmartCardSection() {
+  const cardImage = placeholderImages["smart-card"];
   return (
-    <section id="cards" className="py-20 bg-gradient-to-r from-blue-100 to-sky-100 dark:from-background dark:to-muted">
+    <section id="cards" className="py-20 bg-muted/40">
       <div className="container grid lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
           <h2 className="text-3xl md:text-4xl font-bold text-primary font-headline">
@@ -65,12 +60,12 @@ export function SmartCardSection() {
         </div>
         <div className="hidden lg:flex justify-center items-center">
           <Image
-            src="https://picsum.photos/500/500"
+            src={cardImage.src}
             alt="Smart card illustration"
             width={500}
             height={500}
             className="rounded-lg shadow-2xl transform transition-transform duration-500 hover:scale-105"
-            data-ai-hint="credit card"
+            data-ai-hint={cardImage.hint}
           />
         </div>
       </div>

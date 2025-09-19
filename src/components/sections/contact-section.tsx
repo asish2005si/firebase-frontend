@@ -1,18 +1,9 @@
 
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Loader2, Mail, Phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 
 export function ContactSection() {
-  const { toast } = useToast();
   
   return (
     <section id="contact" className="py-20 bg-background">
@@ -40,7 +31,7 @@ export function ContactSection() {
           </div>
         </div>
         <div>
-          <p className="text-center text-muted-foreground">For support, please email or call us directly. The contact form has been removed.</p>
+          <p className="text-center text-muted-foreground">For support, please email or call us directly.</p>
         </div>
       </div>
     </section>

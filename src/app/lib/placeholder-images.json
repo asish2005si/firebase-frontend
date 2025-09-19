@@ -1,0 +1,11 @@
+
+{
+    "hero-background": {
+        "src": "https://picsum.photos/seed/hero/1920/1080",
+        "hint": "modern cityscape finance"
+    },
+    "smart-card": {
+        "src": "https://picsum.photos/seed/smartcard/500/500",
+        "hint": "credit card design"
+    }
+}

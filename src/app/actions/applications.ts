@@ -68,24 +68,34 @@ export async function getApplicationById(applicationId: string): Promise<Applica
     return application || null;
 }
 
-export async function updateApplicationStatus(applicationId: string, newStatus: "Approved" | "Rejected"): Promise<{ success: boolean; message?: string }> {
+export async function updateApplicationStatus(applicationId: string, newStatus: "Approved" | "Rejected", reason?: string): Promise<{ success: boolean; message?: string }> {
     try {
         let userApplications = (await db.read('applications')) || [];
         let mockApplications = (await db.read('mock-applications')) || [];
 
         let appUpdated = false;
 
+        const updateLogic = (app: ApplicationData) => {
+            app.status = newStatus;
+            if (newStatus === 'Rejected') {
+                app.reason = reason || 'No reason provided.';
+            } else {
+                // Remove reason if it exists and status is changed to Approved
+                delete app.reason;
+            }
+        };
+
         // Try to find and update in user-submitted applications
         const userAppIndex = userApplications.findIndex((app: ApplicationData) => app.applicationId.toLowerCase() === applicationId.toLowerCase());
         if (userAppIndex !== -1) {
-            userApplications[userAppIndex].status = newStatus;
+            updateLogic(userApplications[userAppIndex]);
             await db.write('applications', userApplications);
             appUpdated = true;
         } else {
             // If not found, try to find and update in mock applications
             const mockAppIndex = mockApplications.findIndex((app: ApplicationData) => app.applicationId.toLowerCase() === applicationId.toLowerCase());
             if (mockAppIndex !== -1) {
-                mockApplications[mockAppIndex].status = newStatus;
+                updateLogic(mockApplications[mockAppIndex]);
                 await db.write('mock-applications', mockApplications);
                 appUpdated = true;
             }

@@ -40,9 +40,10 @@ export function StatusCard({ status, reason }: StatusCardProps) {
         <CardTitle className="text-2xl mt-4">{config.title}</CardTitle>
         <CardDescription>{config.description}</CardDescription>
         {status === "Rejected" && reason && (
-            <p className="text-sm font-semibold text-red-600 mt-2 text-center p-2 bg-red-500/10 rounded-md">
-                Reason: {reason}
-            </p>
+            <div className="text-left w-full mt-4 p-3 bg-red-900/20 rounded-md border border-red-500/30">
+              <p className="font-semibold text-destructive mb-1">Reason for Rejection:</p>
+              <p className="text-sm text-destructive-foreground/80">{reason}</p>
+            </div>
         )}
       </CardHeader>
     </Card>

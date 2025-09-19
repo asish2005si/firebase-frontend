@@ -11,7 +11,9 @@ import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { updateApplicationStatus } from "@/app/actions/applications";
 import { useState } from "react";
-
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 const DetailItem = ({ label, value, isHighlight = false }: { label: string; value?: string | number; isHighlight?: boolean }) => {
     if (!value && value !== 0) return null;
@@ -43,10 +45,12 @@ export function AdminApplicationView({ application }: { application: Application
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
 
-  const handleUpdateStatus = async (newStatus: "Approved" | "Rejected") => {
+  const handleUpdateStatus = async (newStatus: "Approved" | "Rejected", reason?: string) => {
     setIsSubmitting(true);
-    const result = await updateApplicationStatus(application.applicationId, newStatus);
+    const result = await updateApplicationStatus(application.applicationId, newStatus, reason);
     
     if (result.success) {
       toast({
@@ -63,10 +67,13 @@ export function AdminApplicationView({ application }: { application: Application
       });
     }
     setIsSubmitting(false);
+    setIsRejectDialogOpen(false);
+    setRejectionReason("");
   };
 
 
   return (
+    <>
     <Card>
       <CardHeader className="flex flex-row justify-between items-center">
         <div>
@@ -87,7 +94,7 @@ export function AdminApplicationView({ application }: { application: Application
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <DetailItem label="Full Name" value={application.fullName} />
             <DetailItem label="Father's/Mother's Name" value={application.fatherName} />
-            <DetailItem label="Date of Birth" value={new Date(application.dob).toLocaleDateString("en-GB")} />
+            <DetailItem label="Date of Birth" value={application.dob ? new Date(application.dob).toLocaleDateString("en-GB") : ''} />
             <DetailItem label="Gender" value={application.gender} />
             <DetailItem label="Marital Status" value={application.maritalStatus} />
             <DetailItem label="Mobile Number" value={application.mobile} />
@@ -123,11 +130,20 @@ export function AdminApplicationView({ application }: { application: Application
                 </div>
             </>
         )}
+
+        {application.status === 'Rejected' && application.reason && (
+             <>
+                <Separator />
+                <h3 className="text-lg font-semibold text-destructive">Rejection Reason</h3>
+                <p className="text-sm text-destructive-foreground bg-destructive/10 p-3 rounded-md">{application.reason}</p>
+             </>
+        )}
+
       </CardContent>
       {application.status === 'Pending' && (
         <CardFooter className="border-t pt-6 flex justify-end gap-4">
-            <Button variant="destructive" onClick={() => handleUpdateStatus("Rejected")} disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <XCircle className="mr-2 h-4 w-4" />}
+            <Button variant="destructive" onClick={() => setIsRejectDialogOpen(true)} disabled={isSubmitting}>
+                <XCircle className="mr-2 h-4 w-4" />
                 Reject
             </Button>
             <Button onClick={() => handleUpdateStatus("Approved")} disabled={isSubmitting}>
@@ -137,5 +153,39 @@ export function AdminApplicationView({ application }: { application: Application
         </CardFooter>
       )}
     </Card>
+
+    <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Confirm Rejection</DialogTitle>
+                <DialogDescription>
+                    Please provide a reason for rejecting this application. This will be visible to the applicant.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+                <Label htmlFor="rejection-reason">Rejection Reason</Label>
+                <Textarea 
+                    id="rejection-reason"
+                    value={rejectionReason}
+                    onChange={(e) => setRejectionReason(e.target.value)}
+                    placeholder="e.g., Incomplete documents, information mismatch, etc."
+                />
+            </div>
+            <DialogFooter>
+                <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button 
+                    variant="destructive"
+                    onClick={() => handleUpdateStatus("Rejected", rejectionReason)}
+                    disabled={isSubmitting || !rejectionReason}
+                >
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <XCircle className="mr-2 h-4 w-4" />}
+                    Confirm Rejection
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }

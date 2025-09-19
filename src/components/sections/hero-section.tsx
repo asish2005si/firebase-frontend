@@ -1,22 +1,21 @@
 
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { ClientOnly } from "@/components/client-only";
 import Link from "next/link";
 
 export function HeroSection() {
   return (
     <section className="w-full bg-gradient-to-r from-primary to-secondary">
-      <div className="container grid lg:grid-cols-2 gap-8 items-center min-h-[60vh] py-20">
-        <div className="space-y-6 text-center lg:text-left">
+      <div className="container grid lg:grid-cols-1 gap-8 items-center min-h-[60vh] py-20">
+        <div className="space-y-6 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground font-headline tracking-tight">
             Banking Made <span className="text-accent">Smarter</span>, Not Harder
           </h1>
-          <p className="text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto lg:mx-0">
+          <p className="text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto">
             Experience a new era of banking with personalized services, seamless digital access, and expert financial guidance. Your future starts with Nexus Bank.
           </p>
           <ClientOnly>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/open-account">
                 <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg transition-transform duration-300 hover:scale-105">
                   Open Account
@@ -29,16 +28,6 @@ export function HeroSection() {
               </Link>
             </div>
           </ClientOnly>
-        </div>
-        <div className="hidden lg:flex justify-center items-center">
-            <Image 
-              src="https://picsum.photos/600/400" 
-              alt="Person using online banking on a laptop"
-              width={600}
-              height={400}
-              className="rounded-lg shadow-2xl"
-              data-ai-hint="online banking"
-            />
         </div>
       </div>
     </section>

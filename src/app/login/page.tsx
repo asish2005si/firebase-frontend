@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
-import { Landmark, Loader2 } from "lucide-react";
+import { Landmark, Loader2, User, Lock } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -95,11 +95,15 @@ export default function LoginPage() {
                               <FormItem>
                               <FormLabel>Username</FormLabel>
                               <FormControl>
-                                  <Input
-                                  placeholder="Enter your username"
-                                  {...field}
-                                  disabled={isSubmitting}
-                                  />
+                                <div className="relative">
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                    <Input
+                                    placeholder="Enter your username"
+                                    {...field}
+                                    disabled={isSubmitting}
+                                    className="pl-10"
+                                    />
+                                </div>
                               </FormControl>
                               <FormMessage />
                               </FormItem>
@@ -112,12 +116,16 @@ export default function LoginPage() {
                           <FormItem>
                           <FormLabel>Password</FormLabel>
                           <FormControl>
-                              <Input
-                              type="password"
-                              placeholder="••••••••"
-                              {...field}
-                              disabled={isSubmitting}
-                              />
+                             <div className="relative">
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                type="password"
+                                placeholder="••••••••"
+                                {...field}
+                                disabled={isSubmitting}
+                                className="pl-10"
+                                />
+                            </div>
                           </FormControl>
                           <FormMessage />
                           </FormItem>

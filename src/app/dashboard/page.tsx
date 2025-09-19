@@ -53,8 +53,8 @@ export default async function DashboardPage() {
         <CardContent>
             <div className="p-4 border rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-secondary/20 rounded-full">
-                        <Landmark className="h-6 w-6 text-secondary" />
+                    <div className="p-3 bg-primary/10 rounded-full">
+                        <Landmark className="h-6 w-6 text-primary" />
                     </div>
                     <div>
                         <p className="font-bold text-lg">{account.type}</p>

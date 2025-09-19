@@ -15,7 +15,14 @@ export async function saveApplication(applicationData: Omit<ApplicationData, 'ap
     const allApplications = await getApplications();
     
     const currentYear = new Date().getFullYear();
-    const sequentialNumber = (allApplications.length || 0) + 1;
+    // Find the highest existing sequential number for the current year to avoid collisions
+    const yearApplications = allApplications.filter(app => app.applicationId.startsWith(`NX-${currentYear}-`));
+    const lastSeq = yearApplications.reduce((max, app) => {
+        const seq = parseInt(app.applicationId.split('-')[2], 10);
+        return seq > max ? seq : max;
+    }, 0);
+
+    const sequentialNumber = lastSeq + 1;
     const newApplicationId = `NX-${currentYear}-${String(sequentialNumber).padStart(3, '0')}`;
 
     const newApplication: ApplicationData = {

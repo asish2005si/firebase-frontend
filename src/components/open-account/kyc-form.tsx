@@ -117,12 +117,16 @@ const kycSchema = z.object({
 
 type KycFormData = z.infer<typeof kycSchema>;
 
-const finalSchema = kycSchema.refine(data => {
-    return !!data.otp && data.otp.length === 6;
+const finalKycSchema = kycSchema.refine(data => {
+    if (data.otp) {
+        return data.otp.length === 6;
+    }
+    return false;
 }, {
-    message: "A valid 6-digit OTP is required.",
-    path: ["otp"]
+    message: "A valid 6-digit OTP is required to submit.",
+    path: ["otp"],
 });
+
 
 const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     savings: [
@@ -148,7 +152,7 @@ export function KycForm() {
   const router = useRouter();
 
   const methods = useForm<KycFormData>({
-    resolver: zodResolver(kycSchema),
+    resolver: zodResolver(finalKycSchema),
     defaultValues: {
         accountType: "",
         fullName: "",
@@ -202,7 +206,7 @@ export function KycForm() {
     
     // Add review and OTP steps only if an account type is selected
     if (accountType) {
-        baseSteps.push(<ReviewDetailsForm key="review" />);
+        baseSteps.push(<ReviewDetailsForm key="review" goTo={goTo} />);
         baseSteps.push(<OtpVerificationStep key="otp" />);
     }
     
@@ -250,11 +254,9 @@ export function KycForm() {
   }
 
   async function handleNextStep() {
+    // For the last step, use the final schema resolver for submission
     if (isLastStep) {
-        const result = await methods.trigger(["otp"]);
-        if (result) {
-            await methods.handleSubmit(onSubmit)();
-        }
+        await methods.handleSubmit(onSubmit)();
         return;
     }
     
@@ -265,12 +267,12 @@ export function KycForm() {
     }
 
     const fieldsToValidate = fieldGroups[currentStepIndex];
-    if (fieldsToValidate.length === 0) { 
-        next();
-        return;
-    }
-
-    const result = await methods.trigger(fieldsToValidate as (keyof KycFormData)[]);
+    // Create a temporary resolver with the non-final schema for step-by-step validation
+    const tempResolver = zodResolver(kycSchema);
+    const tempForm = { ...methods, resolver: tempResolver };
+    
+    // Trigger validation for the current step's fields using the temporary resolver
+    const result = await tempForm.trigger(fieldsToValidate as (keyof KycFormData)[]);
 
     if (result) {
         next();
@@ -315,8 +317,7 @@ export function KycForm() {
                         </Button>
                     ) : (
                         <Button 
-                          type="button" 
-                          onClick={handleNextStep}
+                          type="submit"
                           disabled={methods.formState.isSubmitting}
                         >
                             {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

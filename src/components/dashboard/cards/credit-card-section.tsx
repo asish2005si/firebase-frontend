@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { CreditCard, Star, Calendar, Info, IndianRupee } from "lucide-react";
 import { creditCardTypes } from "@/lib/card-data";
+import { getCustomerInfo } from "@/app/actions/transactions";
+
 
 // Mock data for credit card
 const initialCreditCard = {
@@ -18,12 +20,12 @@ const initialCreditCard = {
     cardHolder: "",
     expiryDate: "10/29",
     cardTypeValue: "platinum-credit",
-    totalLimit: 0,
-    availableLimit: 0,
-    unbilledAmount: 0,
-    billDueDate: "",
-    dueAmount: 0,
-    rewardPoints: 0,
+    totalLimit: 250000,
+    availableLimit: 185430.25,
+    unbilledAmount: 64569.75,
+    billDueDate: "2024-08-15",
+    dueAmount: 25300.50,
+    rewardPoints: 12540,
 };
 
 const formatCurrency = (amount: number) => {
@@ -39,6 +41,14 @@ export function CreditCardSection() {
     const [card, setCard] = useState(initialCreditCard);
     const cardInfo = creditCardTypes.find(c => c.value === card.cardTypeValue) || creditCardTypes[0];
     const usagePercentage = card.totalLimit > 0 ? ((card.totalLimit - card.availableLimit) / card.totalLimit) * 100 : 0;
+    
+    useEffect(() => {
+        async function fetchCustomer() {
+            const customer = await getCustomerInfo();
+            setCard(prev => ({...prev, cardHolder: customer.fullName}));
+        }
+        fetchCustomer();
+    }, []);
 
     return (
         <Card className="mt-6 border-0 shadow-none">

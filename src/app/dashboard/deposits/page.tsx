@@ -8,13 +8,9 @@ import { FixedDeposits } from "@/components/dashboard/deposits/fixed-deposits";
 import { RecurringDeposits } from "@/components/dashboard/deposits/recurring-deposits";
 import type { FixedDeposit, RecurringDeposit } from "@/types/deposits";
 
-const initialFixedDeposits: FixedDeposit[] = [];
-
-const initialRecurringDeposits: RecurringDeposit[] = [];
-
 export default function DepositsPage() {
-    const [fds, setFds] = useState<FixedDeposit[]>(initialFixedDeposits);
-    const [rds, setRds] = useState<RecurringDeposit[]>(initialRecurringDeposits);
+    const [fds, setFds] = useState<FixedDeposit[]>([]);
+    const [rds, setRds] = useState<RecurringDeposit[]>([]);
 
     const addFd = (newFd: Omit<FixedDeposit, "id" | "startDate" | "maturityDate" | "status">) => {
         const today = new Date();

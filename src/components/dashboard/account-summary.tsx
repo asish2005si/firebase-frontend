@@ -8,7 +8,9 @@ import { useState, useEffect } from "react";
 type Customer = {
     fullName: string;
     accountNumber: string;
-    email: string;
+    accountType?: string;
+    branch?: string;
+    email?: string;
 }
 
 type CustomerProfileProps = {
@@ -23,22 +25,22 @@ export function CustomerProfile({ customer }: CustomerProfileProps) {
     const now = new Date();
     // Move one day back to simulate a previous login
     now.setDate(now.getDate() - 1);
-    setLastLogin(now.toLocaleString());
+    setLastLogin(now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }));
   }, []);
 
   return (
     <Card>
-        <CardHeader className="flex flex-row justify-between items-center">
+        <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div>
                 <CardTitle className="text-xl font-headline">Welcome back, {customer.fullName || 'Customer'}!</CardTitle>
                 <CardDescription>Here’s a summary of your profile information.</CardDescription>
             </div>
-            {lastLogin && <p className="text-sm text-muted-foreground">Last Login: {lastLogin}</p>}
+            {lastLogin && <p className="text-sm text-muted-foreground mt-2 md:mt-0">Last Login: {lastLogin}</p>}
         </CardHeader>
         <CardContent className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 pt-2">
             <DetailItem label="Full Name" value={customer.fullName} />
             <DetailItem label="Account Number" value={customer.accountNumber} />
-            <DetailItem label="Email Address" value={customer.email} />
+            <DetailItem label="Email Address" value={customer.email || '-'} />
         </CardContent>
     </Card>
   )

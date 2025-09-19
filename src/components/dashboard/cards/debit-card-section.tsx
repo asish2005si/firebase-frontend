@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { CreditCard, Lock, Unlock, Settings, Pin, ShieldCheck, Truck, Globe } from "lucide-react";
 import { debitCardTypes } from "@/lib/card-data";
+import { getCustomerInfo } from "@/app/actions/transactions";
 
 // Mock data for debit card
 const initialDebitCard = {
@@ -26,9 +27,9 @@ const initialDebitCard = {
     internationalUsage: false,
     cardTypeValue: "platinum-debit",
     limits: {
-        atm: 0,
-        pos: 0,
-        online: 0,
+        atm: 40000,
+        pos: 150000,
+        online: 150000,
     }
 };
 
@@ -45,6 +46,14 @@ export function DebitCardSection() {
     const [card, setCard] = useState(initialDebitCard);
     const cardInfo = debitCardTypes.find(c => c.value === card.cardTypeValue) || debitCardTypes[0];
     const { toast } = useToast();
+    
+    useEffect(() => {
+        async function fetchCustomer() {
+            const customer = await getCustomerInfo();
+            setCard(prev => ({...prev, cardHolder: customer.fullName}));
+        }
+        fetchCustomer();
+    }, []);
 
     const handleToggleBlock = () => {
         const newBlockedState = !card.isBlocked;

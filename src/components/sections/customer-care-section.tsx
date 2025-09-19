@@ -57,32 +57,6 @@ export function CustomerCareSection() {
                     </CardContent>
                 </Card>
             </div>
-             <div className="grid md:grid-cols-2 gap-6">
-                <Card className="bg-background">
-                    <CardHeader className="flex-row items-center gap-4">
-                        <Phone className="h-8 w-8 text-primary" />
-                        <div>
-                            <CardTitle>Call Us</CardTitle>
-                             <p className="text-sm text-muted-foreground">Available 24/7 for all your banking needs.</p>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-lg font-semibold">1800-200-5555 (Toll-Free)</p>
-                    </CardContent>
-                </Card>
-                <Card className="bg-background">
-                    <CardHeader className="flex-row items-center gap-4">
-                        <Mail className="h-8 w-8 text-primary" />
-                         <div>
-                            <CardTitle>Email Us</CardTitle>
-                            <p className="text-sm text-muted-foreground">We'll respond within 24 business hours.</p>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-lg font-semibold">support@nexusbank.com</p>
-                    </CardContent>
-                </Card>
-            </div>
         </div>
     </section>
   );

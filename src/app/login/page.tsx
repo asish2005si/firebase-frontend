@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,7 +29,8 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password is required."),
 });
 
-function LoginComponent() {
+
+export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
@@ -62,7 +63,8 @@ function LoginComponent() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <ClientOnly>
+       <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
             <Link href="/" className="flex items-center gap-2 justify-center text-primary">
@@ -151,15 +153,6 @@ function LoginComponent() {
         </Card>
       </div>
     </div>
-  )
-}
-
-export default function LoginPage() {
-  return (
-    <ClientOnly>
-      <Suspense fallback={<div>Loading...</div>}>
-        <LoginComponent />
-      </Suspense>
     </ClientOnly>
   );
 }

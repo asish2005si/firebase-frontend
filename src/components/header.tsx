@@ -5,7 +5,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Landmark, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { ClientOnly } from "@/components/client-only";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -19,8 +19,6 @@ const navLinks = [
 ];
 
 export function Header() {
-  const [isSheetOpen, setIsSheetOpen] = React.useState(false);
-
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
@@ -51,7 +49,7 @@ export function Header() {
                   Login
                 </Button>
               </Link>
-              <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+              <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="md:hidden">
                     <Menu className="h-5 w-5" />
@@ -67,33 +65,35 @@ export function Header() {
                         <Landmark className="h-6 w-6 text-primary" />
                         <span className="font-bold font-headline">Nexus Bank</span>
                       </Link>
-                      <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" onClick={() => setIsSheetOpen(false)}>
-                          <X className="h-5 w-5" />
-                          <span className="sr-only">Close Menu</span>
-                        </Button>
-                      </SheetTrigger>
+                       <SheetClose asChild>
+                         <Button variant="ghost" size="icon">
+                           <X className="h-5 w-5" />
+                           <span className="sr-only">Close Menu</span>
+                         </Button>
+                       </SheetClose>
                     </div>
                     <nav className="flex flex-col gap-4 p-4 mt-4">
                       {navLinks.map((link) => (
-                        <Link
-                          key={link.label}
-                          href={link.href}
-                          onClick={() => setIsSheetOpen(false)}
-                          className="text-lg font-medium text-foreground/80 hover:text-foreground"
-                        >
-                          {link.label}
-                        </Link>
+                        <SheetClose asChild key={link.label}>
+                          <Link
+                            href={link.href}
+                            className="text-lg font-medium text-foreground/80 hover:text-foreground"
+                          >
+                            {link.label}
+                          </Link>
+                        </SheetClose>
                       ))}
                     </nav>
                     <div className="mt-auto p-4 border-t">
-                      <Link href="/login">
-                        <Button
-                          className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-                        >
-                          Login
-                        </Button>
-                      </Link>
+                      <SheetClose asChild>
+                        <Link href="/login">
+                          <Button
+                            className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                          >
+                            Login
+                          </Button>
+                        </Link>
+                      </SheetClose>
                     </div>
                   </div>
                 </SheetContent>

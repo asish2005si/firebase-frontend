@@ -16,22 +16,32 @@ import { StatementSummary } from "@/components/dashboard/statements/statement-su
 import { DateRange } from "react-day-picker";
 import { subDays } from "date-fns";
 import { ClientOnly } from "@/components/client-only";
+import { getTransactions, getCustomerInfo } from "@/app/actions/transactions";
 
-const initialTransactions: Transaction[] = [];
+type CustomerInfo = {
+    fullName: string;
+    accountNumber: string;
+    accountType: string;
+    branch: string;
+}
 
-const customerInfo = {
-    fullName: "",
-    accountNumber: "",
-    accountType: "Savings Account",
-    branch: "",
-};
-  
 export default function StatementsPage() {
-  const [transactions] = useState<Transaction[]>(initialTransactions);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
   useEffect(() => {
+    async function fetchData() {
+        const [txns, customer] = await Promise.all([
+            getTransactions(),
+            getCustomerInfo()
+        ]);
+        setTransactions(txns);
+        setCustomerInfo(customer);
+    }
+    fetchData();
+
     setDateRange({
         from: subDays(new Date(), 29),
         to: new Date(),
@@ -62,8 +72,12 @@ export default function StatementsPage() {
     
     const sorted = [...filteredTransactions].sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
-    const openingBalance = sorted[0].balance + (sorted[0].type === 'debit' ? sorted[0].amount : -sorted[0].amount);
-    const closingBalance = sorted[sorted.length - 1].balance;
+    const firstTxn = sorted[0];
+    const openingBalance = firstTxn.balance + (firstTxn.type === 'debit' ? firstTxn.amount : -firstTxn.amount);
+    
+    const lastTxn = sorted[sorted.length - 1];
+    const closingBalance = lastTxn.balance;
+
     const totalCredits = sorted.filter(t => t.type === 'credit').reduce((acc, t) => acc + t.amount, 0);
     const totalDebits = sorted.filter(t => t.type === 'debit').reduce((acc, t) => acc + t.amount, 0);
 
@@ -82,7 +96,7 @@ export default function StatementsPage() {
                 </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <StatementHeader customer={customerInfo} range={dateRange}/>
+                    {customerInfo && <StatementHeader customer={customerInfo} range={dateRange}/>}
                     <StatementControls dateRange={dateRange} setDateRange={setDateRange} />
                     <StatementSummary summary={summary} />
                     <TransactionHistory transactions={filteredTransactions} />

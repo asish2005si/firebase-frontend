@@ -14,6 +14,7 @@ import { mockApplicationData, ApplicationData } from "@/lib/mock-application-dat
 import { StatusCard } from "../application-status/status-card";
 import { StatusDetails } from "../application-status/status-details";
 import { StatusTimeline } from "../application-status/status-timeline";
+import { ClientOnly } from "../client-only";
 
 const statusSchema = z.object({
   applicationId: z.string().regex(/^NX-\d{4}-\d{3}$/, "Invalid Application ID. Expected format: NX-YYYY-XXX"),
@@ -57,34 +58,36 @@ export function ApplicationStatusSection() {
           </p>
         </div>
         <div className="max-w-md mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>Application Status Checker</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-4">
-                  <FormField
-                    control={form.control}
-                    name="applicationId"
-                    render={({ field }) => (
-                      <FormItem className="flex-grow">
-                        <FormLabel className="sr-only">Application ID</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter Application ID (e.g., NX-2025-001)" {...field} disabled={isLoading}/>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" disabled={isLoading}>
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Check Status
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
+          <ClientOnly>
+            <Card>
+              <CardHeader>
+                <CardTitle>Application Status Checker</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-4">
+                    <FormField
+                      control={form.control}
+                      name="applicationId"
+                      render={({ field }) => (
+                        <FormItem className="flex-grow">
+                          <FormLabel className="sr-only">Application ID</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter Application ID (e.g., NX-2025-001)" {...field} disabled={isLoading}/>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Check Status
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+          </ClientOnly>
         </div>
         
         {error && (

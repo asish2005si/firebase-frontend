@@ -1,3 +1,4 @@
+
 "use client";
 import { useFormContext } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -7,17 +8,22 @@ import { FormHeader } from "../form-header";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { FileUploadItem } from "./file-upload-item";
+import { useToast } from "@/hooks/use-toast";
 
 
 export function AddressDetailsForm() {
   const { control, watch, setValue, trigger } = useFormContext();
   const isSameAddress = watch("isSameAddress");
   const permanentAddress = watch("permanentAddress");
+  const { toast } = useToast();
 
   const handleOtp = async (field: 'mobile' | 'email') => {
       const result = await trigger(field);
       if (result) {
-          alert(`OTP verification simulation for ${field}. In a real app, an OTP would be sent.`)
+          toast({
+            title: `Verification OTP Sent to ${field}`,
+            description: `A simulated OTP has been sent. In a real app, you'd verify a code.`,
+          });
       }
   }
 
@@ -25,7 +31,7 @@ export function AddressDetailsForm() {
     <div>
         <FormHeader 
             title="Contact & Address Details"
-            description="Enter your contact information and current address."
+            description="Enter your contact information and current address. Please verify your email and mobile."
         />
       <div className="space-y-4">
         <div className="grid md:grid-cols-2 gap-4">

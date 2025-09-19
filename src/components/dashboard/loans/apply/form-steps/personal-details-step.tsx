@@ -11,9 +11,21 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 export function PersonalDetailsStep() {
-    const { control } = useFormContext();
+    const { control, trigger } = useFormContext();
+    const { toast } = useToast();
+
+    const handleOtp = async (field: 'mobile' | 'email') => {
+        const result = await trigger(field);
+        if (result) {
+            toast({
+              title: `Verification OTP Sent to ${field}`,
+              description: `A simulated OTP has been sent. In a real app, you'd verify a code.`,
+            });
+        }
+    }
 
     return (
         <div>
@@ -33,6 +45,40 @@ export function PersonalDetailsStep() {
                         </FormItem>
                     )}
                 />
+                 <div className="grid md:grid-cols-2 gap-4">
+                    <FormField
+                        control={control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Email Address</FormLabel>
+                            <div className="flex gap-2">
+                                <FormControl>
+                                    <Input type="email" placeholder="you@example.com" {...field} />
+                                </FormControl>
+                                <Button type="button" variant="outline" onClick={() => handleOtp('email')}>Verify</Button>
+                            </div>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={control}
+                        name="mobile"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Mobile Number</FormLabel>
+                            <div className="flex gap-2">
+                                <FormControl>
+                                    <Input type="tel" placeholder="9876543210" {...field} />
+                                </FormControl>
+                                <Button type="button" variant="outline" onClick={() => handleOtp('mobile')}>Verify</Button>
+                            </div>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
                 <div className="grid md:grid-cols-2 gap-4">
                     <FormField
                         control={control}

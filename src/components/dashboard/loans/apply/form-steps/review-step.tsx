@@ -1,3 +1,4 @@
+
 "use client";
 import { useFormContext } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -85,6 +86,8 @@ export function ReviewStep() {
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
                 <DetailItem label="Full Name" value={values.fullName} />
+                <DetailItem label="Email Address" value={values.email} />
+                <DetailItem label="Mobile Number" value={values.mobile} />
                 <DetailItem label="Date of Birth" value={values.dob ? format(values.dob, "PPP") : "-"} />
                 <DetailItem label="PAN" value={values.pan} />
                 <DetailItem label="Address" value={values.address} />

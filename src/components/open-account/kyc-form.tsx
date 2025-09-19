@@ -190,29 +190,6 @@ export function KycForm() {
   
   const accountType = methods.watch("accountType");
 
-  const stepsArray = useMemo(() => {
-    const baseSteps: ReactElement[] = [
-      <AccountTypeSelector key="accountType" />,
-      <PersonalDetailsForm key="personal" />,
-      <AddressDetailsForm key="address" />,
-    ];
-    
-    if (accountType === 'savings') {
-      baseSteps.push(<SavingsAccountDetailsForm key="savings-specific" />);
-    } else if (accountType === 'current') {
-      baseSteps.push(<CurrentAccountDetailsForm key="current-specific" />);
-    }
-    
-    // Add review and OTP steps only if an account type is selected
-    if (accountType) {
-        baseSteps.push(<ReviewDetailsForm key="review" goTo={goTo} />);
-        baseSteps.push(<OtpVerificationStep key="otp" />);
-    }
-    
-    return baseSteps;
-  }, [accountType]);
-
-
   const {
     currentStepIndex,
     step,
@@ -222,7 +199,29 @@ export function KycForm() {
     back,
     next,
     goTo,
-  } = useMultistepForm(stepsArray);
+  } = useMultistepForm(
+    useMemo(() => {
+        const baseSteps: ReactElement[] = [
+          <AccountTypeSelector key="accountType" />,
+          <PersonalDetailsForm key="personal" />,
+          <AddressDetailsForm key="address" />,
+        ];
+        
+        if (accountType === 'savings') {
+          baseSteps.push(<SavingsAccountDetailsForm key="savings-specific" />);
+        } else if (accountType === 'current') {
+          baseSteps.push(<CurrentAccountDetailsForm key="current-specific" />);
+        }
+        
+        // Add review and OTP steps only if an account type is selected
+        if (accountType) {
+            baseSteps.push(<ReviewDetailsForm key="review" />);
+            baseSteps.push(<OtpVerificationStep key="otp" />);
+        }
+        
+        return baseSteps;
+    }, [accountType])
+  );
 
   const onSubmit = async (data: KycFormData) => {
       // Don't submit sensitive file data. In a real app, you would upload to a secure bucket

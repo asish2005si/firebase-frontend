@@ -23,9 +23,11 @@ export default function RegisterPage() {
           </div>
         </header>
         <main className="flex-1 w-full container py-8 md:py-12">
-            <Suspense fallback={<div>Loading form...</div>}>
-                <RegistrationForm />
-            </Suspense>
+            <ClientOnly>
+              <Suspense fallback={<div>Loading form...</div>}>
+                  <RegistrationForm />
+              </Suspense>
+            </ClientOnly>
         </main>
       </div>
   );

@@ -4,20 +4,30 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { CreditCard, Landmark, ArrowRight, IndianRupee, Receipt } from "lucide-react";
 import Link from "next/link";
+import { TransactionChart } from "@/components/dashboard/transaction-chart";
 
 const customer = {
-  fullName: "",
-  accountNumber: "",
-  email: "",
-  contactNumber: "",
-  address: "",
+  fullName: "Jane Doe",
+  accountNumber: "50100123456789",
+  email: "jane.doe@example.com",
+  contactNumber: "+91 98765 43210",
+  address: "123, Park Avenue, Mumbai - 400001",
 };
 
 const account = {
     type: "Savings Account",
-    number: "",
-    balance: 0,
+    number: "50100123456789",
+    balance: 150000.75,
 };
+
+const chartData = [
+  { month: "Jan", credit: 50000, debit: 35000 },
+  { month: "Feb", credit: 65000, debit: 42000 },
+  { month: "Mar", credit: 72000, debit: 68000 },
+  { month: "Apr", credit: 48000, debit: 51000 },
+  { month: "May", credit: 90000, debit: 60000 },
+  { month: "Jun", credit: 85000, debit: 75000 },
+];
 
 const formatCurrency = (amount: number) => {
     const formatted = new Intl.NumberFormat('en-IN', {
@@ -67,6 +77,15 @@ export default function DashboardPage() {
                     </Link>
                 </div>
             </div>
+        </CardContent>
+      </Card>
+       <Card>
+        <CardHeader>
+            <CardTitle>Monthly Activity</CardTitle>
+            <CardDescription>A summary of your credits and debits over the last 6 months.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <TransactionChart data={chartData} />
         </CardContent>
       </Card>
       

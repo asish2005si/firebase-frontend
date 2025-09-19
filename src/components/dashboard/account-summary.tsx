@@ -21,7 +21,10 @@ export function CustomerProfile({ customer }: CustomerProfileProps) {
 
   useEffect(() => {
     // This will only run on the client, after hydration
-    setLastLogin(new Date().toLocaleString());
+    const now = new Date();
+    // Move one day back to simulate a previous login
+    now.setDate(now.getDate() - 1);
+    setLastLogin(now.toLocaleString());
   }, []);
 
   return (

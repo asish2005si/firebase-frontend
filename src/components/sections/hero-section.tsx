@@ -1,10 +1,8 @@
 
 import { Button } from "@/components/ui/button";
-import { ClientOnly } from "@/components/client-only";
 import Link from "next/link";
 import Image from "next/image";
 import placeholderImages from "@/app/lib/placeholder-images.json";
-
 
 export function HeroSection() {
   const heroImage = placeholderImages["hero-background"];
@@ -27,20 +25,18 @@ export function HeroSection() {
           <p className="text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto">
             Experience a new era of banking with personalized services, seamless digital access, and expert financial guidance. Your future starts with Nexus Bank.
           </p>
-          <ClientOnly>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/open-account">
-                <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg transition-transform duration-300 hover:scale-105">
-                  Open Account
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button size="lg" variant="secondary" className="bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm shadow-lg transition-transform duration-300 hover:scale-105">
-                  Login to Nexus Bank
-                </Button>
-              </Link>
-            </div>
-          </ClientOnly>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/open-account">
+              <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg transition-transform duration-300 hover:scale-105">
+                Open Account
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button size="lg" variant="secondary" className="bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm shadow-lg transition-transform duration-300 hover:scale-105">
+                Login to Nexus Bank
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </section>

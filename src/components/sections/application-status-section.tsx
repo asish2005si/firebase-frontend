@@ -14,7 +14,6 @@ import { mockApplicationData, ApplicationData } from "@/lib/mock-application-dat
 import { StatusCard } from "../application-status/status-card";
 import { StatusDetails } from "../application-status/status-details";
 import { StatusTimeline } from "../application-status/status-timeline";
-import { ClientOnly } from "../client-only";
 
 const statusSchema = z.object({
   applicationId: z.string().regex(/^NX-\d{4}-\d{3}$/, "Invalid Application ID. Expected format: NX-YYYY-XXX"),
@@ -58,7 +57,6 @@ export function ApplicationStatusSection() {
           </p>
         </div>
         <div className="max-w-md mx-auto">
-          <ClientOnly>
             <Card>
               <CardHeader>
                 <CardTitle>Application Status Checker</CardTitle>
@@ -87,7 +85,6 @@ export function ApplicationStatusSection() {
                 </Form>
               </CardContent>
             </Card>
-          </ClientOnly>
         </div>
         
         {error && (

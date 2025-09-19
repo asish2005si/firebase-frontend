@@ -1,15 +1,28 @@
 
 export type ApplicationData = {
     applicationId: string;
-    accountType: "Savings Account" | "Student Account" | "Salary Account" | "Current Account";
+    accountType: "Savings Account" | "Current Account";
     status: "Approved" | "Pending" | "Rejected";
     reason?: string;
     fullName: string;
+    fatherName?: string;
     dob: string;
+    gender?: string;
+    maritalStatus?: string;
+    panNumber?: string;
+    aadhaarNumber?: string;
     mobile: string;
     email: string;
     address: string;
+    occupation?: string;
+    businessName?: string;
+    businessType?: string;
+    gstNumber?: string;
     nomineeName?: string;
+    nomineeRelation?: string;
+    nomineeDob?: string;
+    nomineePan?: string;
+    nomineeAadhaar?: string;
     initialDeposit: number;
     applicationDate: string;
     accountNumber?: string;

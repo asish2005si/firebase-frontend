@@ -15,12 +15,13 @@ const DetailItem = ({ label, value, isHighlight = false }: { label: string; valu
     return (
         <div>
             <p className="text-sm text-muted-foreground">{label}</p>
-            <p className={`font-semibold ${isHighlight ? 'text-primary' : ''}`}>{value}</p>
+            <p className={`font-semibold capitalize ${isHighlight ? 'text-primary' : ''}`}>{String(value)}</p>
         </div>
     );
 }
 
 const formatCurrency = (amount: number) => {
+    if (typeof amount !== 'number') return '-';
     const formatted = new Intl.NumberFormat('en-IN', {
         style: 'decimal',
         minimumFractionDigits: 2,
@@ -75,18 +76,40 @@ export function AdminApplicationView({ application }: { application: Application
         <h3 className="text-lg font-semibold text-foreground">Personal Information</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <DetailItem label="Full Name" value={application.fullName} />
+            <DetailItem label="Father's/Mother's Name" value={application.fatherName} />
             <DetailItem label="Date of Birth" value={new Date(application.dob).toLocaleDateString("en-GB")} />
+            <DetailItem label="Gender" value={application.gender} />
+            <DetailItem label="Marital Status" value={application.maritalStatus} />
             <DetailItem label="Mobile Number" value={application.mobile} />
             <DetailItem label="Email Address" value={application.email} />
+            <DetailItem label="PAN Number" value={application.panNumber} />
+            <DetailItem label="Aadhaar Number" value={application.aadhaarNumber} />
             <DetailItem label="Address" value={application.address} />
+            {application.accountType === "Savings Account" && <DetailItem label="Occupation" value={application.occupation} />}
         </div>
         
+        {application.accountType === "Current Account" && (
+            <>
+                <Separator />
+                <h3 className="text-lg font-semibold text-foreground">Business Details</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <DetailItem label="Business Name" value={application.businessName} />
+                    <DetailItem label="Business Type" value={application.businessType} />
+                    <DetailItem label="GST Number" value={application.gstNumber} />
+                </div>
+            </>
+        )}
+
         {application.nomineeName && (
             <>
                 <Separator />
                 <h3 className="text-lg font-semibold text-foreground">Nominee Details</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     <DetailItem label="Nominee Name" value={application.nomineeName} />
+                    <DetailItem label="Relationship" value={application.nomineeRelation} />
+                    <DetailItem label="Nominee DOB" value={application.nomineeDob ? new Date(application.nomineeDob).toLocaleDateString("en-GB") : ''} />
+                    <DetailItem label="Nominee PAN" value={application.nomineePan} />
+                    <DetailItem label="Nominee Aadhaar" value={application.nomineeAadhaar} />
                 </div>
             </>
         )}

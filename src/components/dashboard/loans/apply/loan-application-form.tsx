@@ -20,6 +20,7 @@ import { DocumentUploadStep } from "./form-steps/document-upload-step";
 import { ReviewStep } from "./form-steps/review-step";
 import { useEffect } from "react";
 import { ClientOnly } from "@/components/client-only";
+import { saveLoanApplication } from "@/app/actions/applications";
 
 const loanApplicationSchema = z.object({
     loanType: z.enum(["home", "personal", "car", "education"]),
@@ -137,6 +138,11 @@ function LoanApplicationFormComponent() {
     ]);
 
     async function processForm() {
+        if (isLastStep) {
+            await methods.handleSubmit(onSubmit)();
+            return;
+        }
+
         const fieldGroups = formStepsPerLoan[loanType];
         if (!fieldGroups) {
             console.error("Invalid loan type:", loanType);
@@ -150,11 +156,22 @@ function LoanApplicationFormComponent() {
     }
 
     const onSubmit = async (data: LoanFormData) => {
-        console.log("Loan Application Submitted:", data);
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // In a real app, you would handle file uploads to a storage service (like GCS)
+        // and only pass the file URLs to the server action.
+        // For this prototype, we'll pass a simplified data object.
+        const simplifiedData = {
+            loanType: data.loanType,
+            amount: data.amount,
+            tenure: data.tenure,
+            fullName: data.fullName,
+            monthlyIncome: data.monthlyIncome,
+        };
+
+        const newApplication = await saveLoanApplication(simplifiedData);
+
         toast({
             title: "Application Submitted!",
-            description: "Your loan application has been submitted for review. We will notify you of the status.",
+            description: `Your loan application (ID: ${newApplication.id}) has been submitted for review. We will notify you of the status.`,
         });
         router.push("/dashboard/loans");
     };
@@ -179,7 +196,7 @@ function LoanApplicationFormComponent() {
                             </Button>
                         )}
                         <div className="flex-grow"></div>
-                        <Button type={isLastStep ? "submit" : "button"} onClick={isLastStep ? undefined : processForm} disabled={methods.formState.isSubmitting}>
+                        <Button type="button" onClick={processForm} disabled={methods.formState.isSubmitting}>
                             {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {isLastStep ? (methods.formState.isSubmitting ? "Submitting..." : "Submit Application") : "Next Step"}
                         </Button>

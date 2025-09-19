@@ -1,13 +1,23 @@
 
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoanProducts } from "@/components/dashboard/loans/loan-products";
-import { LoanApplications } from "@/components/dashboard/loans/loan-applications";
-
-const initialLoanApplications = [];
+import { LoanApplications, type LoanApplication } from "@/components/dashboard/loans/loan-applications";
+import { getLoanApplications } from "@/app/actions/applications";
 
 export default function LoansPage() {
+    const [applications, setApplications] = useState<LoanApplication[]>([]);
+
+    useEffect(() => {
+        async function fetchLoanApplications() {
+            const apps = await getLoanApplications();
+            setApplications(apps);
+        }
+        fetchLoanApplications();
+    }, []);
+
   return (
     <div className="flex flex-col gap-8">
         <Card>
@@ -19,7 +29,7 @@ export default function LoansPage() {
                 <LoanProducts />
             </CardContent>
         </Card>
-        <LoanApplications applications={initialLoanApplications} />
+        <LoanApplications applications={applications} />
     </div>
   );
 }

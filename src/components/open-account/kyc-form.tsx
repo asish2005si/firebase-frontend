@@ -19,6 +19,7 @@ import { SavingsAccountDetailsForm } from "./form-steps/savings-account-details-
 import { CurrentAccountDetailsForm } from "./form-steps/current-account-details-form";
 import { ReviewDetailsForm } from "./form-steps/review-details-form";
 import { OtpVerificationStep } from "./form-steps/otp-verification-step";
+import { saveApplication } from "@/app/actions/applications";
 
 
 const kycSchema = z.object({
@@ -113,8 +114,8 @@ const kycSchema = z.object({
     path: ["dob"],
 })
 .refine(data => {
-    // This is the final check before submission, so we validate OTP here
-    if (data.accountType) { // This check should happen on the last step
+    const isLastStep = true; // This should be determined by form step logic
+    if (isLastStep && data.accountType) { 
         return !!data.otp && data.otp.length === 6;
     }
     return true;
@@ -204,7 +205,7 @@ export function KycForm() {
     
     // Add review and OTP steps only if an account type is selected
     if (accountType) {
-        baseSteps.push(<ReviewDetailsForm key="review" />);
+        baseSteps.push(<ReviewDetailsForm key="review" goTo={goTo} />);
         baseSteps.push(<OtpVerificationStep key="otp" />);
     }
     
@@ -224,21 +225,38 @@ export function KycForm() {
   } = useMultistepForm(stepsArray);
 
   const onSubmit = async (data: KycFormData) => {
-      console.log("Form Submitted:", data);
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Don't submit sensitive file data. In a real app, you would upload to a secure bucket
+      // and only pass the URLs. For this demo, we'll omit them from the saved data.
+      const { 
+          photo, panCardUpload, addressProof, aadhaarCardUpload, 
+          communicationAddress, isSameAddress,
+          ...submissionData 
+      } = data;
+
+      const finalAddress = isSameAddress ? data.permanentAddress : communicationAddress;
       
-      const currentYear = new Date().getFullYear();
-      const sequentialNumber = Math.floor(Math.random() * 900) + 100;
-      const newApplicationId = `NX-${currentYear}-${String(sequentialNumber).padStart(3, '0')}`;
+      const dataToSave = {
+          ...submissionData,
+          dob: data.dob.toISOString().split('T')[0],
+          nomineeDob: data.nomineeDob.toISOString().split('T')[0],
+          accountType: data.accountType === 'savings' ? 'Savings Account' : 'Current Account',
+          address: finalAddress || data.permanentAddress,
+      };
+
+      const newApplication = await saveApplication(dataToSave as any);
       
       toast({
           title: "Application Submitted!",
-          description: `Your application (ID: ${newApplicationId}) has been submitted for review. You can use this ID to track its status.`,
+          description: `Your application (ID: ${newApplication.applicationId}) has been submitted for review. You can use this ID to track its status.`,
       });
       router.push("/");
   }
 
   async function handleNextStep() {
+    // For the last step, the button's type is 'submit', so this function won't be called.
+    // It will directly trigger the 'onSubmit' handler after validation.
+    if (isLastStep) return;
+
     const fieldGroups = formStepsPerType[accountType || 'savings'];
     if (!fieldGroups || currentStepIndex >= fieldGroups.length) {
         next();
@@ -246,7 +264,8 @@ export function KycForm() {
     }
 
     const fieldsToValidate = fieldGroups[currentStepIndex];
-    if (fieldsToValidate.length === 0) { // For review step
+    // For review step, no validation needed to proceed
+    if (fieldsToValidate.length === 0) { 
         next();
         return;
     }
@@ -258,7 +277,6 @@ export function KycForm() {
     }
   }
   
-  // Clone the current step to pass the goTo prop for the review page
   const currentStepWithProps = React.isValidElement(step) 
     ? React.cloneElement(step, { goTo: goTo } as { goTo: (index: number) => void }) 
     : step;

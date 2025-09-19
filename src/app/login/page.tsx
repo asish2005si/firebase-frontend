@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { loginUser } from "@/app/actions/auth";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required."),
@@ -46,19 +47,23 @@ export default function LoginPage() {
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const result = await loginUser(values);
     
-    // In a real app, you'd check credentials. For demo, we'll simulate a successful login.
-    // And for this demo, we won't distinguish between customer/admin for simplicity now.
-    const destination = redirectUrl || "/dashboard";
-
-    toast({
-      title: "Login Successful",
-      description: "Redirecting to your dashboard...",
-    });
-    router.push(destination);
-
-    // Note: isSubmitting is not set back to false because of the navigation
+    if (result.success) {
+        toast({
+          title: "Login Successful",
+          description: "Redirecting to your dashboard...",
+        });
+        const destination = redirectUrl || "/dashboard";
+        router.push(destination);
+    } else {
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: result.message,
+        });
+        setIsSubmitting(false);
+    }
   };
 
   return (

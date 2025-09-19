@@ -10,10 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { mockApplicationData, ApplicationData } from "@/lib/mock-application-data";
+import type { ApplicationData } from "@/lib/mock-application-data";
 import { StatusCard } from "../application-status/status-card";
 import { StatusDetails } from "../application-status/status-details";
 import { StatusTimeline } from "../application-status/status-timeline";
+import { getApplicationById } from "@/app/actions/applications";
+import { ClientOnly } from "../client-only";
 
 const statusSchema = z.object({
   applicationId: z.string().regex(/^NX-\d{4}-\d{3}$/, "Invalid Application ID. Expected format: NX-YYYY-XXX"),
@@ -33,9 +35,8 @@ export function ApplicationStatusSection() {
     setIsLoading(true);
     setError(null);
     setApplicationData(null);
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-
-    const data = mockApplicationData.find(app => app.applicationId.toLowerCase() === values.applicationId.toLowerCase());
+    
+    const data = await getApplicationById(values.applicationId);
 
     if (data) {
       setApplicationData(data);
@@ -57,6 +58,7 @@ export function ApplicationStatusSection() {
           </p>
         </div>
         <div className="max-w-md mx-auto">
+          <ClientOnly>
             <Card>
               <CardHeader>
                 <CardTitle>Application Status Checker</CardTitle>
@@ -71,7 +73,7 @@ export function ApplicationStatusSection() {
                         <FormItem className="flex-grow">
                           <FormLabel className="sr-only">Application ID</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter Application ID (e.g., NX-2025-001)" {...field} disabled={isLoading}/>
+                            <Input placeholder="Enter Application ID (e.g., NX-2024-001)" {...field} disabled={isLoading}/>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -85,6 +87,7 @@ export function ApplicationStatusSection() {
                 </Form>
               </CardContent>
             </Card>
+          </ClientOnly>
         </div>
         
         {error && (

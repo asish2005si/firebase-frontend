@@ -3,6 +3,7 @@ import Link from "next/link";
 import { RegistrationForm } from "@/components/register/registration-form";
 import { Landmark } from "lucide-react";
 import { ClientOnly } from "@/components/client-only";
+import { Suspense } from "react";
 
 export default function RegisterPage() {
   return (
@@ -22,9 +23,9 @@ export default function RegisterPage() {
           </div>
         </header>
         <main className="flex-1 w-full container py-8 md:py-12">
-            <ClientOnly>
+            <Suspense fallback={<div>Loading form...</div>}>
                 <RegistrationForm />
-            </ClientOnly>
+            </Suspense>
         </main>
       </div>
   );

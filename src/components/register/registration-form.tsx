@@ -17,6 +17,7 @@ import { VerifyIdentityStep } from "./form-steps/verify-identity-step";
 import { OtpVerificationStep } from "./form-steps/otp-verification-step";
 import { CreateCredentialsStep } from "./form-steps/create-credentials-step";
 import { TermsAndSubmitStep } from "./form-steps/terms-and-submit-step";
+import { registerUser, checkAccount } from "@/app/actions/auth";
 
 const passwordValidation = z.string()
   .min(8, "Password must be at least 8 characters long")
@@ -89,6 +90,18 @@ export function RegistrationForm() {
     const result = await methods.trigger(fieldsToValidate as (keyof RegistrationFormData)[]);
     
     if (result) {
+        if (currentStepIndex === 0) { // After identity verification
+            const canRegister = await checkAccount(methods.getValues("accountNumber"));
+            if (!canRegister) {
+                methods.setError("accountNumber", { type: "manual", message: "An online banking profile already exists for this account number."});
+                return;
+            }
+             toast({
+                title: "OTP Sent",
+                description: "An OTP has been sent to your registered mobile/email.",
+            });
+        }
+        
         if (isLastStep) {
             await methods.handleSubmit(onSubmit)();
         } else {
@@ -98,14 +111,21 @@ export function RegistrationForm() {
   }
 
   const onSubmit = async (data: RegistrationFormData) => {
-    console.log("Registration Form Submitted:", data);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    toast({
-        title: "Registration Complete!",
-        description: "Congratulations! Your online banking registration is complete. You can now log in.",
-    });
-    router.push("/login");
+    const result = await registerUser(data);
+    if (result.success) {
+      toast({
+          title: "Registration Complete!",
+          description: "Congratulations! Your online banking registration is complete. You can now log in.",
+      });
+      router.push("/login");
+    } else {
+       toast({
+          variant: "destructive",
+          title: "Registration Failed",
+          description: result.message,
+      });
+      methods.formState.isSubmitting = false;
+    }
   }
 
 

@@ -80,7 +80,9 @@ function PaymentsComponent() {
 export default function PaymentsPage() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <PaymentsComponent />
+            <ClientOnly>
+                <PaymentsComponent />
+            </ClientOnly>
         </Suspense>
     )
 }

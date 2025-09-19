@@ -1,7 +1,6 @@
-
 "use client"
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -22,11 +21,11 @@ import {
 const chartConfig = {
   credit: {
     label: "Credit",
-    color: "hsl(var(--chart-2))",
+    color: "hsl(var(--chart-1))",
   },
   debit: {
     label: "Debit",
-    color: "hsl(var(--chart-5))",
+    color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig
 
@@ -37,24 +36,72 @@ type TransactionChartProps = {
 export function TransactionChart({ data }: TransactionChartProps) {
   return (
       <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-        <BarChart accessibilityLayer data={data}>
-        <CartesianGrid vertical={false} />
+        <LineChart
+          accessibilityLayer
+          data={data}
+          margin={{
+            top: 5,
+            right: 10,
+            left: 10,
+            bottom: 5,
+          }}
+        >
+          <CartesianGrid vertical={false} />
           <XAxis
             dataKey="month"
             tickLine={false}
-            tickMargin={10}
             axisLine={false}
+            tickMargin={8}
           />
            <YAxis
             tickLine={false}
             axisLine={false}
+            tickMargin={8}
             tickFormatter={(value) => `₹${value / 1000}k`}
           />
-          <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
           <ChartLegend content={<ChartLegendContent />} />
-          <Bar dataKey="credit" fill="var(--color-credit)" radius={4} />
-          <Bar dataKey="debit" fill="var(--color-debit)" radius={4} />
-        </BarChart>
+          <defs>
+              <linearGradient id="fillCredit" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-credit)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-credit)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+              <linearGradient id="fillDebit" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-debit)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-debit)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+            </defs>
+          <Line
+            dataKey="credit"
+            type="natural"
+            stroke="var(--color-credit)"
+            strokeWidth={2}
+            dot={false}
+          />
+          <Line
+            dataKey="debit"
+            type="natural"
+            stroke="var(--color-debit)"
+            strokeWidth={2}
+            dot={false}
+          />
+        </LineChart>
       </ChartContainer>
   )
 }

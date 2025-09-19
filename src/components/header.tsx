@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Landmark, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
-import { ClientOnly } from "@/components/client-only";
 import { ThemeToggle } from "./theme-toggle";
 
 const navLinks = [
@@ -27,7 +26,6 @@ export function Header() {
           <span className="hidden font-bold sm:inline-block font-headline">Nexus Bank</span>
         </Link>
         <div className="flex flex-1 items-center justify-end">
-          <ClientOnly>
             <nav className="hidden md:flex md:gap-6">
               {navLinks.map((link) => (
                 <Link
@@ -99,7 +97,6 @@ export function Header() {
                 </SheetContent>
               </Sheet>
             </div>
-          </ClientOnly>
         </div>
       </div>
     </header>

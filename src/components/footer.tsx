@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -28,9 +29,9 @@ export function Footer() {
             <h4 className="font-headline text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
               <li><Link href="#" className="text-sm hover:underline text-primary-foreground/80">Services</Link></li>
-              <li><Link href="#" className="text-sm hover:underline text-primary-foreground/80">Open Account</Link></li>
-              <li><Link href="#" className="text-sm hover:underline text-primary-foreground/80">Loans</Link></li>
-              <li><Link href="#" className="text-sm hover:underline text-primary-foreground/80">Cards</Link></li>
+              <li><Link href="#open-account" className="text-sm hover:underline text-primary-foreground/80">Open Account</Link></li>
+              <li><Link href="#loans" className="text-sm hover:underline text-primary-foreground/80">Loans</Link></li>
+              <li><Link href="#cards" className="text-sm hover:underline text-primary-foreground/80">Cards</Link></li>
             </ul>
           </div>
           <div>

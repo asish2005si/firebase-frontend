@@ -8,22 +8,17 @@ import { SmartCardSection } from "@/components/sections/smart-card-section";
 import { ApplicationStatusSection } from "@/components/sections/application-status-section";
 import { CustomerCareSection } from "@/components/sections/customer-care-section";
 import { ContactSection } from "@/components/sections/contact-section";
-import { ClientOnly } from "@/components/client-only";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        <ClientOnly>
-          <HeroSection />
-        </ClientOnly>
+        <HeroSection />
         <OpenAccountSection />
         <LoanProductsSection />
         <SmartCardSection />
-        <ClientOnly>
-          <ApplicationStatusSection />
-        </ClientOnly>
+        <ApplicationStatusSection />
         <CustomerCareSection />
         <ContactSection />
       </main>

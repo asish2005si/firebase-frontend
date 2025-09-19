@@ -22,7 +22,6 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ClientOnly } from "@/components/client-only";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required."),
@@ -64,7 +63,6 @@ export default function LoginPage() {
 
   return (
        <div className="flex min-h-screen items-center justify-center bg-background px-4">
-        <ClientOnly>
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
                 <Link href="/" className="flex items-center gap-2 justify-center text-primary">
@@ -152,7 +150,6 @@ export default function LoginPage() {
             </CardContent>
             </Card>
           </div>
-        </ClientOnly>
     </div>
   );
 }

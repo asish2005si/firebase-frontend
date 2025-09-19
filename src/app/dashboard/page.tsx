@@ -5,20 +5,8 @@ import { Button } from "@/components/ui/button";
 import { CreditCard, Landmark, ArrowRight, IndianRupee, Receipt } from "lucide-react";
 import Link from "next/link";
 import { TransactionChart } from "@/components/dashboard/transaction-chart";
+import { getCustomerInfo } from "@/app/actions/transactions";
 
-const customer = {
-  fullName: "Jane Doe",
-  accountNumber: "50100123456789",
-  email: "jane.doe@example.com",
-  contactNumber: "+91 98765 43210",
-  address: "123, Park Avenue, Mumbai - 400001",
-};
-
-const account = {
-    type: "Savings Account",
-    number: "50100123456789",
-    balance: 150000.75,
-};
 
 const chartData = [
   { month: "Jan", credit: 50000, debit: 35000 },
@@ -39,7 +27,16 @@ const formatCurrency = (amount: number) => {
   };
   
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const customer = await getCustomerInfo();
+
+  const account = {
+      type: "Savings Account",
+      number: "50100123456789",
+      balance: 150000.75,
+  };
+
+
   return (
     <div className="flex flex-col gap-8">
        <div className="bg-card border rounded-lg p-4">

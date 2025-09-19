@@ -112,20 +112,17 @@ const kycSchema = z.object({
 }, {
     message: "You must be at least 18 years old for this account type.",
     path: ["dob"],
-})
-.refine(data => {
-    const isLastStep = true; // This should be determined by form step logic
-    if (isLastStep && data.accountType) { 
-        return !!data.otp && data.otp.length === 6;
-    }
-    return true;
-}, {
-    message: "A valid 6-digit OTP is required.",
-    path: ["otp"]
 });
 
 
 type KycFormData = z.infer<typeof kycSchema>;
+
+const finalSchema = kycSchema.refine(data => {
+    return !!data.otp && data.otp.length === 6;
+}, {
+    message: "A valid 6-digit OTP is required.",
+    path: ["otp"]
+});
 
 const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     savings: [
@@ -190,6 +187,28 @@ export function KycForm() {
   
   const accountType = methods.watch("accountType");
 
+  const stepsArray = useMemo(() => {
+    const baseSteps: ReactElement[] = [
+      <AccountTypeSelector key="accountType" />,
+      <PersonalDetailsForm key="personal" />,
+      <AddressDetailsForm key="address" />,
+    ];
+    
+    if (accountType === 'savings') {
+      baseSteps.push(<SavingsAccountDetailsForm key="savings-specific" />);
+    } else if (accountType === 'current') {
+      baseSteps.push(<CurrentAccountDetailsForm key="current-specific" />);
+    }
+    
+    // Add review and OTP steps only if an account type is selected
+    if (accountType) {
+        baseSteps.push(<ReviewDetailsForm key="review" />);
+        baseSteps.push(<OtpVerificationStep key="otp" />);
+    }
+    
+    return baseSteps;
+  }, [accountType]);
+
   const {
     currentStepIndex,
     step,
@@ -199,29 +218,8 @@ export function KycForm() {
     back,
     next,
     goTo,
-  } = useMultistepForm(
-    useMemo(() => {
-        const baseSteps: ReactElement[] = [
-          <AccountTypeSelector key="accountType" />,
-          <PersonalDetailsForm key="personal" />,
-          <AddressDetailsForm key="address" />,
-        ];
-        
-        if (accountType === 'savings') {
-          baseSteps.push(<SavingsAccountDetailsForm key="savings-specific" />);
-        } else if (accountType === 'current') {
-          baseSteps.push(<CurrentAccountDetailsForm key="current-specific" />);
-        }
-        
-        // Add review and OTP steps only if an account type is selected
-        if (accountType) {
-            baseSteps.push(<ReviewDetailsForm key="review" />);
-            baseSteps.push(<OtpVerificationStep key="otp" />);
-        }
-        
-        return baseSteps;
-    }, [accountType])
-  );
+  } = useMultistepForm(stepsArray);
+
 
   const onSubmit = async (data: KycFormData) => {
       // Don't submit sensitive file data. In a real app, you would upload to a secure bucket
@@ -252,10 +250,14 @@ export function KycForm() {
   }
 
   async function handleNextStep() {
-    // For the last step, the button's type is 'submit', so this function won't be called.
-    // It will directly trigger the 'onSubmit' handler after validation.
-    if (isLastStep) return;
-
+    if (isLastStep) {
+        const result = await methods.trigger(["otp"]);
+        if (result) {
+            await methods.handleSubmit(onSubmit)();
+        }
+        return;
+    }
+    
     const fieldGroups = formStepsPerType[accountType || 'savings'];
     if (!fieldGroups || currentStepIndex >= fieldGroups.length) {
         next();
@@ -263,7 +265,6 @@ export function KycForm() {
     }
 
     const fieldsToValidate = fieldGroups[currentStepIndex];
-    // For review step, no validation needed to proceed
     if (fieldsToValidate.length === 0) { 
         next();
         return;
@@ -314,7 +315,8 @@ export function KycForm() {
                         </Button>
                     ) : (
                         <Button 
-                          type="submit" 
+                          type="button" 
+                          onClick={handleNextStep}
                           disabled={methods.formState.isSubmitting}
                         >
                             {methods.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

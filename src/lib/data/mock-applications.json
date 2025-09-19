@@ -9,7 +9,7 @@
     "mobile": "9876543210",
     "email": "john.mock@example.com",
     "address": "123, Mock Lane, Test City - 400001",
-    "nominee": "Jane Mock",
+    "nomineeName": "Jane Mock",
     "initialDeposit": 5000,
     "applicationDate": "2024-07-10",
     "accountNumber": "50100987654321",
@@ -24,7 +24,7 @@
     "mobile": "9876543211",
     "email": "alice.b@example.com",
     "address": "456, Biz Avenue, Work Town - 400002",
-    "nominee": "Bob Business",
+    "nomineeName": "Bob Business",
     "initialDeposit": 25000,
     "applicationDate": "2024-07-28"
   },
@@ -38,7 +38,7 @@
     "mobile": "9876543212",
     "email": "charlie.r@example.com",
     "address": "789, Fail Street, Error Ville - 400003",
-    "nominee": "Diana Reject",
+    "nomineeName": "Diana Reject",
     "initialDeposit": 1000,
     "applicationDate": "2024-07-25"
   }

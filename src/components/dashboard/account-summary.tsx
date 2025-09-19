@@ -9,7 +9,6 @@ type Customer = {
     fullName: string;
     accountNumber: string;
     email: string;
-    contactNumber: string;
 }
 
 type CustomerProfileProps = {

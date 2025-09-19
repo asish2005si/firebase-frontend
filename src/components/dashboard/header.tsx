@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -6,30 +7,17 @@ import {
   Bell,
   CircleUser,
   Menu,
-  Home,
-  LineChart,
-  Package,
-  ShoppingCart,
-  Users,
   CreditCard,
   ListOrdered,
   Banknote,
-  FileText,
   BadgeIndianRupee,
-  Receipt,
   PiggyBank,
   LifeBuoy,
+  Settings,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +26,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetContent,
@@ -48,6 +35,7 @@ import {
 } from "@/components/ui/sheet";
 import { ThemeToggle } from "../theme-toggle";
 import { ClientOnly } from "../client-only";
+import { useToast } from "@/hooks/use-toast";
 
 const navItems = [
     { href: "/dashboard", icon: CircleUser, label: "My Accounts & Profile" },
@@ -57,9 +45,21 @@ const navItems = [
     { href: "/dashboard/statements", icon: ListOrdered, label: "Statements" },
     { href: "/dashboard/loans", icon: BadgeIndianRupee, label: "Loans" },
     { href: "/dashboard/customer-care", icon: LifeBuoy, label: "Customer Care" },
+    { href: "/dashboard/settings", icon: Settings, label: "Settings" },
 ];
 
 export function Header() {
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
+    router.push("/login");
+  };
+
   return (
     <header className="flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 sticky top-0 z-30">
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
@@ -130,10 +130,14 @@ export function Header() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => router.push('/dashboard/settings')}>
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => router.push('/dashboard/customer-care')}>
+                Support
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </ClientOnly>

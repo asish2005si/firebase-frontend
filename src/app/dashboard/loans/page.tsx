@@ -1,22 +1,11 @@
 
-"use client";
-
-import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoanProducts } from "@/components/dashboard/loans/loan-products";
 import { LoanApplications, type LoanApplication } from "@/components/dashboard/loans/loan-applications";
 import { getLoanApplications } from "@/app/actions/applications";
 
-export default function LoansPage() {
-    const [applications, setApplications] = useState<LoanApplication[]>([]);
-
-    useEffect(() => {
-        async function fetchLoanApplications() {
-            const apps = await getLoanApplications();
-            setApplications(apps);
-        }
-        fetchLoanApplications();
-    }, []);
+export default async function LoansPage() {
+    const applications = await getLoanApplications();
 
   return (
     <div className="flex flex-col gap-8">

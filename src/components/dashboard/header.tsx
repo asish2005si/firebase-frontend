@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -60,7 +59,7 @@ export function Header() {
       title: "Logged Out",
       description: "You have been successfully logged out.",
     });
-    router.push("/login");
+    router.push("/");
   };
 
   return (

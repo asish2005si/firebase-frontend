@@ -58,14 +58,14 @@ export function AdminHeader() {
               <span className="sr-only">Nexus Bank</span>
             </Link>
             <Link
-              href="/admin"
+              href="/admin/applications"
               className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
             >
               <Home className="h-5 w-5" />
               Dashboard
             </Link>
             <Link
-              href="#"
+              href="/admin/applications"
               className="flex items-center gap-4 px-2.5 text-foreground"
             >
               <Users className="h-5 w-5" />

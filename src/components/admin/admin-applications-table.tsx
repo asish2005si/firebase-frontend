@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { ApplicationData } from "@/lib/mock-application-data";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 type AdminApplicationsTableProps = {
     applications: ApplicationData[];
@@ -49,7 +50,9 @@ export function AdminApplicationsTable({ applications }: AdminApplicationsTableP
                         <Badge className={statusColors[app.status]}>{app.status}</Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                        <Button variant="outline" size="sm">View</Button>
+                        <Link href={`/admin/applications/${app.applicationId}`}>
+                            <Button variant="outline" size="sm">View</Button>
+                        </Link>
                     </TableCell>
                 </TableRow>
                 ))

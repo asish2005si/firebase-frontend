@@ -1,6 +1,7 @@
+
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,8 +9,6 @@ import { FundTransferForm } from "@/components/dashboard/payments/fund-transfer-
 import { BillPaymentForm } from "@/components/dashboard/payments/bill-payment-form";
 import { PaymentHistory } from "@/components/dashboard/payments/payment-history";
 import { ClientOnly } from "@/components/client-only";
-
-const initialPaymentHistory = [];
 
 export type Payment = {
     id: string;
@@ -23,7 +22,18 @@ export type Payment = {
 function PaymentsComponent() {
   const searchParams = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'transfer';
-  const [paymentHistory, setPaymentHistory] = useState<Payment[]>(initialPaymentHistory);
+  const [paymentHistory, setPaymentHistory] = useState<Payment[]>(() => {
+    if (typeof window !== 'undefined') {
+        const savedHistory = localStorage.getItem('paymentHistory');
+        return savedHistory ? JSON.parse(savedHistory) : [];
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('paymentHistory', JSON.stringify(paymentHistory));
+  }, [paymentHistory]);
+
 
   const addPaymentToHistory = (payment: Omit<Payment, 'id' | 'date'>) => {
     const newPayment: Payment = {

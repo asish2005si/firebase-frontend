@@ -7,14 +7,15 @@ import type { LoanApplication } from '@/components/dashboard/loans/loan-applicat
 
 export async function getApplications(): Promise<ApplicationData[]> {
     const applications = await db.read('applications');
-    return applications || [];
+    const mockApplications = await db.read('mock-applications');
+    return [...(applications || []), ...(mockApplications || [])];
 }
 
 export async function saveApplication(applicationData: Omit<ApplicationData, 'applicationId' | 'applicationDate' | 'status'>) {
-    const applications = await getApplications();
+    const allApplications = await getApplications();
     
     const currentYear = new Date().getFullYear();
-    const sequentialNumber = (applications.length || 0) + 1;
+    const sequentialNumber = (allApplications.length || 0) + 1;
     const newApplicationId = `NX-${currentYear}-${String(sequentialNumber).padStart(3, '0')}`;
 
     const newApplication: ApplicationData = {
@@ -23,9 +24,11 @@ export async function saveApplication(applicationData: Omit<ApplicationData, 'ap
         applicationDate: new Date().toISOString().split('T')[0],
         status: "Pending", // Default status for new applications
     };
-
-    applications.push(newApplication);
-    await db.write('applications', applications);
+    
+    // We only write to the main 'applications.json', not the mock file
+    const userApplications = (await db.read('applications')) || [];
+    userApplications.push(newApplication);
+    await db.write('applications', userApplications);
     
     return newApplication;
 }
@@ -53,10 +56,7 @@ export async function saveLoanApplication(applicationData: any) {
 }
 
 export async function getApplicationById(applicationId: string): Promise<ApplicationData | null> {
-    const allApplications = await db.read('applications');
-    const mockApplications = await db.read('mock-applications');
-    const applications = [...(allApplications || []), ...(mockApplications || [])];
-    
-    const application = applications.find(app => app.applicationId.toLowerCase() === applicationId.toLowerCase());
+    const allApplications = await getApplications();
+    const application = allApplications.find(app => app.applicationId.toLowerCase() === applicationId.toLowerCase());
     return application || null;
 }

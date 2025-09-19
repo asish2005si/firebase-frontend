@@ -1,2 +1,32 @@
-
-[]
+[
+  {
+    "accountType": "Savings Account",
+    "fullName": "Bhaskar Aditya",
+    "fatherName": "Bahskar",
+    "dob": "2002-10-04",
+    "gender": "male",
+    "maritalStatus": "single",
+    "panNumber": "HODPP8643L",
+    "aadhaarNumber": "703527623901",
+    "initialDeposit": 1000,
+    "nomineeName": "Bhaskar",
+    "nomineeRelation": "father",
+    "nomineeDob": "2010-09-08",
+    "nomineePan": "HODPP8643L",
+    "nomineeAadhaar": "703527623901",
+    "email": "asishkumarpadhy123@gmail.com",
+    "mobile": "8658433267",
+    "permanentAddress": "Digapahandi",
+    "state": "Odisha",
+    "city": "Ganjam",
+    "pincode": "761012",
+    "occupation": "student",
+    "businessName": "",
+    "gstNumber": "",
+    "otp": "123456",
+    "address": "Digapahandi",
+    "applicationId": "NX-2025-001",
+    "applicationDate": "2025-09-19",
+    "status": "Pending"
+  }
+]

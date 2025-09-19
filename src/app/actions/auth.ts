@@ -55,6 +55,30 @@ export async function loginUser(data: any) {
     }
 }
 
+export async function loginAdmin(data: any) {
+    try {
+        const admins = (await db.read('admins')) || [];
+        
+        const admin = admins.find((a: any) => a.username.toLowerCase() === data.username.toLowerCase());
+
+        if (!admin) {
+            return { success: false, message: 'Invalid admin username or password.' };
+        }
+
+        // For this prototype, we'll assume admin passwords are not hashed. 
+        // In a real app, always hash passwords.
+        if (data.password !== admin.password) {
+            return { success: false, message: 'Invalid admin username or password.' };
+        }
+
+        return { success: true, message: 'Admin login successful!' };
+    } catch (error) {
+        console.error('Admin login error:', error);
+        return { success: false, message: 'An unexpected error occurred.' };
+    }
+}
+
+
 export async function checkAccount(accountNumber: string) {
     const users = await db.read('users');
     // In a real app, you'd check a proper customer database.

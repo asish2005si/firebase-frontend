@@ -60,3 +60,37 @@ export async function getApplicationById(applicationId: string): Promise<Applica
     const application = allApplications.find(app => app.applicationId.toLowerCase() === applicationId.toLowerCase());
     return application || null;
 }
+
+export async function updateApplicationStatus(applicationId: string, newStatus: "Approved" | "Rejected"): Promise<{ success: boolean; message?: string }> {
+    try {
+        let userApplications = (await db.read('applications')) || [];
+        let mockApplications = (await db.read('mock-applications')) || [];
+
+        let appUpdated = false;
+
+        // Try to find and update in user-submitted applications
+        const userAppIndex = userApplications.findIndex((app: ApplicationData) => app.applicationId.toLowerCase() === applicationId.toLowerCase());
+        if (userAppIndex !== -1) {
+            userApplications[userAppIndex].status = newStatus;
+            await db.write('applications', userApplications);
+            appUpdated = true;
+        } else {
+            // If not found, try to find and update in mock applications
+            const mockAppIndex = mockApplications.findIndex((app: ApplicationData) => app.applicationId.toLowerCase() === applicationId.toLowerCase());
+            if (mockAppIndex !== -1) {
+                mockApplications[mockAppIndex].status = newStatus;
+                await db.write('mock-applications', mockApplications);
+                appUpdated = true;
+            }
+        }
+
+        if (appUpdated) {
+            return { success: true };
+        } else {
+            return { success: false, message: "Application not found." };
+        }
+    } catch (error) {
+        console.error("Error updating application status:", error);
+        return { success: false, message: "An unexpected error occurred." };
+    }
+}

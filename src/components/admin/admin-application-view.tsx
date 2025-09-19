@@ -6,8 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { ApplicationData } from "@/lib/mock-application-data";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/navigation";
+import { updateApplicationStatus } from "@/app/actions/applications";
+import { useState } from "react";
 
 
 const DetailItem = ({ label, value, isHighlight = false }: { label: string; value?: string | number; isHighlight?: boolean }) => {
@@ -38,23 +41,30 @@ const statusColors: Record<ApplicationData['status'], string> = {
 
 export function AdminApplicationView({ application }: { application: ApplicationData }) {
   const { toast } = useToast();
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleApprove = () => {
-    // In a real app, you'd call a server action here to update the status.
-    toast({
-      title: "Application Approved",
-      description: `Application ${application.applicationId} has been marked as approved.`,
-    });
+  const handleUpdateStatus = async (newStatus: "Approved" | "Rejected") => {
+    setIsSubmitting(true);
+    const result = await updateApplicationStatus(application.applicationId, newStatus);
+    
+    if (result.success) {
+      toast({
+        title: `Application ${newStatus}`,
+        description: `Application ${application.applicationId} has been marked as ${newStatus.toLowerCase()}.`,
+        variant: newStatus === "Rejected" ? "destructive" : "default",
+      });
+      router.refresh(); // Refresh the page to show the updated status
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: result.message || "Could not update the application status.",
+      });
+    }
+    setIsSubmitting(false);
   };
 
-  const handleReject = () => {
-    // In a real app, you'd call a server action here to update the status.
-    toast({
-        variant: "destructive",
-        title: "Application Rejected",
-        description: `Application ${application.applicationId} has been marked as rejected.`,
-    });
-  }
 
   return (
     <Card>
@@ -116,11 +126,13 @@ export function AdminApplicationView({ application }: { application: Application
       </CardContent>
       {application.status === 'Pending' && (
         <CardFooter className="border-t pt-6 flex justify-end gap-4">
-            <Button variant="destructive" onClick={handleReject}>
-                <XCircle className="mr-2 h-4 w-4" /> Reject
+            <Button variant="destructive" onClick={() => handleUpdateStatus("Rejected")} disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <XCircle className="mr-2 h-4 w-4" />}
+                Reject
             </Button>
-            <Button onClick={handleApprove}>
-                <CheckCircle className="mr-2 h-4 w-4" /> Approve
+            <Button onClick={() => handleUpdateStatus("Approved")} disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
+                Approve
             </Button>
         </CardFooter>
       )}

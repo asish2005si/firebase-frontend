@@ -185,9 +185,10 @@ export function PersonalDetailsForm() {
                 )}
             />
         </div>
-        <div className="grid md:grid-cols-2 gap-6 pt-4">
+        <div className="grid md:grid-cols-3 gap-6 pt-4">
             <FileUploadItem fieldName="photo" label="Upload Your Recent Photograph" />
             <FileUploadItem fieldName="panCardUpload" label="Upload Your PAN Card" />
+            <FileUploadItem fieldName="signature" label="Upload Your Signature" />
         </div>
         
         <Separator className="my-8" />

@@ -36,6 +36,7 @@ const kycSchema = z.object({
   initialDeposit: z.coerce.number().min(1000, "Minimum initial deposit is INR 1,000."),
   photo: z.any().refine(files => files?.length > 0, "Photograph is required."),
   panCardUpload: z.any().refine(files => files?.length > 0, "PAN Card is required."),
+  signature: z.any().refine(files => files?.length > 0, "Signature is required."),
   
   // Nominee Details
   nomineeName: z.string().min(2, "Nominee name is required."),
@@ -131,7 +132,7 @@ const finalKycSchema = kycSchema.refine(data => {
 const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     savings: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "initialDeposit", "photo", "panCardUpload", "nomineeName", "nomineeRelation", "nomineeDob", "nomineePan", "nomineeAadhaar"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "initialDeposit", "photo", "panCardUpload", "signature", "nomineeName", "nomineeRelation", "nomineeDob", "nomineePan", "nomineeAadhaar"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof", "aadhaarCardUpload"],
         ["occupation"],
         [], // Review step has no validation
@@ -139,7 +140,7 @@ const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     ],
     current: [
         ["accountType"],
-        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "initialDeposit", "photo", "panCardUpload", "nomineeName", "nomineeRelation", "nomineeDob", "nomineePan", "nomineeAadhaar"],
+        ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "initialDeposit", "photo", "panCardUpload", "signature", "nomineeName", "nomineeRelation", "nomineeDob", "nomineePan", "nomineeAadhaar"],
         ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof", "aadhaarCardUpload"],
         ["businessName", "businessType", "gstNumber"],
         [], // Review step has no validation
@@ -165,6 +166,7 @@ export function KycForm() {
         initialDeposit: 1000,
         photo: null,
         panCardUpload: null,
+        signature: null,
         email: "",
         mobile: "",
         permanentAddress: "",
@@ -229,7 +231,7 @@ export function KycForm() {
       // Don't submit sensitive file data. In a real app, you would upload to a secure bucket
       // and only pass the URLs. For this demo, we'll omit them from the saved data.
       const { 
-          photo, panCardUpload, addressProof, aadhaarCardUpload, 
+          photo, panCardUpload, addressProof, aadhaarCardUpload, signature,
           communicationAddress, isSameAddress,
           ...submissionData 
       } = data;

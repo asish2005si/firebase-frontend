@@ -120,9 +120,10 @@ export function ReviewDetailsForm({ goTo }: ReviewDetailsFormProps) {
                     <DetailItem label="Aadhaar Number" value={values.aadhaarNumber} />
                     <DetailItem label="Initial Deposit" value={formatCurrency(values.initialDeposit)} />
                 </div>
-                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                 <div className="grid grid-cols-3 md:grid-cols-4 gap-4 mt-4">
                     <FilePreviewItem label="Photograph" fileList={values.photo} />
                     <FilePreviewItem label="PAN Card" fileList={values.panCardUpload} />
+                    <FilePreviewItem label="Signature" fileList={values.signature} />
                 </div>
                 <Separator className="my-6" />
                 <h4 className="text-md font-semibold text-primary mb-4">Nominee Details</h4>

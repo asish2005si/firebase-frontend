@@ -1,7 +1,7 @@
 
 "use client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useUser } from "@/firebase/auth/use-user";
+import { useUser } from "@/firebase";
 import { useEffect, useState } from "react";
 import { ClientOnly } from "../client-only";
 

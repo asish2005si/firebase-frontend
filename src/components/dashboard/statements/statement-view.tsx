@@ -35,12 +35,12 @@ export function StatementView({
   }));
 
   const transactionsQuery = useMemoFirebase(() => {
-    if (!firestore || !user || !dateRange?.from || !dateRange?.to) return null;
+    if (!firestore || !user || !dateRange?.from) return null;
     
     const fromDate = new Date(dateRange.from);
     fromDate.setHours(0, 0, 0, 0);
 
-    const toDate = new Date(dateRange.to);
+    const toDate = dateRange.to ? new Date(dateRange.to) : new Date();
     toDate.setHours(23, 59, 59, 999);
 
     return query(
@@ -70,24 +70,48 @@ export function StatementView({
       (a, b) => new Date(a.txn_time).getTime() - new Date(b.txn_time).getTime()
     );
 
-    const totalCredits = sorted
-      .filter((t) => t.txn_type === "credit" || t.txn_type === "Bill Payment")
-      .reduce((acc, t) => acc + t.amount, 0);
-    const totalDebits = sorted
-      .filter((t) => t.txn_type === "debit" || t.txn_type === "Fund Transfer")
-      .reduce((acc, t) => acc + t.amount, 0);
+    const { totalCredits, totalDebits } = sorted.reduce((acc, t) => {
+        if (t.txn_type === "credit") {
+            acc.totalCredits += t.amount;
+        } else if (t.txn_type === "debit") {
+            acc.totalDebits += t.amount;
+        }
+        return acc;
+    }, { totalCredits: 0, totalDebits: 0 });
       
     const closingBalance = openingBalance + totalCredits - totalDebits;
 
     return { openingBalance, closingBalance, totalCredits, totalDebits };
   }, [transactions]);
 
+  const transactionsWithBalance = useMemo(() => {
+    if (!transactions) return [];
+
+    const sorted = [...transactions].sort(
+        (a, b) => new Date(a.txn_time).getTime() - new Date(b.txn_time).getTime()
+    );
+
+    let currentBalance = summary.openingBalance;
+    const balancedTransactions = sorted.map(txn => {
+        if (txn.txn_type === 'credit') {
+            currentBalance += txn.amount;
+        } else {
+            currentBalance -= txn.amount;
+        }
+        return { ...txn, balance_after: currentBalance };
+    });
+    
+    return balancedTransactions.sort((a,b) => new Date(b.txn_time).getTime() - new Date(a.txn_time).getTime());
+
+  }, [transactions, summary.openingBalance]);
+
+
   return (
     <>
       <StatementHeader customer={customerInfo} range={dateRange} />
       <StatementControls dateRange={dateRange} setDateRange={setDateRange} />
       <StatementSummary summary={summary} />
-      <TransactionHistory transactions={transactions || []} isLoading={isLoading} />
+      <TransactionHistory transactions={transactionsWithBalance} isLoading={isLoading} />
     </>
   );
 }

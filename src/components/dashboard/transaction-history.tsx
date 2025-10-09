@@ -86,7 +86,7 @@ export function TransactionHistory({ transactions, isLoading }: TransactionHisto
                 ))
             ) : (
                 <TableRow>
-                    <TableCell colSpan={6} className="text-center h-24">
+                    <TableCell colSpan={5} className="text-center h-24">
                         No transactions found for the selected period.
                     </TableCell>
                 </TableRow>

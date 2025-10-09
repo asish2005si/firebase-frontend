@@ -1,2 +1,8 @@
-
-[]
+[
+  {
+    "accountNumber": "1234567890",
+    "username": "Asish890",
+    "password": "$2a$10$wBjaw8sxSSa4pqDk2m8v6..mihYDyEeFpMWwuFD6M3R6Ytx0ukiBW",
+    "email": "asishkumarpadhy123@gmail.com"
+  }
+]

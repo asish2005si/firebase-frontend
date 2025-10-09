@@ -19,7 +19,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2">
-              <Landmark className="h-7 w-7" />
+              <Landmark className="h-7 w-7 text-accent" />
               <span className="text-xl font-bold font-headline">Nexus Bank</span>
             </Link>
             <p className="text-sm text-primary-foreground/80">
@@ -46,9 +46,9 @@ export function Footer() {
           <div>
             <h4 className="font-headline text-lg font-semibold mb-4">Connect With Us</h4>
             <div className="flex space-x-4">
-              <Link href="#" aria-label="Facebook"><Facebook className="h-6 w-6 text-primary-foreground/80 hover:text-primary-foreground" /></Link>
-              <Link href="#" aria-label="Twitter"><Twitter className="h-6 w-6 text-primary-foreground/80 hover:text-primary-foreground" /></Link>
-              <Link href="#" aria-label="LinkedIn"><Linkedin className="h-6 w-6 text-primary-foreground/80 hover:text-primary-foreground" /></Link>
+              <Link href="#" aria-label="Facebook"><Facebook className="h-6 w-6 text-primary-foreground/80 hover:text-accent" /></Link>
+              <Link href="#" aria-label="Twitter"><Twitter className="h-6 w-6 text-primary-foreground/80 hover:text-accent" /></Link>
+              <Link href="#" aria-label="LinkedIn"><Linkedin className="h-6 w-6 text-primary-foreground/80 hover:text-accent" /></Link>
             </div>
           </div>
         </div>

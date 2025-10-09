@@ -62,14 +62,6 @@ export function Header() {
                   </Button>
                 </Link>
             )}
-             <Link href="/admin/login">
-              <Button
-                variant="outline"
-                size="sm"
-              >
-                Admin Portal
-              </Button>
-            </Link>
           </ClientOnly>
           <Sheet>
             <SheetTrigger asChild>
@@ -113,16 +105,6 @@ export function Header() {
                         className="w-full"
                       >
                         Login
-                      </Button>
-                    </Link>
-                  </SheetClose>
-                   <SheetClose asChild>
-                     <Link href="/admin/login">
-                      <Button
-                        className="w-full mt-2"
-                        variant="secondary"
-                      >
-                        Admin Login
                       </Button>
                     </Link>
                   </SheetClose>

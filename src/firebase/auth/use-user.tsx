@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { onAuthStateChanged, User, Auth } from 'firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
 import { useAuth } from '../provider';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { useFirebaseApp } from '../provider';
@@ -38,6 +38,9 @@ export function useUser(): UserState {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
+          if (user.isAnonymous) {
+            setUserState({ user, profile: { role: 'guest' }, isLoading: false, error: null });
+          } else {
             const db = getFirestore(app);
             const userDocRef = doc(db, 'users', user.uid);
             const userDoc = await getDoc(userDocRef);
@@ -46,6 +49,7 @@ export function useUser(): UserState {
             } else {
                 setUserState({ user, profile: null, isLoading: false, error: null });
             }
+          }
         } catch (error: any) {
             setUserState({ user: null, profile: null, isLoading: false, error });
         }

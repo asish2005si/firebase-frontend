@@ -10,6 +10,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { ClientOnly } from "./client-only";
 import { signInAsGuest } from "@/app/actions/auth";
 import { useUser } from "@/firebase/auth/use-user";
+import { useRouter } from "next/navigation";
 
 const navLinks = [
   { href: "#", label: "Home" },
@@ -22,9 +23,13 @@ const navLinks = [
 
 export function Header() {
   const { user } = useUser();
+  const router = useRouter();
 
   const handleGuestLogin = async () => {
-    await signInAsGuest();
+    const result = await signInAsGuest();
+    if(result.success){
+      router.push('/dashboard');
+    }
   }
 
   return (

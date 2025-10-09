@@ -61,7 +61,11 @@ export async function loginAdmin(data: any) {
         }
     } catch (error: any) {
         console.error('Admin login error:', error);
-        return { success: false, message: 'Invalid admin credentials or unauthorized.' };
+        let message = 'An unexpected error occurred.';
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+            message = 'Invalid admin credentials.';
+        }
+        return { success: false, message };
     }
 }
 

@@ -64,7 +64,7 @@ export default function AdminLoginPage() {
             </div>
             <Card>
             <CardHeader className="text-center">
-                <CardTitle className="text-2xl">Admin Login</CardTitle>
+                <CardTitle className="text-2xl">Admin Sign In</CardTitle>
                 <CardDescription>
                 Access the management dashboard.
                 </CardDescription>
@@ -117,7 +117,7 @@ export default function AdminLoginPage() {
                     />
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {isSubmitting ? "Signing In..." : "Login"}
+                    {isSubmitting ? "Signing In..." : "Sign In"}
                     </Button>
                 </form>
                 </Form>

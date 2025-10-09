@@ -64,10 +64,10 @@ export function Header() {
             )}
              <Link href="/admin/login">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
               >
-                Admin
+                Admin Portal
               </Button>
             </Link>
           </ClientOnly>

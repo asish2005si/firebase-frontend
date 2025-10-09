@@ -1,115 +1,100 @@
 
 'use server';
 
-import { db } from '@/lib/db';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import type { ApplicationData } from '@/lib/mock-application-data';
 import type { LoanApplication } from '@/components/dashboard/loans/loan-applications';
+import { getFirestore } from 'firebase/firestore';
+import { initializeFirebase } from '@/firebase';
 
 export async function getApplications(): Promise<ApplicationData[]> {
-    const applications = await db.read('applications');
-    const mockApplications = await db.read('mock-applications');
-    return [...(applications || []), ...(mockApplications || [])];
+    const firestore = getFirestore(initializeFirebase().firebaseApp);
+    const applicationsRef = collection(firestore, 'applications');
+    const snapshot = await getDocs(applicationsRef);
+    const applications = snapshot.docs.map(doc => ({ ...doc.data(), applicationId: doc.id } as ApplicationData));
+    return applications;
 }
 
 export async function saveApplication(applicationData: Omit<ApplicationData, 'applicationId' | 'applicationDate' | 'status'>) {
-    const allApplications = await getApplications();
+    const firestore = getFirestore(initializeFirebase().firebaseApp);
+    const applicationsRef = collection(firestore, 'applications');
     
-    const currentYear = new Date().getFullYear();
-    
-    const yearApplications = allApplications.filter(app => {
-        const parts = app.applicationId.split('-');
-        return parts[0] === 'NX' && parts[1] === String(currentYear);
-    });
-
-    const lastSeq = yearApplications.reduce((max, app) => {
-        const seq = parseInt(app.applicationId.split('-')[2], 10);
-        return isNaN(seq) ? max : Math.max(max, seq);
-    }, 0);
-
-    const sequentialNumber = lastSeq + 1;
-    const newApplicationId = `NX-${currentYear}-${String(sequentialNumber).padStart(3, '0')}`;
-
-    const newApplication: ApplicationData = {
+    const newApplication = {
         ...applicationData,
-        applicationId: newApplicationId,
         applicationDate: new Date().toISOString().split('T')[0],
-        status: "Pending", // Default status for new applications
+        status: "Pending",
     };
     
-    // We only write to the main 'applications.json', not the mock file
-    const userApplications = (await db.read('applications')) || [];
-    userApplications.push(newApplication);
-    await db.write('applications', userApplications);
+    const docRef = await addDocumentNonBlocking(applicationsRef, newApplication);
     
-    return newApplication;
+    return { ...newApplication, applicationId: docRef.id };
 }
 
 export async function getLoanApplications(): Promise<LoanApplication[]> {
-    const applications = await db.read('loan-applications');
-    return applications || [];
+    const firestore = getFirestore(initializeFirebase().firebaseApp);
+    const applicationsRef = collection(firestore, 'loan-applications');
+    const snapshot = await getDocs(applicationsRef);
+    const applications = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as LoanApplication));
+    return applications;
 }
 
 export async function saveLoanApplication(applicationData: any) {
-    const applications = await getLoanApplications();
-    
-    const newApplication: LoanApplication = {
-        id: `LN-${Date.now()}`,
+    const firestore = getFirestore(initializeFirebase().firebaseApp);
+    const applicationsRef = collection(firestore, 'loan-applications');
+    const newApplication: Omit<LoanApplication, 'id'> = {
         type: applicationData.loanType,
         amount: applicationData.amount,
         date: new Date().toISOString().split('T')[0],
         status: "Pending",
     };
 
-    applications.push(newApplication);
-    await db.write('loan-applications', applications);
-
-    return newApplication;
+    const docRef = await addDocumentNonBlocking(applicationsRef, newApplication);
+    
+    return { ...newApplication, id: docRef.id };
 }
 
 export async function getApplicationById(applicationId: string): Promise<ApplicationData | null> {
-    const allApplications = await getApplications();
-    const application = allApplications.find(app => app.applicationId.toLowerCase() === applicationId.toLowerCase());
-    return application || null;
+    const firestore = getFirestore(initializeFirebase().firebaseApp);
+    const applicationsRef = collection(firestore, 'applications');
+    const q = query(applicationsRef, where("applicationId", "==", applicationId));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+        // Fallback to mock data if not found in user applications
+        const mockApplications: ApplicationData[] = (await import('@/lib/data/mock-applications.json')).default;
+        const application = mockApplications.find(app => app.applicationId.toLowerCase() === applicationId.toLowerCase());
+        return application || null;
+    }
+    
+    const doc = snapshot.docs[0];
+    return { ...doc.data(), applicationId: doc.id } as ApplicationData;
 }
+
 
 export async function updateApplicationStatus(applicationId: string, newStatus: "Approved" | "Rejected", reason?: string): Promise<{ success: boolean; message?: string }> {
     try {
-        let userApplications = (await db.read('applications')) || [];
-        let mockApplications = (await db.read('mock-applications')) || [];
+        const firestore = getFirestore(initializeFirebase().firebaseApp);
+        const applicationsRef = collection(firestore, 'applications');
+        const q = query(applicationsRef, where("applicationId", "==", applicationId));
+        const snapshot = await getDocs(q);
 
-        let appUpdated = false;
-
-        const updateLogic = (app: ApplicationData) => {
-            app.status = newStatus;
-            if (newStatus === 'Rejected') {
-                app.reason = reason || 'No reason provided.';
-            } else {
-                // Remove reason if it exists and status is changed to Approved
-                delete app.reason;
-            }
-        };
-
-        // Try to find and update in user-submitted applications
-        const userAppIndex = userApplications.findIndex((app: ApplicationData) => app.applicationId.toLowerCase() === applicationId.toLowerCase());
-        if (userAppIndex !== -1) {
-            updateLogic(userApplications[userAppIndex]);
-            await db.write('applications', userApplications);
-            appUpdated = true;
-        } else {
-            // If not found, try to find and update in mock applications
-            const mockAppIndex = mockApplications.findIndex((app: ApplicationData) => app.applicationId.toLowerCase() === applicationId.toLowerCase());
-            if (mockAppIndex !== -1) {
-                updateLogic(mockApplications[mockAppIndex]);
-                await db.write('mock-applications', mockApplications);
-                appUpdated = true;
-            }
-        }
-
-        if (appUpdated) {
-            return { success: true };
-        } else {
+        if (snapshot.empty) {
             return { success: false, message: "Application not found." };
         }
+        
+        const docToUpdate = snapshot.docs[0].ref;
+        const updateData: Partial<ApplicationData> = { status: newStatus };
+        if (newStatus === 'Rejected') {
+            updateData.reason = reason || 'No reason provided.';
+        } else {
+            delete updateData.reason;
+        }
+
+        await addDocumentNonBlocking(docToUpdate, updateData);
+        
+        return { success: true };
+
     } catch (error) {
         console.error("Error updating application status:", error);
         return { success: false, message: "An unexpected error occurred." };

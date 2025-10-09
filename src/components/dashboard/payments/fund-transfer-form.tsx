@@ -27,7 +27,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { IfscFinder } from "./ifsc-finder";
-import type { Payment } from "@/app/dashboard/payments/page";
+import type { Transaction } from "@/types/transaction";
 import { OtpDialog } from "./otp-dialog";
 
 const otherBanks = [
@@ -108,7 +108,7 @@ const transferSchema = z.object({
 export type TransferFormData = z.infer<typeof transferSchema>;
 
 type FundTransferFormProps = {
-  onSuccessfulTransfer: (payment: Omit<Payment, 'id' | 'date'>) => void;
+  onSuccessfulTransfer: (payment: Omit<Transaction, 'txn_id' | 'txn_time'| 'performed_by' | 'balance_after'>) => void;
 };
 
 const formatCurrency = (amount: number) => {
@@ -160,10 +160,10 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     onSuccessfulTransfer({
-        type: "Fund Transfer",
+        txn_type: "Fund Transfer",
         description: formData.recipientName,
         amount: formData.amount,
-        status: "Success",
+        account_no: formData.recipientAccount
     });
 
     toast({

@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetClose, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "./theme-toggle";
 import { ClientOnly } from "./client-only";
+import { signInAsGuest } from "@/app/actions/auth";
+import { useUser } from "@/firebase/auth/use-user";
 
 const navLinks = [
   { href: "#", label: "Home" },
@@ -19,6 +21,12 @@ const navLinks = [
 ];
 
 export function Header() {
+  const { user } = useUser();
+
+  const handleGuestLogin = async () => {
+    await signInAsGuest();
+  }
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
@@ -42,21 +50,30 @@ export function Header() {
         <div className="flex items-center gap-2 ml-auto">
           <ClientOnly>
              <ThemeToggle />
-            <Link href="/login">
-              <Button
-                variant="outline"
-                className="rounded-full"
-                size="sm"
-              >
-                Login
-              </Button>
-            </Link>
+            {user ? (
+                <Link href="/dashboard">
+                    <Button variant="outline" className="rounded-full" size="sm">Dashboard</Button>
+                </Link>
+            ) : (
+                <>
+                <Link href="/login">
+                  <Button
+                    variant="outline"
+                    className="rounded-full"
+                    size="sm"
+                  >
+                    Login
+                  </Button>
+                </Link>
+                <Button size="sm" onClick={handleGuestLogin}>Guest Login</Button>
+                </>
+            )}
              <Link href="/admin/login">
               <Button
                 variant="ghost"
                 size="sm"
               >
-                Admin Login
+                Admin
               </Button>
             </Link>
           </ClientOnly>

@@ -14,10 +14,9 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { VerifyIdentityStep } from "./form-steps/verify-identity-step";
-import { OtpVerificationStep } from "./form-steps/otp-verification-step";
 import { CreateCredentialsStep } from "./form-steps/create-credentials-step";
 import { TermsAndSubmitStep } from "./form-steps/terms-and-submit-step";
-import { registerUser, checkAccount } from "@/app/actions/auth";
+import { registerUser } from "@/app/actions/auth";
 
 const passwordValidation = z.string()
   .min(8, "Password must be at least 8 characters long")
@@ -27,21 +26,11 @@ const passwordValidation = z.string()
   .refine(value => /[^A-Za-z0-9]/.test(value), "Password must contain at least one special character");
 
 const registrationSchema = z.object({
-  // Step 1
   accountNumber: z.string().regex(/^\d{9,18}$/, "Invalid account number."),
-  mobileOrEmail: z.string().min(1, "Mobile or Email is required."),
-
-  // Step 2
-  otp: z.string().length(6, "OTP must be 6 digits."),
-
-  // Step 3
+  email: z.string().email("A valid email is required."),
   username: z.string().min(3, "Username must be at least 3 characters.").regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores."),
   password: passwordValidation,
   confirmPassword: z.string(),
-  securityQuestion: z.string().optional(),
-  securityAnswer: z.string().optional(),
-
-  // Step 4
   terms: z.boolean().refine(val => val === true, "You must agree to the terms and conditions."),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords do not match",
@@ -52,9 +41,8 @@ const registrationSchema = z.object({
 type RegistrationFormData = z.infer<typeof registrationSchema>;
 
 const formStepsValidation: (keyof RegistrationFormData)[][] = [
-    ["accountNumber", "mobileOrEmail"],
-    ["otp"],
-    ["username", "password", "confirmPassword", "securityQuestion", "securityAnswer"],
+    ["accountNumber", "email"],
+    ["username", "password", "confirmPassword"],
     ["terms"],
 ];
 
@@ -66,13 +54,10 @@ export function RegistrationForm() {
     resolver: zodResolver(registrationSchema),
     defaultValues: {
         accountNumber: "",
-        mobileOrEmail: "",
-        otp: "",
+        email: "",
         username: "",
         password: "",
         confirmPassword: "",
-        securityQuestion: "",
-        securityAnswer: "",
         terms: false,
     },
     mode: "onTouched",
@@ -80,7 +65,6 @@ export function RegistrationForm() {
   
   const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } = useMultistepForm([
     <VerifyIdentityStep key="identity" />,
-    <OtpVerificationStep key="otp" />,
     <CreateCredentialsStep key="credentials" />,
     <TermsAndSubmitStep key="terms" />,
   ]);
@@ -90,18 +74,6 @@ export function RegistrationForm() {
     const result = await methods.trigger(fieldsToValidate as (keyof RegistrationFormData)[]);
     
     if (result) {
-        if (currentStepIndex === 0) { // After identity verification
-            const canRegister = await checkAccount(methods.getValues("accountNumber"));
-            if (!canRegister) {
-                methods.setError("accountNumber", { type: "manual", message: "An online banking profile already exists for this account number."});
-                return;
-            }
-             toast({
-                title: "OTP Sent",
-                description: "An OTP has been sent to your registered mobile/email.",
-            });
-        }
-        
         if (isLastStep) {
             await methods.handleSubmit(onSubmit)();
         } else {
@@ -124,12 +96,6 @@ export function RegistrationForm() {
           title: "Registration Failed",
           description: result.message,
       });
-      // This is important to re-enable the button on failure
-      if (methods.formState.isSubmitting) {
-        // A bit of a hack, but react-hook-form doesn't have a built-in way to reset submission state
-        // without a full form reset. We need to manually allow the user to try again.
-        // A better long-term solution would be to manage `isSubmitting` with a separate `useState`.
-      }
     }
   }
 

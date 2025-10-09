@@ -1,39 +1,25 @@
 
 "use client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Mail, Phone, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useUser } from "@/firebase/auth/use-user";
+import { useEffect, useState } from "react";
 import { ClientOnly } from "../client-only";
 
-type Customer = {
-    fullName: string;
-    accountNumber: string;
-    accountType?: string;
-    branch?: string;
-    email?: string;
-}
-
-type CustomerProfileProps = {
-    customer: Customer;
-}
-
-export function CustomerProfile({ customer }: CustomerProfileProps) {
+export function CustomerProfile() {
+  const { user } = useUser();
   const [lastLogin, setLastLogin] = useState("");
 
   useEffect(() => {
-    // This will only run on the client, after hydration, to avoid mismatch
-    const now = new Date();
-    // Move one day back to simulate a previous login
-    now.setDate(now.getDate() - 1);
-    setLastLogin(now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }));
-  }, []);
+    if (user?.metadata.lastSignInTime) {
+      setLastLogin(new Date(user.metadata.lastSignInTime).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }));
+    }
+  }, [user]);
 
   return (
     <Card>
         <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div>
-                <CardTitle className="text-xl font-headline">Welcome back, {customer.fullName || 'Customer'}!</CardTitle>
+                <CardTitle className="text-xl font-headline">Welcome back, {user?.displayName || user?.email || 'Customer'}!</CardTitle>
                 <CardDescription>Here’s a summary of your profile information.</CardDescription>
             </div>
             <ClientOnly>
@@ -41,9 +27,9 @@ export function CustomerProfile({ customer }: CustomerProfileProps) {
             </ClientOnly>
         </CardHeader>
         <CardContent className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 pt-2">
-            <DetailItem label="Full Name" value={customer.fullName} />
-            <DetailItem label="Account Number" value={customer.accountNumber} />
-            <DetailItem label="Email Address" value={customer.email || '-'} />
+            <DetailItem label="Full Name" value={user?.displayName || "Not set"} />
+            <DetailItem label="Account Number" value={"50100123456789"} />
+            <DetailItem label="Email Address" value={user?.email || '-'} />
         </CardContent>
     </Card>
   )

@@ -8,28 +8,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
 import { Landmark, Loader2, User, Lock } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { loginUser } from "@/app/actions/auth";
 import { ClientOnly } from "@/components/client-only";
+import { useAuth } from "@/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required."),
+  email: z.string().email("Please enter a valid email address."),
   password: z.string().min(1, "Password is required."),
 });
-
 
 export default function LoginPage() {
   const router = useRouter();
@@ -37,32 +29,37 @@ export default function LoginPage() {
   const redirectUrl = searchParams.get('redirect');
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const auth = useAuth();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true);
-    const result = await loginUser(values);
-    
-    if (result.success) {
+    if (!auth) {
+        toast({ variant: "destructive", title: "Auth service not available." });
+        setIsSubmitting(false);
+        return;
+    }
+
+    try {
+        await signInWithEmailAndPassword(auth, values.email, values.password);
         toast({
-          title: "OTP Required",
-          description: "An OTP has been sent to your registered contact method.",
+          title: "Login Successful",
+          description: "Welcome back! Redirecting to your dashboard...",
         });
         const destination = redirectUrl || "/dashboard";
-        // Redirect to OTP page for 2FA
-        router.push(`/otp?email=${result.email}&redirect=${destination}`);
-    } else {
+        router.push(destination);
+    } catch (error: any) {
         toast({
           variant: "destructive",
           title: "Login Failed",
-          description: result.message,
+          description: error.message || "Invalid email or password.",
         });
         setIsSubmitting(false);
     }
@@ -90,15 +87,15 @@ export default function LoginPage() {
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                       <FormField
                           control={form.control}
-                          name="username"
+                          name="email"
                           render={({ field }) => (
                               <FormItem>
-                              <FormLabel>Username</FormLabel>
+                              <FormLabel>Email</FormLabel>
                               <FormControl>
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
-                                    placeholder="Enter your username"
+                                    placeholder="Enter your email"
                                     {...field}
                                     disabled={isSubmitting}
                                     className="pl-10"

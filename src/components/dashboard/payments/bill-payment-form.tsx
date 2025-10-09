@@ -25,7 +25,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import type { Payment } from "@/app/dashboard/payments/page";
+import type { Transaction } from "@/types/transaction";
 import { OtpDialog } from "./otp-dialog";
 
 const billPaymentSchema = z.object({
@@ -45,7 +45,7 @@ const billers: Record<string, string[]> = {
 export type BillPaymentFormData = z.infer<typeof billPaymentSchema>;
 
 type BillPaymentFormProps = {
-  onSuccessfulPayment: (payment: Omit<Payment, 'id' | 'date'>) => void;
+  onSuccessfulPayment: (payment: Omit<Transaction, 'txn_id' | 'txn_time' | 'performed_by' | 'balance_after'>) => void;
 }
 
 const formatCurrency = (amount: number) => {
@@ -90,10 +90,9 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       onSuccessfulPayment({
-          type: "Bill Payment",
+          txn_type: "Bill Payment",
           description: formData.biller,
           amount: formData.amount,
-          status: "Success",
       });
 
       toast({

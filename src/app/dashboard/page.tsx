@@ -1,12 +1,12 @@
 
+"use client";
+
 import { CustomerProfile } from "@/components/dashboard/account-summary";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CreditCard, Landmark, ArrowRight, IndianRupee, Receipt } from "lucide-react";
 import Link from "next/link";
 import { TransactionChart } from "@/components/dashboard/transaction-chart";
-import { getCustomerInfo } from "@/app/actions/transactions";
-
 
 const chartData = [
   { month: "Jan", credit: 50000, debit: 35000 },
@@ -25,17 +25,13 @@ const formatCurrency = (amount: number) => {
     }).format(amount);
     return `INR ${formatted}`;
   };
-  
 
-export default async function DashboardPage() {
-  const customer = await getCustomerInfo();
-
+export default function DashboardPage() {
   const account = {
       type: "Savings Account",
       number: "50100123456789",
       balance: 150000.75,
   };
-
 
   return (
     <div className="flex flex-col gap-8">
@@ -43,43 +39,41 @@ export default async function DashboardPage() {
         <p className="text-sm text-muted-foreground">You are here: / <span className="font-medium text-primary">My Accounts &amp; Profile</span></p>
        </div>
 
-      <CustomerProfile customer={customer} />
+      <CustomerProfile />
 
       <Card>
         <CardHeader>
             <CardTitle>My Account</CardTitle>
-            <CardDescription>An overview of your bank account and balance.</CardDescription>
+            <CardContent className="pt-4">
+                <div className="p-4 border rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-primary/10 rounded-full">
+                            <Landmark className="h-6 w-6 text-primary" />
+                        </div>
+                        <div>
+                            <p className="font-bold text-lg">{account.type}</p>
+                            <p className="text-muted-foreground">{account.number}</p>
+                        </div>
+                    </div>
+                    <div className="text-left md:text-right">
+                        <p className="text-sm text-muted-foreground">Available Balance</p>
+                        <p className="font-bold text-xl text-primary">{formatCurrency(account.balance)}</p>
+                    </div>
+                    <div className="flex gap-2 self-start md:self-center">
+                        <Link href="/dashboard/statements">
+                            <Button variant="outline" size="sm">View Transactions</Button>
+                        </Link>
+                        <Link href="/dashboard/payments?tab=transfer">
+                          <Button size="sm">Transfer Funds</Button>
+                        </Link>
+                    </div>
+                </div>
+            </CardContent>
         </CardHeader>
-        <CardContent>
-            <div className="p-4 border rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div className="flex items-center gap-4">
-                    <div className="p-3 bg-primary/10 rounded-full">
-                        <Landmark className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                        <p className="font-bold text-lg">{account.type}</p>
-                        <p className="text-muted-foreground">{account.number}</p>
-                    </div>
-                </div>
-                <div className="text-left md:text-right">
-                    <p className="text-sm text-muted-foreground">Available Balance</p>
-                    <p className="font-bold text-xl text-primary">{formatCurrency(account.balance)}</p>
-                </div>
-                <div className="flex gap-2 self-start md:self-center">
-                    <Link href="/dashboard/statements">
-                        <Button variant="outline" size="sm">View Transactions</Button>
-                    </Link>
-                    <Link href="/dashboard/payments?tab=transfer">
-                      <Button size="sm">Transfer Funds</Button>
-                    </Link>
-                </div>
-            </div>
-        </CardContent>
       </Card>
        <Card>
         <CardHeader>
             <CardTitle>Monthly Activity</CardTitle>
-            <CardDescription>A summary of your credits and debits over the last 6 months.</CardDescription>
         </CardHeader>
         <CardContent>
             <TransactionChart data={chartData} />

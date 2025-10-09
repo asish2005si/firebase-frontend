@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -7,16 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
 import { Landmark, Loader2 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,10 +17,9 @@ import { loginAdmin } from "@/app/actions/auth";
 import { ClientOnly } from "@/components/client-only";
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required."),
+  email: z.string().email("Please enter a valid email."),
   password: z.string().min(1, "Password is required."),
 });
-
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -37,7 +29,7 @@ export default function AdminLoginPage() {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -84,13 +76,13 @@ export default function AdminLoginPage() {
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="username"
+                            name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Admin Username</FormLabel>
+                                <FormLabel>Admin Email</FormLabel>
                                 <FormControl>
                                     <Input
-                                    placeholder="Enter your admin username"
+                                    placeholder="Enter your admin email"
                                     {...field}
                                     disabled={isSubmitting}
                                     />

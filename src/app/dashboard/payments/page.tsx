@@ -9,39 +9,38 @@ import { FundTransferForm } from "@/components/dashboard/payments/fund-transfer-
 import { BillPaymentForm } from "@/components/dashboard/payments/bill-payment-form";
 import { PaymentHistory } from "@/components/dashboard/payments/payment-history";
 import { ClientOnly } from "@/components/client-only";
-
-export type Payment = {
-    id: string;
-    date: string;
-    type: string;
-    description: string;
-    amount: number;
-    status: string;
-};
+import { addDocumentNonBlocking, useCollection, useFirestore, useUser } from "@/firebase";
+import { collection, query, where, orderBy } from "firebase/firestore";
+import type { Transaction } from "@/types/transaction";
+import { useMemo } from "react";
 
 function PaymentsComponent() {
   const searchParams = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'transfer';
-  const [paymentHistory, setPaymentHistory] = useState<Payment[]>(() => {
-    if (typeof window !== 'undefined') {
-        const savedHistory = localStorage.getItem('paymentHistory');
-        return savedHistory ? JSON.parse(savedHistory) : [];
-    }
-    return [];
-  });
+  const { user } = useUser();
+  const firestore = useFirestore();
 
-  useEffect(() => {
-    localStorage.setItem('paymentHistory', JSON.stringify(paymentHistory));
-  }, [paymentHistory]);
+  const transactionsQuery = useMemo(() => {
+    if (!firestore || !user) return null;
+    return query(
+      collection(firestore, "transactions"),
+      where("performed_by", "==", user.uid),
+      orderBy("txn_time", "desc")
+    );
+  }, [firestore, user]);
 
+  const { data: paymentHistory } = useCollection<Transaction>(transactionsQuery);
 
-  const addPaymentToHistory = (payment: Omit<Payment, 'id' | 'date'>) => {
-    const newPayment: Payment = {
-        ...payment,
-        id: `TXN${Math.floor(Math.random() * 90000) + 10000}`,
-        date: new Date().toISOString().split('T')[0],
+  const addPaymentToHistory = async (payment: Omit<Transaction, 'txn_id' | 'txn_time' | 'performed_by' | 'balance_after'>) => {
+    if (!firestore || !user) return;
+    const transactionsRef = collection(firestore, "transactions");
+    const newPayment = {
+      ...payment,
+      txn_time: new Date().toISOString(),
+      performed_by: user.uid,
+      balance_after: 0 // This would be calculated on the backend in a real scenario
     };
-    setPaymentHistory(prev => [newPayment, ...prev]);
+    await addDocumentNonBlocking(transactionsRef, newPayment);
   };
 
   return (
@@ -67,7 +66,7 @@ function PaymentsComponent() {
                 <BillPaymentForm onSuccessfulPayment={addPaymentToHistory} />
             </TabsContent>
             <TabsContent value="history">
-                <PaymentHistory history={paymentHistory} />
+                <PaymentHistory history={paymentHistory || []} />
             </TabsContent>
           </Tabs>
         </CardContent>

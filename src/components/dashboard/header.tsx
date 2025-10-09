@@ -38,6 +38,7 @@ import { ThemeToggle } from "../theme-toggle";
 import { ClientOnly } from "../client-only";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/firebase";
 
 const navItems = [
     { href: "/dashboard", icon: CircleUser, label: "My Accounts & Profile" },
@@ -54,8 +55,12 @@ export function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
+  const auth = useAuth();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (auth) {
+        await auth.signOut();
+    }
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",

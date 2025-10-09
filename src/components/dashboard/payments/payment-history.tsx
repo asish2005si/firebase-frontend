@@ -17,7 +17,7 @@ import {
     TableRow,
   } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import type { Payment } from "@/app/dashboard/payments/page";
+import type { Transaction } from "@/types/transaction";
 
 const formatCurrency = (amount: number) => {
     const formatted = new Intl.NumberFormat('en-IN', {
@@ -29,7 +29,7 @@ const formatCurrency = (amount: number) => {
 };
 
 type PaymentHistoryProps = {
-    history: Payment[];
+    history: Transaction[];
 }
 
 export function PaymentHistory({ history }: PaymentHistoryProps) {
@@ -53,14 +53,14 @@ export function PaymentHistory({ history }: PaymentHistoryProps) {
             </TableHeader>
             <TableBody>
                 {history.length > 0 ? history.map((item) => (
-                    <TableRow key={item.id}>
-                        <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
-                        <TableCell>{item.id}</TableCell>
-                        <TableCell>{item.type}</TableCell>
+                    <TableRow key={item.txn_id}>
+                        <TableCell>{new Date(item.txn_time).toLocaleDateString()}</TableCell>
+                        <TableCell>{item.txn_id}</TableCell>
+                        <TableCell>{item.txn_type}</TableCell>
                         <TableCell>{item.description}</TableCell>
                         <TableCell>
-                            <Badge variant={item.status === "Success" ? "default" : "destructive"} className={item.status === "Success" ? "bg-green-600" : ""}>
-                                {item.status}
+                             <Badge variant={"default"} className={"bg-green-600"}>
+                                Success
                             </Badge>
                         </TableCell>
                         <TableCell className="text-right">{formatCurrency(item.amount)}</TableCell>

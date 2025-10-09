@@ -38,18 +38,18 @@ export function useUser(): UserState {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
-          if (user.isAnonymous) {
-            setUserState({ user, profile: { role: 'guest' }, isLoading: false, error: null });
-          } else {
             const db = getFirestore(app);
             const userDocRef = doc(db, 'users', user.uid);
             const userDoc = await getDoc(userDocRef);
             if (userDoc.exists()) {
                 setUserState({ user, profile: userDoc.data() as UserProfile, isLoading: false, error: null });
             } else {
+                // This could be a new user who hasn't had their profile created yet, or an admin
+                // For admin, we might not have a public user profile document.
+                // We'll check for a custom claim if that's the desired pattern.
+                // For now, assume a missing doc means a regular user without a profile yet.
                 setUserState({ user, profile: null, isLoading: false, error: null });
             }
-          }
         } catch (error: any) {
             setUserState({ user: null, profile: null, isLoading: false, error });
         }

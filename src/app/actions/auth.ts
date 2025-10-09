@@ -5,8 +5,7 @@ import { initializeFirebase } from '@/firebase';
 import { 
     getAuth, 
     createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword,
-    signInAnonymously 
+    signInWithEmailAndPassword
 } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 
@@ -73,15 +72,4 @@ export async function checkAccount(accountNumber: string) {
     // This function now can be used to check against firestore if needed.
     // For now, we assume email/username is the unique identifier.
     return true;
-}
-
-export async function signInAsGuest() {
-    try {
-        const { auth } = initializeFirebase();
-        await signInAnonymously(auth);
-        return { success: true, message: "Signed in as guest." };
-    } catch (error: any) {
-        console.error("Anonymous sign-in error:", error);
-        return { success: false, message: "Could not sign in as a guest." };
-    }
 }

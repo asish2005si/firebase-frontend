@@ -1,102 +1,43 @@
-/**
- * @fileoverview Firestore Security Rules for the Smart Bank application.
- *
- * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for user profiles and personalized offers.
- * Contact requests are accessible by administrators.
- *
- * Data Structure:
- * - /users/{userId}: Stores user profiles, accessible only to the user themselves.
- * - /users/{userId}/personalizedOffers/{offerId}: Stores personalized offers for each user, accessible only to the user themselves.
- * - /contactRequests/{contactRequestId}: Stores contact requests, not directly secured in this iteration.
- *
- * Key Security Decisions:
- * - Users can only read and write their own user profile data.
- * - Users can only read and write their own personalized offers.
- * - Contact requests are currently not protected by any specific authorization.
- *
- * Denormalization for Authorization:
- * - PersonalizedOffer documents include the userId field. This enables direct ownership checks within the personalizedOffers collection without needing to perform additional reads on the parent /users/{userId} document.
- *
- * Structural Segregation:
- * - User data and contact requests are stored in separate collections to allow for different access control policies. User-specific data is nested under the /users/{userId} path, while contact requests are at the top level.
- */
+
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * @description Rules for user profiles.
-     * @path /users/{userId}
-     * @allow (create) - User with UID 'user_abc' can create their own profile with ID 'user_abc'.
-     * @allow (get, update, delete) - User with UID 'user_abc' can get, update, and delete their own profile with ID 'user_abc'.
-     * @deny (create) - User with UID 'user_abc' cannot create a profile with ID 'user_xyz'.
-     * @deny (get, update, delete) - User with UID 'user_abc' cannot get, update, or delete a profile with ID 'user_xyz'.
-     * @principle Enforces document ownership for writes.
-     */
+    // Helper function to check if the user is an admin
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Users can only read/write their own profile. Admins can read any profile.
     match /users/{userId} {
-      // Allow the user to read their own profile.
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if false;
-
-      // Allow the user to create their own profile, but only if the userId matches the authenticated user's UID.
-      allow create: if isSignedIn() && isSelfCreation(userId);
-
-      // Allow the user to update and delete their own profile.
-      allow update: if isSignedIn() && isExistingOwner(userId);
-      allow delete: if isSignedIn() && isExistingOwner(userId);
+      allow read: if request.auth.uid == userId || isAdmin();
+      allow write: if request.auth.uid == userId;
     }
 
-    /**
-     * @description Rules for personalized offers for a specific user.
-     * @path /users/{userId}/personalizedOffers/{offerId}
-     * @allow (create) - User with UID 'user_abc' can create an offer under /users/user_abc/personalizedOffers.
-     * @allow (get, update, delete) - User with UID 'user_abc' can get, update, and delete offers under /users/user_abc/personalizedOffers.
-     * @deny (create) - User with UID 'user_abc' cannot create an offer under /users/user_xyz/personalizedOffers.
-     * @deny (get, update, delete) - User with UID 'user_abc' cannot get, update, or delete offers under /users/user_xyz/personalizedOffers.
-     * @principle Enforces document ownership and validates relational integrity.
-     */
-    match /users/{userId}/personalizedOffers/{offerId} {
-      // Allow the user to read their own personalized offers.
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if isSignedIn() && isOwner(userId);
-
-      // Allow the user to create personalized offers for themselves, enforcing that the userId matches.
-      allow create: if isSignedIn() && request.resource.data.userId == userId;
-
-      // Allow the user to update and delete their own personalized offers, ensuring the document exists.
-      allow update: if isSignedIn() && isExistingOwner(userId) && resource.data.userId == userId;
-      allow delete: if isSignedIn() && isExistingOwner(userId);
+    // Admins can read all applications. Users cannot read/write them directly.
+    match /applications/{applicationId} {
+        allow read, write: if isAdmin();
+        allow create: if request.auth != null;
+    }
+    
+    // Admins can read all loan applications. Users cannot read/write them directly.
+    match /loan-applications/{loanId} {
+        allow read, write: if isAdmin();
+        allow create: if request.auth != null;
     }
 
-    /**
-     * @description Rules for contact requests.  These rules are wide open for prototyping purposes and MUST be secured in a real application.
-     * @path /contactRequests/{contactRequestId}
-     * @allow (get, list, create, update, delete) - Any authenticated user can perform any operation on contact requests. This is for prototyping only.
-     * @principle Placeholder for future access control implementation.  Contact requests should be secured based on administrator roles.
-     */
-    match /contactRequests/{contactRequestId} {
-      allow get, list, create, update, delete: if true;
+    // Users can read transactions where they are the owner. Admins can read all transactions.
+    // Writes are restricted to prevent client-side tampering.
+    match /transactions/{transactionId} {
+      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accountNumber == resource.data.account_no || isAdmin();
+      allow create: if request.auth.uid == request.resource.data.performed_by;
+      allow update, delete: if false;
     }
-
-    // Helper function to determine if the user is signed in.
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    // Helper function to determine if the user is the owner of the resource based on the userId.
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    // Helper function to determine if the user is creating their own user document.
-    function isSelfCreation(userId) {
-        return request.auth.uid == userId;
-    }
-
-    // Helper function to determine if the user is the owner of an existing resource.
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
+    
+    // Default deny all other reads/writes
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

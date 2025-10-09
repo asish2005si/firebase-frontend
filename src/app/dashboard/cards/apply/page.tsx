@@ -27,3 +27,4 @@ function ApplyCardPage() {
 }
 
 export default ApplyCardPage;
+

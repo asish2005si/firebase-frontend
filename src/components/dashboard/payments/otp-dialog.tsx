@@ -67,7 +67,7 @@ export function OtpDialog({ isOpen, onClose, onVerify, contactMethod }: OtpDialo
         <DialogHeader>
           <DialogTitle>Transaction Authorization</DialogTitle>
           <DialogDescription>
-            Please enter the 6-digit OTP sent to {contactMethod} to authorize this transaction. The code is logged in your server console.
+            Please enter the 6-digit OTP sent to {contactMethod}. The code is logged in your server console.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-2">

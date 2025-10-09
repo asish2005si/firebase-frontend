@@ -1,7 +1,7 @@
 
 'use server';
 
-import { addDoc, collection, getDocs, query, where, doc, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, where, doc, updateDoc, getDoc } from 'firebase/firestore';
 import type { ApplicationData } from '@/lib/mock-application-data';
 import type { LoanApplication } from '@/components/dashboard/loans/loan-applications';
 import { getFirestore } from 'firebase/firestore';
@@ -55,22 +55,12 @@ export async function saveLoanApplication(applicationData: any) {
 
 export async function getApplicationById(applicationId: string): Promise<ApplicationData | null> {
     const firestore = getFirestore(initializeFirebase().firebaseApp);
-    const applicationsRef = collection(firestore, 'applications');
-    // In a real app with proper security rules, you'd want to query securely.
-    // For now, we query by a custom field if it exists, or by doc ID.
     try {
         const docRef = doc(firestore, 'applications', applicationId);
-        const docSnap = await getDocs(query(applicationsRef, where('applicationId', '==', applicationId)));
+        const docSnap = await getDoc(docRef);
 
-        if (!docSnap.empty) {
-            const doc = docSnap.docs[0];
-            return { ...doc.data(), applicationId: doc.id } as ApplicationData;
-        }
-        
-        const docByIdSnap = await getDocs(query(collection(firestore, 'applications'), where('__name__', '==', applicationId)));
-        if (!docByIdSnap.empty) {
-            const doc = docByIdSnap.docs[0];
-            return { ...doc.data(), applicationId: doc.id } as ApplicationData;
+        if (docSnap.exists()) {
+            return { ...docSnap.data(), applicationId: docSnap.id } as ApplicationData;
         }
 
     } catch (e) {

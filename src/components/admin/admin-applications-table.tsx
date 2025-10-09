@@ -42,7 +42,7 @@ export function AdminApplicationsTable({ applications }: AdminApplicationsTableP
             {applications.length > 0 ? (
                 applications.map((app) => (
                 <TableRow key={app.applicationId}>
-                    <TableCell className="font-medium">{app.applicationId}</TableCell>
+                    <TableCell className="font-medium truncate max-w-[120px]">{app.applicationId}</TableCell>
                     <TableCell>{app.fullName}</TableCell>
                     <TableCell>{app.accountType}</TableCell>
                     <TableCell>{new Date(app.applicationDate).toLocaleDateString("en-GB")}</TableCell>

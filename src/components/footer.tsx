@@ -41,6 +41,7 @@ export function Footer() {
               <li><Link href="#" className="text-sm hover:underline text-primary-foreground/80">Privacy Policy</Link></li>
               <li><Link href="#" className="text-sm hover:underline text-primary-foreground/80">Terms of Service</Link></li>
               <li><Link href="#" className="text-sm hover:underline text-primary-foreground/80">Cookie Policy</Link></li>
+              <li><Link href="/admin/login" className="text-sm hover:underline text-primary-foreground/80">Admin Login</Link></li>
             </ul>
           </div>
           <div>

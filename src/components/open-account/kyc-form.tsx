@@ -1,4 +1,5 @@
 
+
 "use client";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,7 +7,7 @@ import { z } from "zod";
 import { AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import React, { useMemo, ReactElement } from 'react';
+import React, { useMemo, ReactElement, useEffect } from 'react';
 
 import { useMultistepForm } from "@/hooks/use-multistep-form";
 import { AccountTypeSelector } from "./account-type-selector";
@@ -193,24 +194,20 @@ export function KycForm() {
   
   const accountType = methods.watch("accountType");
 
-  const initialSteps = useMemo(() => [
-      <AccountTypeSelector key="accountType" />,
-      <PersonalDetailsForm key="personal" />,
-      <AddressDetailsForm key="address" />,
-    ], []);
-
   const {
-    currentStepIndex,
-    step,
-    steps,
-    isFirstStep,
-    isLastStep,
-    back,
-    next,
-    goTo,
-  } = useMultistepForm(initialSteps);
+      currentStepIndex,
+      step,
+      steps,
+      isFirstStep,
+      isLastStep,
+      back,
+      next,
+      goTo,
+      setSteps
+  } = useMultistepForm([<AccountTypeSelector key="accountType" />]);
 
-  const stepsArray = useMemo(() => {
+
+  useEffect(() => {
     const baseSteps: ReactElement[] = [
       <AccountTypeSelector key="accountType" />,
       <PersonalDetailsForm key="personal" />,
@@ -228,19 +225,11 @@ export function KycForm() {
         baseSteps.push(<OtpVerificationStep key="otp" />);
     }
     
-    return baseSteps;
-  }, [accountType, goTo]);
-
-  const {
-      currentStepIndex: finalCurrentStepIndex,
-      step: finalStep,
-      steps: finalSteps,
-      isFirstStep: finalIsFirstStep,
-      isLastStep: finalIsLastStep,
-      back: finalBack,
-      next: finalNext,
-      goTo: finalGoTo
-  } = useMultistepForm(stepsArray);
+    setSteps(baseSteps);
+     if (currentStepIndex >= baseSteps.length) {
+        goTo(baseSteps.length - 1);
+    }
+  }, [accountType, setSteps, goTo, currentStepIndex]);
 
 
   const onSubmit = async (data: KycFormData) => {
@@ -270,31 +259,31 @@ export function KycForm() {
   }
 
   async function handleNextStep() {
-    if (finalIsLastStep) {
+    if (isLastStep) {
         await methods.handleSubmit(onSubmit)();
         return;
     }
     
     const fieldGroups = formStepsPerType[accountType || 'savings'];
-    if (!fieldGroups || finalCurrentStepIndex >= fieldGroups.length) {
-        finalNext();
+    if (!fieldGroups || currentStepIndex >= fieldGroups.length) {
+        next();
         return;
     }
 
-    const fieldsToValidate = fieldGroups[finalCurrentStepIndex];
+    const fieldsToValidate = fieldGroups[currentStepIndex];
     const tempResolver = zodResolver(kycSchema);
     const tempForm = { ...methods, resolver: tempResolver };
     
     const result = await tempForm.trigger(fieldsToValidate as (keyof KycFormData)[]);
 
     if (result) {
-        finalNext();
+        next();
     }
   }
   
-  const currentStepWithProps = React.isValidElement(finalStep) 
-    ? React.cloneElement(finalStep, { goTo: finalGoTo } as { goTo: (index: number) => void }) 
-    : finalStep;
+  const currentStepWithProps = React.isValidElement(step) 
+    ? React.cloneElement(step, { goTo: goTo } as { goTo: (index: number) => void }) 
+    : step;
 
 
   return (
@@ -302,10 +291,10 @@ export function KycForm() {
         <form onSubmit={methods.handleSubmit(onSubmit)}>
             <div className="max-w-3xl mx-auto p-4 md:p-8 rounded-lg shadow-xl border bg-card">
                 <div className="mb-8">
-                    <Progress value={finalSteps.length > 0 ? (finalCurrentStepIndex + 1) * (100 / finalSteps.length) : 0} className="mb-2" />
-                    {finalSteps.length > 0 && (
+                    <Progress value={steps.length > 0 ? (currentStepIndex + 1) * (100 / steps.length) : 0} className="mb-2" />
+                    {steps.length > 0 && (
                         <p className="text-sm text-center text-muted-foreground">
-                            Step {finalCurrentStepIndex + 1} of {finalSteps.length}
+                            Step {currentStepIndex + 1} of {steps.length}
                         </p>
                     )}
                 </div>
@@ -313,18 +302,18 @@ export function KycForm() {
                     {currentStepWithProps}
                 </AnimatePresence>
                 <div className="mt-8 flex justify-between">
-                    {!finalIsFirstStep && (
-                    <Button type="button" variant="outline" onClick={finalBack} disabled={methods.formState.isSubmitting}>
+                    {!isFirstStep && (
+                    <Button type="button" variant="outline" onClick={back} disabled={methods.formState.isSubmitting}>
                         Go Back
                     </Button>
                     )}
                     <div className="flex-grow"></div>
                     
-                    {!finalIsLastStep ? (
+                    {!isLastStep ? (
                        <Button 
                           type="button" 
                           onClick={handleNextStep}
-                          disabled={methods.formState.isSubmitting || (finalIsFirstStep && !accountType)}
+                          disabled={methods.formState.isSubmitting || (isFirstStep && !accountType)}
                         >
                             Next Step
                         </Button>
@@ -343,5 +332,3 @@ export function KycForm() {
     </FormProvider>
   );
 }
-
-    

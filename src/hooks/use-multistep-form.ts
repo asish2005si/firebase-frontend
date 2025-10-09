@@ -1,44 +1,37 @@
 
-import { ReactElement, useState, Children, useEffect } from "react";
+import { ReactElement, useState, Children, useEffect, useCallback } from "react";
 
-export function useMultistepForm(steps: ReactElement[]) {
+export function useMultistepForm(initialSteps: ReactElement[]) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [steps, setSteps] = useState(initialSteps);
 
-  const validSteps = Children.toArray(steps).filter(Boolean) as ReactElement[];
-
-  useEffect(() => {
-    if (currentStepIndex >= validSteps.length) {
-      setCurrentStepIndex(validSteps.length > 0 ? validSteps.length - 1 : 0);
-    }
-  }, [validSteps.length]);
-
-
-  function next() {
+  const next = useCallback(() => {
     setCurrentStepIndex(i => {
-      if (i >= validSteps.length - 1) return i;
+      if (i >= steps.length - 1) return i;
       return i + 1;
     });
-  }
+  }, [steps.length]);
 
-  function back() {
+  const back = useCallback(() => {
     setCurrentStepIndex(i => {
       if (i <= 0) return i;
       return i - 1;
     });
-  }
+  }, []);
 
-  function goTo(index: number) {
-    if (index >= 0 && index < validSteps.length) {
+  const goTo = useCallback((index: number) => {
+    if (index >= 0 && index < steps.length) {
       setCurrentStepIndex(index);
     }
-  }
+  }, [steps.length]);
 
   return {
     currentStepIndex,
-    step: validSteps[currentStepIndex],
-    steps: validSteps,
+    step: steps[currentStepIndex],
+    steps,
+    setSteps,
     isFirstStep: currentStepIndex === 0,
-    isLastStep: currentStepIndex === validSteps.length - 1,
+    isLastStep: currentStepIndex === steps.length - 1,
     goTo,
     next,
     back,

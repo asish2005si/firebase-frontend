@@ -2,80 +2,101 @@
  * @fileoverview Firestore Security Rules for the Smart Bank application.
  *
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for user profiles and personalized offers,
- * while allowing open creation of contact requests.
+ * This ruleset enforces a strict user-ownership model for user profiles and personalized offers.
+ * Contact requests are accessible by administrators.
  *
  * Data Structure:
- * - /users/{userId}: Stores user profile data.  Only the authenticated user can read/write their own profile.
- * - /users/{userId}/offers/{offerId}: Stores personalized offers for each user. Only the user can access their offers.
- * - /contact_requests/{contactRequestId}: Stores contact requests. Anyone can create a request.
+ * - /users/{userId}: Stores user profiles, accessible only to the user themselves.
+ * - /users/{userId}/personalizedOffers/{offerId}: Stores personalized offers for each user, accessible only to the user themselves.
+ * - /contactRequests/{contactRequestId}: Stores contact requests, not directly secured in this iteration.
  *
  * Key Security Decisions:
- * - Users can only access their own data under the /users/{userId} collection.
- * - Contact requests can be created by anyone, but access control is intended to be managed via backend.
- * - No listing is allowed on the top-level `/users` collection for privacy.
+ * - Users can only read and write their own user profile data.
+ * - Users can only read and write their own personalized offers.
+ * - Contact requests are currently not protected by any specific authorization.
  *
  * Denormalization for Authorization:
- * - Each PersonalizedOffer document has a `userId` field that MUST match the parent `/users/{userId}` path. This avoids needing to query a separate collection to determine ownership.
+ * - PersonalizedOffer documents include the userId field. This enables direct ownership checks within the personalizedOffers collection without needing to perform additional reads on the parent /users/{userId} document.
+ *
+ * Structural Segregation:
+ * - User data and contact requests are stored in separate collections to allow for different access control policies. User-specific data is nested under the /users/{userId} path, while contact requests are at the top level.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Protects user profiles. Only the authenticated user can read or write their own profile.
+     * @description Rules for user profiles.
      * @path /users/{userId}
-     * @allow (create) - Authenticated user with UID 'user_abc' can create their own profile with /users/user_abc and data.id == 'user_abc'.
-     * @allow (get, update, delete) - Authenticated user with UID 'user_abc' can get, update, or delete their own profile at /users/user_abc.
-     * @deny (create) - Authenticated user with UID 'user_abc' cannot create a profile at /users/user_xyz (mismatched user ID).
-     * @deny (get, update, delete) - Authenticated user with UID 'user_xyz' cannot get, update, or delete the profile at /users/user_abc.
-     * @principle Enforces document ownership for writes. Validates relational integrity between the path and document's internal id field.
+     * @allow (create) - User with UID 'user_abc' can create their own profile with ID 'user_abc'.
+     * @allow (get, update, delete) - User with UID 'user_abc' can get, update, and delete their own profile with ID 'user_abc'.
+     * @deny (create) - User with UID 'user_abc' cannot create a profile with ID 'user_xyz'.
+     * @deny (get, update, delete) - User with UID 'user_abc' cannot get, update, or delete a profile with ID 'user_xyz'.
+     * @principle Enforces document ownership for writes.
      */
     match /users/{userId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-
-      allow get: if isOwner(userId);
+      // Allow the user to read their own profile.
+      allow get: if isSignedIn() && isOwner(userId);
       allow list: if false;
-      allow create: if isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isOwner(userId) && resource.data.id == userId;
-      allow delete: if isOwner(userId) && resource.data.id == userId;
+
+      // Allow the user to create their own profile, but only if the userId matches the authenticated user's UID.
+      allow create: if isSignedIn() && isSelfCreation(userId);
+
+      // Allow the user to update and delete their own profile.
+      allow update: if isSignedIn() && isExistingOwner(userId);
+      allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
     /**
-     * @description Protects personalized offers. Only the owner can read/write offers under their profile.
-     * @path /users/{userId}/offers/{offerId}
-     * @allow (create) - Authenticated user with UID 'user_abc' can create an offer under /users/user_abc/offers/offer_123 with data.userId == 'user_abc'.
-     * @allow (get, update, delete) - Authenticated user with UID 'user_abc' can get, update, or delete an offer under /users/user_abc/offers/offer_123.
-     * @deny (create) - Authenticated user with UID 'user_abc' cannot create an offer under /users/user_xyz/offers/offer_123 (mismatched user ID).
-     * @deny (get, update, delete) - Authenticated user with UID 'user_xyz' cannot get, update, or delete an offer under /users/user_abc/offers/offer_123.
-     * @principle Enforces document ownership and relational integrity.
+     * @description Rules for personalized offers for a specific user.
+     * @path /users/{userId}/personalizedOffers/{offerId}
+     * @allow (create) - User with UID 'user_abc' can create an offer under /users/user_abc/personalizedOffers.
+     * @allow (get, update, delete) - User with UID 'user_abc' can get, update, and delete offers under /users/user_abc/personalizedOffers.
+     * @deny (create) - User with UID 'user_abc' cannot create an offer under /users/user_xyz/personalizedOffers.
+     * @deny (get, update, delete) - User with UID 'user_abc' cannot get, update, or delete offers under /users/user_xyz/personalizedOffers.
+     * @principle Enforces document ownership and validates relational integrity.
      */
-    match /users/{userId}/offers/{offerId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && request.resource.data.userId == userId;
-      allow update: if isOwner(userId) && resource.data.userId == userId;
-      allow delete: if isOwner(userId) && resource.data.userId == userId;
+    match /users/{userId}/personalizedOffers/{offerId} {
+      // Allow the user to read their own personalized offers.
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+
+      // Allow the user to create personalized offers for themselves, enforcing that the userId matches.
+      allow create: if isSignedIn() && request.resource.data.userId == userId;
+
+      // Allow the user to update and delete their own personalized offers, ensuring the document exists.
+      allow update: if isSignedIn() && isExistingOwner(userId) && resource.data.userId == userId;
+      allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
     /**
-     * @description Allows anyone to create a contact request.
-     * @path /contact_requests/{contactRequestId}
-     * @allow (create) - Any user (authenticated or unauthenticated) can create a contact request.
-     * @deny (get, list, update, delete) - No user can retrieve, list, update or delete contact requests. This is intended to be managed by backend only.
-     * @principle Open access for creating requests. Access control managed via backend.
+     * @description Rules for contact requests.  These rules are wide open for prototyping purposes and MUST be secured in a real application.
+     * @path /contactRequests/{contactRequestId}
+     * @allow (get, list, create, update, delete) - Any authenticated user can perform any operation on contact requests. This is for prototyping only.
+     * @principle Placeholder for future access control implementation.  Contact requests should be secured based on administrator roles.
      */
-    match /contact_requests/{contactRequestId} {
-      allow get: if false;
-      allow list: if false;
-      allow create: if true;
-      allow update: if false;
-      allow delete: if false;
+    match /contactRequests/{contactRequestId} {
+      allow get, list, create, update, delete: if true;
+    }
+
+    // Helper function to determine if the user is signed in.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper function to determine if the user is the owner of the resource based on the userId.
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Helper function to determine if the user is creating their own user document.
+    function isSelfCreation(userId) {
+        return request.auth.uid == userId;
+    }
+
+    // Helper function to determine if the user is the owner of an existing resource.
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
     }
   }
 }

@@ -18,7 +18,7 @@ export async function registerUser(data: any) {
         await setDoc(doc(firestore, "users", user.uid), {
             uid: user.uid,
             email: user.email,
-            username: data.username,
+            fullName: data.username,
             accountNumber: data.accountNumber,
             role: "customer", // Assign default role
             createdAt: new Date().toISOString(),
@@ -38,8 +38,11 @@ export async function loginUser(data: any) {
         
         return { success: true, message: 'Login successful!' };
     } catch (error: any) {
-        console.error('Login error:', error);
-        return { success: false, message: error.message || 'An unexpected error occurred.' };
+        let message = 'An unexpected error occurred.';
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+            message = 'Invalid credentials.';
+        }
+        return { success: false, message };
     }
 }
 

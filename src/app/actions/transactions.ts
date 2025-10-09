@@ -17,14 +17,3 @@ export async function getTransactions(userId: string): Promise<Transaction[]> {
   const transactions = snapshot.docs.map(doc => ({ ...doc.data(), txn_id: doc.id } as Transaction));
   return transactions;
 }
-
-export async function getCustomerInfo() {
-    // This function can now be refactored to fetch dynamic data based on the logged-in user.
-    // For now, it returns mock data for components that haven't been fully migrated.
-    return {
-        fullName: "Jane Doe",
-        accountNumber: "50100123456789",
-        accountType: "Savings Account",
-        branch: "Mumbai - Fort",
-    };
-}

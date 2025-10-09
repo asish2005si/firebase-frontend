@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { CreditCard, Star, Calendar, Info, IndianRupee } from "lucide-react";
 import { creditCardTypes } from "@/lib/card-data";
-import { getCustomerInfo } from "@/app/actions/transactions";
+import { useUser } from "@/firebase";
 
 
 // Mock data for credit card
@@ -39,16 +39,15 @@ const formatCurrency = (amount: number) => {
 
 export function CreditCardSection() {
     const [card, setCard] = useState(initialCreditCard);
+    const { user } = useUser();
     const cardInfo = creditCardTypes.find(c => c.value === card.cardTypeValue) || creditCardTypes[0];
     const usagePercentage = card.totalLimit > 0 ? ((card.totalLimit - card.availableLimit) / card.totalLimit) * 100 : 0;
     
     useEffect(() => {
-        async function fetchCustomer() {
-            const customer = await getCustomerInfo();
-            setCard(prev => ({...prev, cardHolder: customer.fullName}));
+        if(user?.displayName) {
+            setCard(prev => ({...prev, cardHolder: user.displayName!}));
         }
-        fetchCustomer();
-    }, []);
+    }, [user]);
 
     return (
         <Card className="mt-6 border-0 shadow-none">

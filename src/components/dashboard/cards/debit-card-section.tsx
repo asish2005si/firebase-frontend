@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { CreditCard, Lock, Unlock, Settings, Pin, ShieldCheck, Truck, Globe } from "lucide-react";
 import { debitCardTypes } from "@/lib/card-data";
-import { getCustomerInfo } from "@/app/actions/transactions";
+import { useUser } from "@/firebase";
 
 // Mock data for debit card
 const initialDebitCard = {
@@ -44,16 +44,15 @@ const formatCurrency = (amount: number) => {
 
 export function DebitCardSection() {
     const [card, setCard] = useState(initialDebitCard);
+    const { user } = useUser();
     const cardInfo = debitCardTypes.find(c => c.value === card.cardTypeValue) || debitCardTypes[0];
     const { toast } = useToast();
     
     useEffect(() => {
-        async function fetchCustomer() {
-            const customer = await getCustomerInfo();
-            setCard(prev => ({...prev, cardHolder: customer.fullName}));
+        if (user?.displayName) {
+            setCard(prev => ({...prev, cardHolder: user.displayName}));
         }
-        fetchCustomer();
-    }, []);
+    }, [user]);
 
     const handleToggleBlock = () => {
         const newBlockedState = !card.isBlocked;

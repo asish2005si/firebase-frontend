@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { KycForm } from "@/components/open-account/kyc-form";
 import { Landmark } from "lucide-react";
+import { ClientOnly } from "@/components/client-only";
 
 export default function OpenAccountPage() {
   return (
@@ -15,7 +16,9 @@ export default function OpenAccountPage() {
           </div>
         </header>
         <main className="flex-1 w-full container py-8">
+          <ClientOnly>
             <KycForm />
+          </ClientOnly>
         </main>
       </div>
   );

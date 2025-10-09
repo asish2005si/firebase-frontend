@@ -1,5 +1,4 @@
 
-
 "use client";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -229,7 +228,8 @@ export function KycForm() {
      if (currentStepIndex >= baseSteps.length) {
         goTo(baseSteps.length - 1);
     }
-  }, [accountType, setSteps, goTo, currentStepIndex]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountType, setSteps, goTo]);
 
 
   const onSubmit = async (data: KycFormData) => {

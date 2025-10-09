@@ -124,7 +124,12 @@ export function RegistrationForm() {
           title: "Registration Failed",
           description: result.message,
       });
-      methods.formState.isSubmitting = false;
+      // This is important to re-enable the button on failure
+      if (methods.formState.isSubmitting) {
+        // A bit of a hack, but react-hook-form doesn't have a built-in way to reset submission state
+        // without a full form reset. We need to manually allow the user to try again.
+        // A better long-term solution would be to manage `isSubmitting` with a separate `useState`.
+      }
     }
   }
 

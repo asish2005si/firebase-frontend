@@ -85,12 +85,15 @@ export async function registerAdmin(data: any) {
             createdAt: new Date().toISOString(),
         });
 
-        // Sign out the user immediately after registration
+        // Sign out the user immediately after registration as a security best practice
         await auth.signOut();
 
         return { success: true, message: 'Admin registration successful!' };
     } catch (error: any) {
         console.error('Admin registration error:', error);
+        if (error.code === 'auth/email-already-in-use') {
+            return { success: false, message: 'An account with this email already exists.' };
+        }
         return { success: false, message: error.message || 'An unexpected error occurred.' };
     }
 }

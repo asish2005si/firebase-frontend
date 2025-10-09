@@ -3,34 +3,55 @@
 import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { useAdmin } from "@/hooks/use-admin";
+import { useUser } from "@/firebase";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isAdmin, isLoading } = useAdmin();
+  const { user, isLoading: isUserLoading } = useUser();
+  const { isAdmin, isLoading: isAdminLoading } = useAdmin();
   const router = useRouter();
   const pathname = usePathname();
+  const { toast } = useToast();
+  const isLoading = isUserLoading || isAdminLoading;
 
   useEffect(() => {
-    // If we are on the login page, don't redirect.
-    if (pathname === '/admin/login') {
+    if (isLoading) {
+      return; // Wait until loading is complete
+    }
+
+    const isLoginPage = pathname === '/admin/login';
+
+    if (isLoginPage) {
       // If an admin is already logged in and tries to visit login, send them to the dashboard.
-      if (!isLoading && isAdmin) {
+      if (isAdmin) {
         router.push('/admin/applications');
       }
       return;
     }
 
     // For any other admin page, enforce the security check.
-    if (!isLoading && !isAdmin) {
-      router.push('/admin/login');
+    if (!isAdmin) {
+      // If a user is logged in but is not an admin, send them to their dashboard
+      if (user) {
+        toast({
+            variant: "destructive",
+            title: "Unauthorized Access",
+            description: "You are not authorized to access the admin panel.",
+        });
+        router.push('/dashboard');
+      } else {
+        // If no user is logged in, send to admin login
+        router.push('/admin/login');
+      }
     }
-  }, [isAdmin, isLoading, router, pathname]);
+  }, [isAdmin, isLoading, user, router, pathname, toast]);
 
   // If we are on the login page, we just render the children (the login form).
   // The useEffect above handles redirecting away if already logged in.

@@ -15,8 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ClientOnly } from "@/components/client-only";
-import { useAuth } from "@/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { loginUser } from "@/app/actions/auth";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -29,7 +28,6 @@ export default function LoginPage() {
   const redirectUrl = searchParams.get('redirect');
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const auth = useAuth();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -41,25 +39,21 @@ export default function LoginPage() {
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true);
-    if (!auth) {
-        toast({ variant: "destructive", title: "Auth service not available." });
-        setIsSubmitting(false);
-        return;
-    }
+    
+    const result = await loginUser(values);
 
-    try {
-        await signInWithEmailAndPassword(auth, values.email, values.password);
+    if (result.success) {
         toast({
           title: "Login Successful",
           description: "Welcome back! Redirecting to your dashboard...",
         });
         const destination = redirectUrl || "/dashboard";
         router.push(destination);
-    } catch (error: any) {
+    } else {
         toast({
           variant: "destructive",
           title: "Login Failed",
-          description: error.message || "Invalid email or password.",
+          description: result.message,
         });
         setIsSubmitting(false);
     }

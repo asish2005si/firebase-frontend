@@ -49,7 +49,7 @@ export default function AdminLoginPage() {
     if (result.success) {
         toast({
           title: "Login Successful",
-          description: "Redirecting to the Admin Dashboard...",
+          description: "Welcome! Redirecting to the Admin Dashboard...",
         });
         router.push(`/admin/applications`);
     } else {
@@ -128,3 +128,4 @@ export default function AdminLoginPage() {
     </div>
   );
 }
+

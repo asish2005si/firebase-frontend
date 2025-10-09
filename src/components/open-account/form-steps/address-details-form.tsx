@@ -11,43 +11,44 @@ import { FileUploadItem } from "./file-upload-item";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { OtpDialog } from "../otp-dialog";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Loader2 } from "lucide-react";
+import { sendOtp } from "@/app/actions/otp";
 
 
 export function AddressDetailsForm() {
-  const { control, watch, setValue, trigger } = useFormContext();
+  const { control, watch, setValue, trigger, getValues } = useFormContext();
   const isSameAddress = watch("isSameAddress");
   const permanentAddress = watch("permanentAddress");
   const { toast } = useToast();
 
   const [otpDialogState, setOtpDialogState] = useState<{isOpen: boolean; field: 'mobile' | 'email' | null}>({ isOpen: false, field: null });
+  const [isSendingOtp, setIsSendingOtp] = useState<'mobile' | 'email' | null>(null);
   
   const emailVerified = watch("emailVerified");
   const mobileVerified = watch("mobileVerified");
 
   const handleOpenOtpDialog = async (field: 'mobile' | 'email') => {
-      const result = await trigger(field);
-      if (result) {
-          setOtpDialogState({ isOpen: true, field: field });
-          toast({
-            title: `Verification OTP Sent`,
-            description: `A simulated OTP has been sent to your ${field}. Please enter '123456' to verify.`,
-          });
-      }
-  }
-
-  const handleVerifyOtp = async (otp: string): Promise<boolean> => {
-      // In a real app, you'd call a server action here to verify the OTP.
-      // For this demo, we'll use a hardcoded value.
-      if (otp === '123456') {
-          if (otpDialogState.field) {
-              setValue(`${otpDialogState.field}Verified`, true, { shouldValidate: true });
-              toast({ title: `${otpDialogState.field.charAt(0).toUpperCase() + otpDialogState.field.slice(1)} Verified!`, className: 'bg-green-600 text-white' });
-              setOtpDialogState({ isOpen: false, field: null });
-              return true;
+      setIsSendingOtp(field);
+      const isFieldValid = await trigger(field);
+      
+      if (isFieldValid) {
+          const contactValue = getValues(field);
+          const result = await sendOtp(contactValue);
+          if (result.success) {
+              setOtpDialogState({ isOpen: true, field: field });
+              toast({
+                title: `OTP Sent`,
+                description: result.message,
+              });
+          } else {
+              toast({
+                  variant: "destructive",
+                  title: `Failed to Send OTP`,
+                  description: result.message,
+              });
           }
       }
-      return false;
+      setIsSendingOtp(null);
   }
 
   return (
@@ -66,15 +67,18 @@ export function AddressDetailsForm() {
                     <FormLabel>Email Address</FormLabel>
                     <div className="flex gap-2">
                         <FormControl>
-                            <Input type="email" placeholder="you@example.com" {...field} disabled={emailVerified}/>
+                            <Input type="email" placeholder="you@example.com" {...field} disabled={emailVerified || isSendingOtp === 'email'}/>
                         </FormControl>
                         {emailVerified ? (
-                             <Button variant="secondary" className="w-[100px]" disabled>
+                             <Button variant="secondary" className="w-[120px]" disabled>
                                 <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
                                 Verified
                             </Button>
                         ) : (
-                            <Button type="button" variant="outline" className="w-[100px]" onClick={() => handleOpenOtpDialog('email')}>Verify</Button>
+                            <Button type="button" variant="outline" className="w-[120px]" onClick={() => handleOpenOtpDialog('email')} disabled={isSendingOtp === 'email'}>
+                               {isSendingOtp === 'email' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                               Verify
+                            </Button>
                         )}
                     </div>
                     <FormMessage />
@@ -89,15 +93,18 @@ export function AddressDetailsForm() {
                     <FormLabel>Mobile Number</FormLabel>
                      <div className="flex gap-2">
                         <FormControl>
-                            <Input type="tel" placeholder="9876543210" {...field} disabled={mobileVerified}/>
+                            <Input type="tel" placeholder="9876543210" {...field} disabled={mobileVerified || isSendingOtp === 'mobile'}/>
                         </FormControl>
                         {mobileVerified ? (
-                             <Button variant="secondary" className="w-[100px]" disabled>
+                             <Button variant="secondary" className="w-[120px]" disabled>
                                 <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
                                 Verified
                             </Button>
                         ) : (
-                            <Button type="button" variant="outline" className="w-[100px]" onClick={() => handleOpenOtpDialog('mobile')}>Verify</Button>
+                            <Button type="button" variant="outline" className="w-[120px]" onClick={() => handleOpenOtpDialog('mobile')} disabled={isSendingOtp === 'mobile'}>
+                                {isSendingOtp === 'mobile' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Verify
+                            </Button>
                         )}
                     </div>
                     <FormMessage />
@@ -218,8 +225,14 @@ export function AddressDetailsForm() {
         <OtpDialog
             isOpen={otpDialogState.isOpen}
             onClose={() => setOtpDialogState({ isOpen: false, field: null })}
-            onVerify={handleVerifyOtp}
             contactMethod={watch(otpDialogState.field)}
+            onVerified={() => {
+                 if (otpDialogState.field) {
+                    setValue(`${otpDialogState.field}Verified`, true, { shouldValidate: true });
+                    toast({ title: `${otpDialogState.field.charAt(0).toUpperCase() + otpDialogState.field.slice(1)} Verified!`, className: 'bg-green-600 text-white' });
+                    setOtpDialogState({ isOpen: false, field: null });
+                }
+            }}
         />
       )}
     </div>

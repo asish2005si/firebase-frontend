@@ -5,7 +5,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Landmark, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetClose, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "./theme-toggle";
 import { ClientOnly } from "./client-only";
 
@@ -51,6 +51,14 @@ export function Header() {
                 Login
               </Button>
             </Link>
+             <Link href="/admin/login">
+              <Button
+                variant="ghost"
+                size="sm"
+              >
+                Admin Login
+              </Button>
+            </Link>
           </ClientOnly>
           <Sheet>
             <SheetTrigger asChild>
@@ -94,6 +102,16 @@ export function Header() {
                         className="w-full"
                       >
                         Login
+                      </Button>
+                    </Link>
+                  </SheetClose>
+                   <SheetClose asChild>
+                     <Link href="/admin/login">
+                      <Button
+                        className="w-full mt-2"
+                        variant="secondary"
+                      >
+                        Admin Login
                       </Button>
                     </Link>
                   </SheetClose>

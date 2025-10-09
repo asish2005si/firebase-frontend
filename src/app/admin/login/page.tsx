@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginAdmin } from "@/app/actions/auth";
+import { ClientOnly } from "@/components/client-only";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required."),
@@ -71,25 +72,44 @@ export default function AdminLoginPage() {
                   <span className="text-3xl font-bold font-headline">Nexus Bank Admin</span>
                 </Link>
             </div>
-            <Card>
-            <CardHeader className="text-center">
-                <CardTitle className="text-2xl">Admin Login</CardTitle>
-                <CardDescription>
-                Access the management dashboard.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
+            <ClientOnly>
+                <Card>
+                <CardHeader className="text-center">
+                    <CardTitle className="text-2xl">Admin Login</CardTitle>
+                    <CardDescription>
+                    Access the management dashboard.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="username"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Admin Username</FormLabel>
+                                <FormControl>
+                                    <Input
+                                    placeholder="Enter your admin username"
+                                    {...field}
+                                    disabled={isSubmitting}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
                         control={form.control}
-                        name="username"
+                        name="password"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel>Admin Username</FormLabel>
+                            <FormLabel>Password</FormLabel>
                             <FormControl>
                                 <Input
-                                placeholder="Enter your admin username"
+                                type="password"
+                                placeholder="••••••••"
                                 {...field}
                                 disabled={isSubmitting}
                                 />
@@ -97,35 +117,17 @@ export default function AdminLoginPage() {
                             <FormMessage />
                             </FormItem>
                         )}
-                    />
-                    <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                            <Input
-                            type="password"
-                            placeholder="••••••••"
-                            {...field}
-                            disabled={isSubmitting}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {isSubmitting ? "Signing In..." : "Login"}
-                    </Button>
-                </form>
-                </Form>
-            </CardContent>
-            </Card>
+                        />
+                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isSubmitting ? "Signing In..." : "Login"}
+                        </Button>
+                    </form>
+                    </Form>
+                </CardContent>
+                </Card>
+            </ClientOnly>
           </div>
     </div>
   );
 }
-

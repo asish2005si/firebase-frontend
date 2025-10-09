@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { User, Mail, Phone, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import { ClientOnly } from "../client-only";
 
 type Customer = {
     fullName: string;
@@ -35,7 +36,9 @@ export function CustomerProfile({ customer }: CustomerProfileProps) {
                 <CardTitle className="text-xl font-headline">Welcome back, {customer.fullName || 'Customer'}!</CardTitle>
                 <CardDescription>Here’s a summary of your profile information.</CardDescription>
             </div>
-            {lastLogin && <p className="text-sm text-muted-foreground mt-2 md:mt-0">Last Login: {lastLogin}</p>}
+            <ClientOnly>
+                {lastLogin && <p className="text-sm text-muted-foreground mt-2 md:mt-0">Last Login: {lastLogin}</p>}
+            </ClientOnly>
         </CardHeader>
         <CardContent className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 pt-2">
             <DetailItem label="Full Name" value={customer.fullName} />

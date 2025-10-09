@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { Landmark, Facebook, Twitter, Linkedin } from "lucide-react";
 import { useState, useEffect } from "react";
+import { ClientOnly } from "./client-only";
 
 export function Footer() {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -54,10 +55,11 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-primary-foreground/20 text-center text-sm text-primary-foreground/60">
-          <p>&copy; {currentYear} Nexus Bank. All Rights Reserved.</p>
+          <ClientOnly>
+            <p>&copy; {currentYear} Nexus Bank. All Rights Reserved.</p>
+          </ClientOnly>
         </div>
       </div>
     </footer>
   );
 }
-

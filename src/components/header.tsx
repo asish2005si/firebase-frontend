@@ -52,15 +52,25 @@ export function Header() {
                     <Button variant="outline" className="rounded-full" size="sm">Dashboard</Button>
                 </Link>
             ) : (
+              <>
                 <Link href="/login">
                   <Button
-                    variant="outline"
                     className="rounded-full"
                     size="sm"
                   >
                     Login
                   </Button>
                 </Link>
+                <Link href="/admin/login">
+                  <Button
+                    variant="outline"
+                    className="rounded-full"
+                    size="sm"
+                  >
+                    Admin Login
+                  </Button>
+                </Link>
+              </>
             )}
           </ClientOnly>
           <Sheet>
@@ -105,6 +115,16 @@ export function Header() {
                         className="w-full"
                       >
                         Login
+                      </Button>
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link href="/admin/login">
+                      <Button
+                        variant="outline"
+                        className="w-full mt-2"
+                      >
+                        Admin Login
                       </Button>
                     </Link>
                   </SheetClose>

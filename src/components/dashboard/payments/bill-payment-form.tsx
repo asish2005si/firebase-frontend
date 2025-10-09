@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -27,6 +26,9 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Transaction } from "@/types/transaction";
 import { OtpDialog } from "./otp-dialog";
+import { useUser } from "@/firebase";
+import { sendOtp } from "@/app/actions/otp";
+
 
 const billPaymentSchema = z.object({
   category: z.string({ required_error: "Please select a bill category." }),
@@ -59,7 +61,9 @@ const formatCurrency = (amount: number) => {
 
 export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
   const { toast } = useToast();
+  const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [showOtpDialog, setShowOtpDialog] = useState(false);
   const [formData, setFormData] = useState<BillPaymentFormData | null>(null);
 
@@ -75,11 +79,27 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
 
   const onSubmit = async (values: BillPaymentFormData) => {
     setFormData(values);
-    setShowOtpDialog(true);
-    toast({
-        title: "OTP Sent",
-        description: "An OTP has been sent to authorize this payment.",
-    });
+    setIsSendingOtp(true);
+    
+    const contactMethod = user?.email || user?.phoneNumber;
+    if (!contactMethod) {
+        toast({ variant: "destructive", title: "Cannot send OTP", description: "No verified contact method found for your account." });
+        setIsSendingOtp(false);
+        return;
+    }
+    
+    const result = await sendOtp(contactMethod);
+
+    if (result.success) {
+      setShowOtpDialog(true);
+      toast({
+          title: "OTP Sent",
+          description: result.message,
+      });
+    } else {
+        toast({ variant: "destructive", title: "Failed to Send OTP", description: result.message });
+    }
+    setIsSendingOtp(false);
   }
 
   const handleOtpVerification = async () => {
@@ -108,6 +128,8 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
       setFormData(null);
       setIsSubmitting(false);
   }
+  
+  const contactMethod = user?.email || user?.phoneNumber;
 
   return (
     <>
@@ -131,7 +153,7 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
                     <Select onValueChange={(value) => {
                         field.onChange(value);
                         form.setValue("biller", "");
-                    }} value={field.value} disabled={isSubmitting}>
+                    }} value={field.value} disabled={isSubmitting || isSendingOtp}>
                         <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="Select a category" />
@@ -153,7 +175,7 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
                 render={({ field }) => (
                     <FormItem>
                     <FormLabel>Biller</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value} disabled={isSubmitting || !selectedCategory}>
+                    <Select onValueChange={field.onChange} value={field.value} disabled={isSubmitting || isSendingOtp || !selectedCategory}>
                         <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="Select a biller" />
@@ -178,7 +200,7 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
                 <FormItem>
                   <FormLabel>Consumer Number / ID</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your consumer number" {...field} disabled={isSubmitting}/>
+                    <Input placeholder="Enter your consumer number" {...field} disabled={isSubmitting || isSendingOtp}/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -192,27 +214,29 @@ export function BillPaymentForm({ onSuccessfulPayment }: BillPaymentFormProps) {
                   <FormItem>
                     <FormLabel>Amount</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="Enter Amount" {...field} disabled={isSubmitting}/>
+                      <Input type="number" placeholder="Enter Amount" {...field} disabled={isSubmitting || isSendingOtp}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-            <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isSubmitting ? "Processing..." : "Pay Bill"}
+            <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting || isSendingOtp}>
+              {(isSubmitting || isSendingOtp) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting ? "Processing..." : (isSendingOtp ? "Sending OTP..." : "Pay Bill")}
             </Button>
           </form>
         </Form>
       </CardContent>
     </Card>
-     <OtpDialog
-        isOpen={showOtpDialog}
-        onClose={() => setShowOtpDialog(false)}
-        onVerify={handleOtpVerification}
-        isVerifying={isSubmitting}
-    />
+     {contactMethod && formData && (
+        <OtpDialog
+            isOpen={showOtpDialog}
+            onClose={() => setShowOtpDialog(false)}
+            onVerify={handleOtpVerification}
+            contactMethod={contactMethod}
+        />
+     )}
     </>
   );
 }

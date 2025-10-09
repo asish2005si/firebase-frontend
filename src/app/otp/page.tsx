@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ClientOnly } from "@/components/client-only";
+import { sendOtp, verifyOtp } from "@/app/actions/otp";
 
 const otpSchema = z.object({
   otp: z.string().length(6, "OTP must be 6 digits."),
@@ -30,10 +31,19 @@ const otpSchema = z.object({
 function OTPFormComponent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const email = searchParams.get("email");
+  const contact = searchParams.get("contact");
   const redirectUrl = searchParams.get("redirect");
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+
+  useEffect(() => {
+    if (contact) {
+      handleResend(false); // Send initial OTP when component loads
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contact]);
+
 
   const form = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
@@ -43,11 +53,15 @@ function OTPFormComponent() {
   });
 
   const onSubmit = async (values: z.infer<typeof otpSchema>) => {
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    if (!contact) {
+        toast({ variant: "destructive", title: "Error", description: "No contact method specified."});
+        return;
+    }
 
-    // Simulate OTP check
-    if (values.otp === "123456") { // Hardcoded OTP for demo
+    setIsSubmitting(true);
+    const result = await verifyOtp(contact, values.otp);
+
+    if (result.success) {
       toast({
         title: "Verification Successful!",
         description: "Your action has been confirmed.",
@@ -57,18 +71,38 @@ function OTPFormComponent() {
       toast({
         variant: "destructive",
         title: "Incorrect OTP",
-        description: "The OTP you entered is incorrect. Please try again.",
+        description: result.message || "The OTP you entered is incorrect. Please try again.",
       });
       form.reset();
     }
     setIsSubmitting(false);
   };
   
-  const onResend = () => {
-    toast({
-        title: "OTP Resent",
-        description: "A new OTP has been sent to your email.",
-      });
+  const handleResend = async (showToast = true) => {
+    if (!contact) return;
+    setIsResending(true);
+    const result = await sendOtp(contact);
+    if (result.success && showToast) {
+        toast({
+            title: "OTP Resent",
+            description: result.message,
+        });
+    } else if (!result.success) {
+        toast({
+            variant: "destructive",
+            title: "Failed to Send OTP",
+            description: result.message,
+        });
+    }
+    setIsResending(false);
+  }
+
+  if (!contact) {
+      return (
+           <div className="flex min-h-screen items-center justify-center bg-background px-4">
+               <p>No contact method provided for OTP verification.</p>
+           </div>
+      )
   }
 
   return (
@@ -84,7 +118,7 @@ function OTPFormComponent() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Two-Factor Authentication</CardTitle>
             <CardDescription>
-              A 6-digit OTP has been sent to {email ? <strong>{email}</strong> : 'your registered contact method'}.
+              A 6-digit OTP has been sent to {<strong>{contact}</strong>}.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -115,8 +149,8 @@ function OTPFormComponent() {
             </Form>
              <div className="mt-4 text-center text-sm">
                 Didn't receive the code?{" "}
-                <Button variant="link" className="p-0 h-auto" onClick={onResend} disabled={isSubmitting}>
-                  Resend OTP
+                <Button variant="link" className="p-0 h-auto" onClick={() => handleResend()} disabled={isSubmitting || isResending}>
+                   {isResending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Resend OTP"}
                 </Button>
             </div>
           </CardContent>

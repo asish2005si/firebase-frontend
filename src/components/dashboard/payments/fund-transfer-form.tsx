@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -29,6 +28,8 @@ import { useToast } from "@/hooks/use-toast";
 import { IfscFinder } from "./ifsc-finder";
 import type { Transaction } from "@/types/transaction";
 import { OtpDialog } from "./otp-dialog";
+import { sendOtp } from "@/app/actions/otp";
+import { useUser } from "@/firebase";
 
 const otherBanks = [
     "Allahabad Bank", "Andhra Bank", "Axis Bank", "Bandhan Bank", "Bank of Baroda",
@@ -123,7 +124,9 @@ const formatCurrency = (amount: number) => {
 
 export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps) {
   const { toast } = useToast();
+  const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isIfscFinderOpen, setIsIfscFinderOpen] = useState(false);
   const [showOtpDialog, setShowOtpDialog] = useState(false);
   const [formData, setFormData] = useState<TransferFormData | null>(null);
@@ -145,11 +148,27 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
   
   const onSubmit = async (values: TransferFormData) => {
     setFormData(values);
-    setShowOtpDialog(true);
-    toast({
-        title: "OTP Sent",
-        description: "An OTP has been sent to your registered contact method to authorize this transaction.",
-    });
+    setIsSendingOtp(true);
+
+    const contactMethod = user?.email || user?.phoneNumber;
+    if (!contactMethod) {
+        toast({ variant: "destructive", title: "Cannot send OTP", description: "No verified contact method found for your account." });
+        setIsSendingOtp(false);
+        return;
+    }
+
+    const result = await sendOtp(contactMethod);
+
+    if (result.success) {
+      setShowOtpDialog(true);
+      toast({
+          title: "OTP Sent",
+          description: result.message,
+      });
+    } else {
+        toast({ variant: "destructive", title: "Failed to Send OTP", description: result.message });
+    }
+    setIsSendingOtp(false);
   }
 
   const handleOtpVerification = async () => {
@@ -157,6 +176,9 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
 
     setIsSubmitting(true);
     setShowOtpDialog(false);
+    
+    // The OTP verification happens in the OtpDialog now.
+    // This function is now just for completing the transaction post-verification.
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     onSuccessfulTransfer({
@@ -183,6 +205,8 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
     setFormData(null);
     setIsSubmitting(false);
   }
+  
+  const contactMethod = user?.email || user?.phoneNumber;
 
   return (
     <>
@@ -202,7 +226,7 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Transfer Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting || isSendingOtp}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select transfer type" />
@@ -226,7 +250,7 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
                 <FormItem>
                   <FormLabel>Recipient Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter recipient's full name" {...field} disabled={isSubmitting}/>
+                    <Input placeholder="Enter recipient's full name" {...field} disabled={isSubmitting || isSendingOtp}/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -241,7 +265,7 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
                   <FormItem>
                     <FormLabel>Recipient Account Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter account number" {...field} disabled={isSubmitting}/>
+                      <Input placeholder="Enter account number" {...field} disabled={isSubmitting || isSendingOtp}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -255,7 +279,7 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>Bank Name</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
+                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting || isSendingOtp}>
                                 <FormControl>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select a bank" />
@@ -283,7 +307,7 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
                                       placeholder="Enter 11-digit IFSC" 
                                       {...field}
                                       onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                                      disabled={isSubmitting}
+                                      disabled={isSubmitting || isSendingOtp}
                                     />
                                 </FormControl>
                                 <IfscFinder 
@@ -306,7 +330,7 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
                   <FormItem>
                     <FormLabel>Amount</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="Enter Amount" {...field} disabled={isSubmitting}/>
+                      <Input type="number" placeholder="Enter Amount" {...field} disabled={isSubmitting || isSendingOtp}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -319,28 +343,30 @@ export function FundTransferForm({ onSuccessfulTransfer }: FundTransferFormProps
                   <FormItem>
                     <FormLabel>Remarks (Optional)</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="e.g., Monthly rent" {...field} disabled={isSubmitting}/>
+                      <Textarea placeholder="e.g., Monthly rent" {...field} disabled={isSubmitting || isSendingOtp}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-            <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isSubmitting ? "Processing..." : "Proceed to Pay"}
+            <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting || isSendingOtp}>
+              {(isSubmitting || isSendingOtp) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting ? "Processing..." : (isSendingOtp ? "Sending OTP..." : "Proceed to Pay")}
             </Button>
           </form>
         </Form>
       </CardContent>
     </Card>
 
-    <OtpDialog
+    {contactMethod && formData && (
+      <OtpDialog
         isOpen={showOtpDialog}
         onClose={() => setShowOtpDialog(false)}
         onVerify={handleOtpVerification}
-        isVerifying={isSubmitting}
-    />
+        contactMethod={contactMethod}
+      />
+    )}
     </>
   );
 }

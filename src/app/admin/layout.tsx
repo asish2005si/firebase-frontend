@@ -32,7 +32,9 @@ export default function AdminLayout({
   }
   
   if (!isAdmin) {
-    return null; // or a login redirect, though the effect handles it
+    // This will show briefly before the redirect happens.
+    // Or you could return a full-page loader here as well.
+    return null;
   }
 
   return (

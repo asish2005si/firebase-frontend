@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginAdmin } from "@/app/actions/auth";
-import { ClientOnly } from "@/components/client-only";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email."),
@@ -63,44 +62,25 @@ export default function AdminLoginPage() {
                   <span className="text-3xl font-bold font-headline">Nexus Bank Admin</span>
                 </Link>
             </div>
-            <ClientOnly>
-                <Card>
-                <CardHeader className="text-center">
-                    <CardTitle className="text-2xl">Admin Login</CardTitle>
-                    <CardDescription>
-                    Access the management dashboard.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Admin Email</FormLabel>
-                                <FormControl>
-                                    <Input
-                                    placeholder="Enter your admin email"
-                                    {...field}
-                                    disabled={isSubmitting}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
+            <Card>
+            <CardHeader className="text-center">
+                <CardTitle className="text-2xl">Admin Login</CardTitle>
+                <CardDescription>
+                Access the management dashboard.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
                         control={form.control}
-                        name="password"
+                        name="email"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel>Admin Email</FormLabel>
                             <FormControl>
                                 <Input
-                                type="password"
-                                placeholder="••••••••"
+                                placeholder="Enter your admin email"
                                 {...field}
                                 disabled={isSubmitting}
                                 />
@@ -108,16 +88,33 @@ export default function AdminLoginPage() {
                             <FormMessage />
                             </FormItem>
                         )}
-                        />
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {isSubmitting ? "Signing In..." : "Login"}
-                        </Button>
-                    </form>
-                    </Form>
-                </CardContent>
-                </Card>
-            </ClientOnly>
+                    />
+                    <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                            <Input
+                            type="password"
+                            placeholder="••••••••"
+                            {...field}
+                            disabled={isSubmitting}
+                            />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isSubmitting ? "Signing In..." : "Login"}
+                    </Button>
+                </form>
+                </Form>
+            </CardContent>
+            </Card>
           </div>
     </div>
   );

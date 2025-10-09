@@ -51,7 +51,7 @@ export default function AdminLoginPage() {
           title: "Login Successful",
           description: "Welcome to the Admin Dashboard.",
         });
-        router.push(`/admin`);
+        router.push(`/admin/applications`);
     } else {
         toast({
           variant: "destructive",

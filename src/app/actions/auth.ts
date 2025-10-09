@@ -71,6 +71,31 @@ export async function loginAdmin(data: any) {
     }
 }
 
+export async function registerAdmin(data: any) {
+    try {
+        const { auth, firestore } = initializeFirebase();
+        const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+        const user = userCredential.user;
+
+        await setDoc(doc(firestore, "users", user.uid), {
+            uid: user.uid,
+            email: user.email,
+            fullName: data.fullName,
+            role: "admin", // Assign admin role
+            createdAt: new Date().toISOString(),
+        });
+
+        // Sign out the user immediately after registration
+        await auth.signOut();
+
+        return { success: true, message: 'Admin registration successful!' };
+    } catch (error: any) {
+        console.error('Admin registration error:', error);
+        return { success: false, message: error.message || 'An unexpected error occurred.' };
+    }
+}
+
+
 export async function checkAccount(accountNumber: string) {
     // This function now can be used to check against firestore if needed.
     // For now, we assume email/username is the unique identifier.

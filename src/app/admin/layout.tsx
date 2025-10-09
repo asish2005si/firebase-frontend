@@ -1,10 +1,9 @@
-
 "use client";
 
 import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { useAdmin } from "@/hooks/use-admin";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
@@ -15,12 +14,29 @@ export default function AdminLayout({
 }) {
   const { isAdmin, isLoading } = useAdmin();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
+    // If we are on the login page, don't redirect.
+    if (pathname === '/admin/login') {
+      // If an admin is already logged in and tries to visit login, send them to the dashboard.
+      if (!isLoading && isAdmin) {
+        router.push('/admin/applications');
+      }
+      return;
+    }
+
+    // For any other admin page, enforce the security check.
     if (!isLoading && !isAdmin) {
       router.push('/admin/login');
     }
-  }, [isAdmin, isLoading, router]);
+  }, [isAdmin, isLoading, router, pathname]);
+
+  // If we are on the login page, we just render the children (the login form).
+  // The useEffect above handles redirecting away if already logged in.
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
 
   if (isLoading) {
     return (
@@ -32,8 +48,7 @@ export default function AdminLayout({
   }
   
   if (!isAdmin) {
-    // This will show briefly before the redirect happens.
-    // Or you could return a full-page loader here as well.
+    // This will show briefly before the redirect happens, or not at all.
     return null;
   }
 

@@ -48,6 +48,8 @@ const kycSchema = z.object({
   // Contact Details
   email: z.string().email("Invalid email address."),
   mobile: z.string().regex(/^\d{10}$/, "Mobile number must be 10 digits."),
+  emailVerified: z.boolean().refine(val => val === true, { message: "Email must be verified." }),
+  mobileVerified: z.boolean().refine(val => val === true, { message: "Mobile number must be verified." }),
 
   // Address Details
   permanentAddress: z.string().min(10, "Permanent address must be at least 10 characters."),
@@ -133,7 +135,7 @@ const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     savings: [
         ["accountType"],
         ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "initialDeposit", "photo", "panCardUpload", "signature", "nomineeName", "nomineeRelation", "nomineeDob", "nomineePan", "nomineeAadhaar"],
-        ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof", "aadhaarCardUpload"],
+        ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof", "aadhaarCardUpload", "emailVerified", "mobileVerified"],
         ["occupation"],
         [], // Review step has no validation
         ["otp"], // OTP step validation
@@ -141,7 +143,7 @@ const formStepsPerType: Record<string, (keyof KycFormData)[][]> = {
     current: [
         ["accountType"],
         ["fullName", "fatherName", "dob", "gender", "maritalStatus", "panNumber", "aadhaarNumber", "initialDeposit", "photo", "panCardUpload", "signature", "nomineeName", "nomineeRelation", "nomineeDob", "nomineePan", "nomineeAadhaar"],
-        ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof", "aadhaarCardUpload"],
+        ["email", "mobile", "permanentAddress", "isSameAddress", "communicationAddress", "city", "state", "pincode", "addressProof", "aadhaarCardUpload", "emailVerified", "mobileVerified"],
         ["businessName", "businessType", "gstNumber"],
         [], // Review step has no validation
         ["otp"], // OTP step validation
@@ -169,6 +171,8 @@ export function KycForm() {
         signature: null,
         email: "",
         mobile: "",
+        emailVerified: false,
+        mobileVerified: false,
         permanentAddress: "",
         isSameAddress: false,
         communicationAddress: "",
@@ -236,6 +240,7 @@ export function KycForm() {
       const { 
           photo, panCardUpload, addressProof, aadhaarCardUpload, signature,
           communicationAddress, isSameAddress,
+          emailVerified, mobileVerified,
           ...submissionData 
       } = data;
 

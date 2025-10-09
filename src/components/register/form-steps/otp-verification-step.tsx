@@ -14,7 +14,7 @@ export function OtpVerificationStep() {
     <div>
       <FormHeader 
         title="OTP Verification"
-        description={`An OTP has been sent to ${mobileOrEmail}. Please enter it below.`}
+        description={`An OTP has been sent to ${mobileOrEmail}. Please check the server console for the code to complete verification.`}
       />
       <div className="space-y-4 max-w-sm mx-auto">
         <FormField

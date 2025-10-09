@@ -193,6 +193,23 @@ export function KycForm() {
   
   const accountType = methods.watch("accountType");
 
+  const initialSteps = useMemo(() => [
+      <AccountTypeSelector key="accountType" />,
+      <PersonalDetailsForm key="personal" />,
+      <AddressDetailsForm key="address" />,
+    ], []);
+
+  const {
+    currentStepIndex,
+    step,
+    steps,
+    isFirstStep,
+    isLastStep,
+    back,
+    next,
+    goTo,
+  } = useMultistepForm(initialSteps);
+
   const stepsArray = useMemo(() => {
     const baseSteps: ReactElement[] = [
       <AccountTypeSelector key="accountType" />,
@@ -206,30 +223,27 @@ export function KycForm() {
       baseSteps.push(<CurrentAccountDetailsForm key="current-specific" />);
     }
     
-    // Add review and OTP steps only if an account type is selected
     if (accountType) {
         baseSteps.push(<ReviewDetailsForm key="review" goTo={goTo} />);
         baseSteps.push(<OtpVerificationStep key="otp" />);
     }
     
     return baseSteps;
-  }, [accountType]);
+  }, [accountType, goTo]);
 
   const {
-    currentStepIndex,
-    step,
-    steps,
-    isFirstStep,
-    isLastStep,
-    back,
-    next,
-    goTo,
+      currentStepIndex: finalCurrentStepIndex,
+      step: finalStep,
+      steps: finalSteps,
+      isFirstStep: finalIsFirstStep,
+      isLastStep: finalIsLastStep,
+      back: finalBack,
+      next: finalNext,
+      goTo: finalGoTo
   } = useMultistepForm(stepsArray);
 
 
   const onSubmit = async (data: KycFormData) => {
-      // Don't submit sensitive file data. In a real app, you would upload to a secure bucket
-      // and only pass the URLs. For this demo, we'll omit them from the saved data.
       const { 
           photo, panCardUpload, addressProof, aadhaarCardUpload, signature,
           communicationAddress, isSameAddress,
@@ -256,34 +270,31 @@ export function KycForm() {
   }
 
   async function handleNextStep() {
-    // For the last step, use the final schema resolver for submission
-    if (isLastStep) {
+    if (finalIsLastStep) {
         await methods.handleSubmit(onSubmit)();
         return;
     }
     
     const fieldGroups = formStepsPerType[accountType || 'savings'];
-    if (!fieldGroups || currentStepIndex >= fieldGroups.length) {
-        next();
+    if (!fieldGroups || finalCurrentStepIndex >= fieldGroups.length) {
+        finalNext();
         return;
     }
 
-    const fieldsToValidate = fieldGroups[currentStepIndex];
-    // Create a temporary resolver with the non-final schema for step-by-step validation
+    const fieldsToValidate = fieldGroups[finalCurrentStepIndex];
     const tempResolver = zodResolver(kycSchema);
     const tempForm = { ...methods, resolver: tempResolver };
     
-    // Trigger validation for the current step's fields using the temporary resolver
     const result = await tempForm.trigger(fieldsToValidate as (keyof KycFormData)[]);
 
     if (result) {
-        next();
+        finalNext();
     }
   }
   
-  const currentStepWithProps = React.isValidElement(step) 
-    ? React.cloneElement(step, { goTo: goTo } as { goTo: (index: number) => void }) 
-    : step;
+  const currentStepWithProps = React.isValidElement(finalStep) 
+    ? React.cloneElement(finalStep, { goTo: finalGoTo } as { goTo: (index: number) => void }) 
+    : finalStep;
 
 
   return (
@@ -291,10 +302,10 @@ export function KycForm() {
         <form onSubmit={methods.handleSubmit(onSubmit)}>
             <div className="max-w-3xl mx-auto p-4 md:p-8 rounded-lg shadow-xl border bg-card">
                 <div className="mb-8">
-                    <Progress value={steps.length > 0 ? (currentStepIndex + 1) * (100 / steps.length) : 0} className="mb-2" />
-                    {steps.length > 0 && (
+                    <Progress value={finalSteps.length > 0 ? (finalCurrentStepIndex + 1) * (100 / finalSteps.length) : 0} className="mb-2" />
+                    {finalSteps.length > 0 && (
                         <p className="text-sm text-center text-muted-foreground">
-                            Step {currentStepIndex + 1} of {steps.length}
+                            Step {finalCurrentStepIndex + 1} of {finalSteps.length}
                         </p>
                     )}
                 </div>
@@ -302,18 +313,18 @@ export function KycForm() {
                     {currentStepWithProps}
                 </AnimatePresence>
                 <div className="mt-8 flex justify-between">
-                    {!isFirstStep && (
-                    <Button type="button" variant="outline" onClick={back} disabled={methods.formState.isSubmitting}>
+                    {!finalIsFirstStep && (
+                    <Button type="button" variant="outline" onClick={finalBack} disabled={methods.formState.isSubmitting}>
                         Go Back
                     </Button>
                     )}
                     <div className="flex-grow"></div>
                     
-                    {!isLastStep ? (
+                    {!finalIsLastStep ? (
                        <Button 
                           type="button" 
                           onClick={handleNextStep}
-                          disabled={methods.formState.isSubmitting || (isFirstStep && !accountType)}
+                          disabled={methods.formState.isSubmitting || (finalIsFirstStep && !accountType)}
                         >
                             Next Step
                         </Button>
@@ -332,3 +343,5 @@ export function KycForm() {
     </FormProvider>
   );
 }
+
+    

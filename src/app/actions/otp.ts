@@ -1,24 +1,29 @@
+
 'use server';
 
-// In a real-world scenario, you would use a secure, expiring cache like Redis 
-// or a dedicated Firestore collection to store OTPs temporarily.
-// For this prototype, we'll use a simple in-memory store, which will reset on every server restart.
-const otpStore: Record<string, { otp: string; timestamp: number }> = {};
-const OTP_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
+import { initializeFirebase } from '@/firebase';
+import { getFirestore, collection, addDoc, query, where, getDocs, doc, deleteDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+
+const OTP_EXPIRY_MINUTES = 5;
 
 /**
- * Generates and "sends" an OTP to a given contact method.
- * In a real app, this would integrate with an email/SMS service (e.g., Twilio, SendGrid).
- * For this prototype, it generates an OTP and logs it to the console for testing.
+ * Generates and stores an OTP in Firestore.
+ * In a real app, this would also integrate with an email/SMS service.
  */
 export async function sendOtp(contact: string): Promise<{ success: boolean; message: string }> {
     try {
+        const { firestore } = initializeFirebase();
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
+
+        const otpsRef = collection(firestore, 'otps');
         
-        otpStore[contact] = {
+        await addDoc(otpsRef, {
+            contact: contact,
             otp: otp,
-            timestamp: Date.now()
-        };
+            expiresAt: Timestamp.fromDate(expiry),
+            createdAt: serverTimestamp()
+        });
 
         // --- SIMULATED SENDING ---
         console.log(`[OTP Simulation] Code for ${contact} is: ${otp}`);
@@ -34,28 +39,33 @@ export async function sendOtp(contact: string): Promise<{ success: boolean; mess
 }
 
 /**
- * Verifies an OTP against the stored value for a given contact method.
+ * Verifies an OTP against the value stored in Firestore.
  */
 export async function verifyOtp(contact: string, otp: string): Promise<{ success: boolean; message?: string }> {
     try {
-        const storedOtpData = otpStore[contact];
-
-        if (!storedOtpData) {
-            return { success: false, message: "No OTP found. Please request a new one." };
-        }
-
-        const isExpired = (Date.now() - storedOtpData.timestamp) > OTP_EXPIRY_MS;
-        if (isExpired) {
-            delete otpStore[contact]; // Clean up expired OTP
-            return { success: false, message: "OTP has expired. Please request a new one." };
-        }
+        const { firestore } = initializeFirebase();
+        const otpsRef = collection(firestore, 'otps');
         
-        if (storedOtpData.otp === otp) {
-            delete otpStore[contact]; // Clean up used OTP
-            return { success: true };
-        } else {
-            return { success: false, message: "The OTP you entered is incorrect." };
+        // Query for the OTP, ensuring it's for the right contact and hasn't expired.
+        const q = query(
+            otpsRef, 
+            where("contact", "==", contact),
+            where("otp", "==", otp),
+            where("expiresAt", ">=", Timestamp.now())
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            // No valid, unexpired OTP found.
+            return { success: false, message: "The OTP is incorrect or has expired. Please request a new one." };
         }
+
+        // OTP is valid. Delete it to prevent reuse.
+        const docToDelete = querySnapshot.docs[0];
+        await deleteDoc(doc(firestore, 'otps', docToDelete.id));
+
+        return { success: true };
 
     } catch (error) {
         console.error("Error verifying OTP:", error);

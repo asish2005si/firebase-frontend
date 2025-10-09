@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import type { Transaction } from "@/types/transaction";
 import { StatementHeader } from "@/components/dashboard/statements/statement-header";
 import { StatementControls } from "@/components/dashboard/statements/statement-controls";
@@ -55,10 +55,12 @@ export function StatementView({
   const { data: transactions, isLoading } = useCollection<Transaction>(transactionsQuery);
 
   const summary = useMemo(() => {
+    const openingBalance = 150000; // Mock opening balance for now
+    
     if (!transactions || transactions.length === 0) {
       return {
-        openingBalance: 0,
-        closingBalance: 0,
+        openingBalance: openingBalance,
+        closingBalance: openingBalance,
         totalCredits: 0,
         totalDebits: 0,
       };
@@ -68,20 +70,14 @@ export function StatementView({
       (a, b) => new Date(a.txn_time).getTime() - new Date(b.txn_time).getTime()
     );
 
-    const firstTxn = sorted[0];
-    const openingBalance =
-      firstTxn.balance_after +
-      (firstTxn.txn_type === "debit" ? firstTxn.amount : -firstTxn.amount);
-
-    const lastTxn = sorted[sorted.length - 1];
-    const closingBalance = lastTxn.balance_after;
-
     const totalCredits = sorted
-      .filter((t) => t.txn_type === "credit")
+      .filter((t) => t.txn_type === "credit" || t.txn_type === "Bill Payment")
       .reduce((acc, t) => acc + t.amount, 0);
     const totalDebits = sorted
-      .filter((t) => t.txn_type === "debit")
+      .filter((t) => t.txn_type === "debit" || t.txn_type === "Fund Transfer")
       .reduce((acc, t) => acc + t.amount, 0);
+      
+    const closingBalance = openingBalance + totalCredits - totalDebits;
 
     return { openingBalance, closingBalance, totalCredits, totalDebits };
   }, [transactions]);

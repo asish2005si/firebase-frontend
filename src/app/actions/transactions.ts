@@ -6,6 +6,8 @@ import { getFirestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
 import type { Transaction } from '@/types/transaction';
 
+// This function is kept for components that may not have been fully migrated yet.
+// It should be deprecated and removed once all transaction fetching is done client-side.
 export async function getTransactions(userId: string): Promise<Transaction[]> {
   const firestore = getFirestore(initializeFirebase().firebaseApp);
   const transactionsRef = collection(firestore, 'transactions');
@@ -17,8 +19,8 @@ export async function getTransactions(userId: string): Promise<Transaction[]> {
 }
 
 export async function getCustomerInfo() {
-    // This could be enhanced to fetch from a 'customers' collection
-    // based on the logged-in user's UID.
+    // This function can now be refactored to fetch dynamic data based on the logged-in user.
+    // For now, it returns mock data for components that haven't been fully migrated.
     return {
         fullName: "Jane Doe",
         accountNumber: "50100123456789",

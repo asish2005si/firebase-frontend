@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { ApplicationData } from "@/lib/mock-application-data";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, Loader2, FileCheck2 } from "lucide-react";
+import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { updateApplicationStatus } from "@/app/actions/applications";
@@ -146,11 +146,11 @@ export function AdminApplicationView({ application }: { application: Application
         <Separator />
         <h3 className="text-lg font-semibold text-foreground">Uploaded Documents</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-            <DocumentItem label="Photograph" imageUrl="https://placehold.co/400x400/EFEFEF/333333/png?text=Photo" />
-            <DocumentItem label="PAN Card" imageUrl="https://placehold.co/600x400/EFEFEF/333333/png?text=PAN+Card" />
-            <DocumentItem label="Signature" imageUrl="https://placehold.co/600x200/EFEFEF/333333/png?text=Signature" />
-            <DocumentItem label="Address Proof" imageUrl="https://placehold.co/400x600/EFEFEF/333333/png?text=Address+Proof" />
-            <DocumentItem label="Aadhaar Card" imageUrl="https://placehold.co/600x400/EFEFEF/333333/png?text=Aadhaar" />
+            <DocumentItem label="Photograph" imageUrl="https://picsum.photos/seed/photo/400/400" />
+            <DocumentItem label="PAN Card" imageUrl="https://picsum.photos/seed/pancard/600/400" />
+            <DocumentItem label="Signature" imageUrl="https://picsum.photos/seed/signature/600/200" />
+            <DocumentItem label="Address Proof" imageUrl="https://picsum.photos/seed/address/400/600" />
+            <DocumentItem label="Aadhaar Card" imageUrl="https://picsum.photos/seed/aadhaar/600/400" />
         </div>
 
         {application.status === 'Rejected' && application.reason && (

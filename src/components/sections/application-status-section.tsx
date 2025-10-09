@@ -18,7 +18,7 @@ import { getApplicationById } from "@/app/actions/applications";
 import { ClientOnly } from "../client-only";
 
 const statusSchema = z.object({
-  applicationId: z.string().regex(/^NX-\d{4}-\d{3}$/, "Invalid Application ID. Expected format: NX-YYYY-XXX"),
+  applicationId: z.string().min(5, "Please enter a valid Application ID."),
 });
 
 export function ApplicationStatusSection() {
@@ -73,7 +73,7 @@ export function ApplicationStatusSection() {
                         <FormItem className="flex-grow">
                           <FormLabel className="sr-only">Application ID</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter Application ID (e.g., NX-2024-001)" {...field} disabled={isLoading}/>
+                            <Input placeholder="Enter Application ID" {...field} disabled={isLoading}/>
                           </FormControl>
                           <FormMessage />
                         </FormItem>

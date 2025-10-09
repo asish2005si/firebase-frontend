@@ -9,10 +9,9 @@ import { FundTransferForm } from "@/components/dashboard/payments/fund-transfer-
 import { BillPaymentForm } from "@/components/dashboard/payments/bill-payment-form";
 import { PaymentHistory } from "@/components/dashboard/payments/payment-history";
 import { ClientOnly } from "@/components/client-only";
-import { addDocumentNonBlocking, useCollection, useFirestore, useUser } from "@/firebase";
+import { addDocumentNonBlocking, useCollection, useFirestore, useUser, useMemoFirebase } from "@/firebase";
 import { collection, query, where, orderBy } from "firebase/firestore";
 import type { Transaction } from "@/types/transaction";
-import { useMemo } from "react";
 
 function PaymentsComponent() {
   const searchParams = useSearchParams();
@@ -20,7 +19,7 @@ function PaymentsComponent() {
   const { user } = useUser();
   const firestore = useFirestore();
 
-  const transactionsQuery = useMemo(() => {
+  const transactionsQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return query(
       collection(firestore, "transactions"),

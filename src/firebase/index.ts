@@ -1,7 +1,7 @@
 
 import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app';
-import { Auth, getAuth } from 'firebase/auth';
-import { Firestore, getFirestore } from 'firebase/firestore';
+import { Auth, getAuth, connectAuthEmulator } from 'firebase/auth';
+import { Firestore, getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { useMemo } from 'react';
 import { firebaseConfig } from './config';
 

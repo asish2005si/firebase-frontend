@@ -1,13 +1,13 @@
+
 'use server';
 
 import { addDoc, collection, getDocs, query, where, doc, updateDoc, getDoc } from 'firebase/firestore';
 import type { ApplicationData } from '@/lib/mock-application-data';
 import type { LoanApplication } from '@/components/dashboard/loans/loan-applications';
-import { getFirestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
 
 export async function getApplications(): Promise<ApplicationData[]> {
-    const firestore = getFirestore(initializeFirebase().firebaseApp);
+    const { firestore } = initializeFirebase();
     const applicationsRef = collection(firestore, 'applications');
     const snapshot = await getDocs(applicationsRef);
     const applications = snapshot.docs.map(doc => ({ ...doc.data(), applicationId: doc.id } as ApplicationData));
@@ -15,7 +15,7 @@ export async function getApplications(): Promise<ApplicationData[]> {
 }
 
 export async function saveApplication(applicationData: Omit<ApplicationData, 'applicationId' | 'applicationDate' | 'status'>) {
-    const firestore = getFirestore(initializeFirebase().firebaseApp);
+    const { firestore } = initializeFirebase();
     const applicationsRef = collection(firestore, 'applications');
     
     const newApplication = {
@@ -30,7 +30,7 @@ export async function saveApplication(applicationData: Omit<ApplicationData, 'ap
 }
 
 export async function getLoanApplications(): Promise<LoanApplication[]> {
-    const firestore = getFirestore(initializeFirebase().firebaseApp);
+    const { firestore } = initializeFirebase();
     const applicationsRef = collection(firestore, 'loan-applications');
     const snapshot = await getDocs(applicationsRef);
     const applications = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as LoanApplication));
@@ -38,7 +38,7 @@ export async function getLoanApplications(): Promise<LoanApplication[]> {
 }
 
 export async function saveLoanApplication(applicationData: any) {
-    const firestore = getFirestore(initializeFirebase().firebaseApp);
+    const { firestore } = initializeFirebase();
     const applicationsRef = collection(firestore, 'loan-applications');
     const newApplication: Omit<LoanApplication, 'id'> = {
         type: applicationData.loanType,
@@ -53,7 +53,7 @@ export async function saveLoanApplication(applicationData: any) {
 }
 
 export async function getApplicationById(applicationId: string): Promise<ApplicationData | null> {
-    const firestore = getFirestore(initializeFirebase().firebaseApp);
+    const { firestore } = initializeFirebase();
     try {
         const docRef = doc(firestore, 'applications', applicationId);
         const docSnap = await getDoc(docRef);
@@ -72,7 +72,7 @@ export async function getApplicationById(applicationId: string): Promise<Applica
 
 export async function updateApplicationStatus(applicationId: string, newStatus: "Approved" | "Rejected", reason?: string): Promise<{ success: boolean; message?: string }> {
     try {
-        const firestore = getFirestore(initializeFirebase().firebaseApp);
+        const { firestore } = initializeFirebase();
         const docRef = doc(firestore, 'applications', applicationId);
         
         const updateData: Partial<ApplicationData> = { status: newStatus };

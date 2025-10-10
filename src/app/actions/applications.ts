@@ -5,6 +5,7 @@ import { addDoc, collection, getDocs, query, where, doc, updateDoc, getDoc } fro
 import type { ApplicationData } from '@/lib/mock-application-data';
 import type { LoanApplication } from '@/components/dashboard/loans/loan-applications';
 import { initializeFirebase } from '@/firebase';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export async function getApplications(): Promise<ApplicationData[]> {
     const { firestore } = initializeFirebase();
@@ -32,9 +33,16 @@ export async function saveApplication(applicationData: Omit<ApplicationData, 'ap
 export async function getLoanApplications(): Promise<LoanApplication[]> {
     const { firestore } = initializeFirebase();
     const applicationsRef = collection(firestore, 'loan-applications');
-    const snapshot = await getDocs(applicationsRef);
-    const applications = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as LoanApplication));
-    return applications;
+    try {
+        const snapshot = await getDocs(applicationsRef);
+        const applications = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as LoanApplication));
+        return applications;
+    } catch (e) {
+        throw new FirestorePermissionError({
+            path: 'loan-applications',
+            operation: 'list'
+        })
+    }
 }
 
 export async function saveLoanApplication(applicationData: any) {

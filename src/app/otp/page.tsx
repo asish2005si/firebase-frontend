@@ -119,7 +119,7 @@ function OTPFormComponent() {
             <CardTitle className="text-2xl">Two-Factor Authentication</CardTitle>
             <CardDescription>
               A 6-digit OTP has been sent to {<strong>{contact}</strong>}.
-              For testing, the code is logged in your server console.
+              For development, please check your server console for the code.
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -25,11 +25,20 @@ export async function sendOtp(contact: string): Promise<{ success: boolean; mess
             createdAt: serverTimestamp()
         });
 
-        // --- SIMULATED SENDING ---
-        console.log(`[OTP Simulation] Code for ${contact} is: ${otp}`);
-        // In a real app, you would uncomment and use a service like this:
-        // await sendSms(contact, `Your Nexus Bank verification code is: ${otp}`);
-        // await sendEmail(contact, 'Your Verification Code', `Your Nexus Bank code is: ${otp}`);
+        // --- ⬇️ REAL-WORLD API INTEGRATION POINT ---
+        // In a real application, you would replace the console.log below
+        // with a call to an email or SMS service API (e.g., Twilio, SendGrid).
+        // For development, we log the OTP to the server console.
+        
+        console.log(`[OTP Simulation] The verification code for ${contact} is: ${otp}`);
+        
+        // Example with a hypothetical email service:
+        // await sendEmail({
+        //   to: contact,
+        //   subject: 'Your Nexus Bank Verification Code',
+        //   body: `Your verification code is: ${otp}`
+        // });
+        // --- ⬆️ END OF API INTEGRATION POINT ---
         
         return { success: true, message: `An OTP has been sent to ${contact}.` };
     } catch (error) {
